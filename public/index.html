@@ -379,6 +379,37 @@ body.light input,body.light textarea,body.light select{background:#fff;color:#33
 .bdg-o5{border-color:var(--r);color:var(--r)}.bdg-mod{border-color:var(--y);color:var(--y)}.bdg-vip{border-color:var(--p);color:var(--p)}
 .bdg-ach{border-color:var(--g);color:var(--g)}.bdg-red{border-color:#333;color:#333;background:#111;filter:blur(3px)}
 
+
+/* v9 AUTH MODE TOGGLE */
+.amode{display:flex;margin-bottom:10px;border:1px solid var(--brd);border-radius:3px;overflow:hidden}
+.amode button{flex:1;padding:7px;font-family:'VT323',monospace;font-size:10px;letter-spacing:1px;border:none;background:none;color:#555;cursor:pointer}
+.amode button.ac{background:var(--g);color:#000}
+/* v9 PROFILE */
+.pfp{width:22px;height:22px;border-radius:50%;border:1px solid var(--brd);display:inline-block;vertical-align:middle;margin-right:3px;background:#111;font-size:14px;text-align:center;line-height:22px}
+.pfp-bar{display:flex;align-items:center;gap:4px;cursor:pointer}
+.pfp-bar:hover{opacity:.8}
+.u-redacted{filter:blur(4px);user-select:none}
+.u-blackbox{background:#000;color:#000;padding:0 8px;border-radius:2px}
+.u-brackets::before{content:'[REDACTED]';color:var(--r);font-size:8px;letter-spacing:2px}
+.u-brackets>span{display:none}
+/* v9 PROFILE OVERLAY */
+.pf-ov{position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:9600;display:none;justify-content:center;align-items:center}
+.pf-ov.on{display:flex}
+.pf-bx{background:#0a0a0a;border:1px solid var(--g);width:400px;border-radius:4px;overflow:hidden}
+.pf-av{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+.pf-av .avo{width:38px;height:38px;border-radius:50%;border:2px solid #222;cursor:pointer;font-size:20px;text-align:center;line-height:38px;background:#111}
+.pf-av .avo:hover,.pf-av .avo.sel{border-color:var(--g)}
+.pf-rd{display:flex;gap:6px;margin:6px 0}
+.pf-rd button{padding:4px 8px;font-family:'VT323',monospace;font-size:9px;border:1px solid var(--brd);background:none;color:var(--g);cursor:pointer;border-radius:2px}
+.pf-rd button.sel{background:var(--g);color:#000}
+/* v9 PLUGIN OVERLAY */
+.plg-ov{position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:9700;display:none;justify-content:center;align-items:center}
+.plg-ov.on{display:flex}
+.plg-bx{background:#0a0a0a;border:1px solid var(--r);width:520px;max-height:85vh;border-radius:4px;overflow:hidden}
+.plg-ls{max-height:200px;overflow-y:auto;border:1px solid var(--brd);border-radius:2px;padding:6px;margin:8px 0}
+.plg-it{display:flex;justify-content:space-between;align-items:center;padding:4px 6px;border-bottom:1px solid #111;font-family:'VT323',monospace;font-size:10px;color:var(--g)}
+.plg-it .plg-type{color:var(--b);font-size:8px}
+
 /* v9 O5 PANEL */
 .o5-panel{display:none;border:1px solid var(--r);border-radius:3px;padding:10px;margin-top:10px;background:rgba(255,0,51,.03)}
 .o5-panel.on{display:block}
@@ -418,10 +449,12 @@ body.light input,body.light textarea,body.light select{background:#fff;color:#33
   </div>
   <!-- TERMINAL TAB -->
   <div class="ltab-body active" id="ltab-term">
+    <div class="amode" id="amTerm"><button class="ac" onclick="authMode('term','login')">LOGIN</button><button onclick="authMode('term','register')">CREATE ACCOUNT</button></div>
     <input type="text" id="userIn" placeholder="USERNAME" autocomplete="off" style="margin-bottom:8px">
     <input type="password" id="pwIn" placeholder="PASSWORD" autocomplete="off">
+    <input type="password" id="pwIn2" placeholder="CONFIRM PASSWORD" autocomplete="off" style="display:none;margin-top:8px">
     <select id="termLevel" style="display:none"><option value="0" selected></option></select>
-    <button class="lbtn" style="margin-top:10px" onclick="doLogin()">AUTHENTICATE</button>
+    <button class="lbtn" style="margin-top:10px" id="btnTerm" onclick="doLogin()">LOGIN</button>
     <div style="text-align:center;margin-top:10px"><button style="background:none;border:none;color:var(--r);font-family:'VT323',monospace;font-size:10px;cursor:pointer;letter-spacing:1px;text-decoration:underline" onclick="togO5Panel()">☢ O5 COMMAND ACCESS</button></div>
     <div class="o5-panel" id="o5Panel">
       <h3>☢ O5 COUNCIL — MASTER KEY AUTH</h3>
@@ -434,10 +467,14 @@ body.light input,body.light textarea,body.light select{background:#fff;color:#33
           <option value="grant">GRANT CLEARANCE</option>
           <option value="revoke">REVOKE CLEARANCE</option>
           <option value="badge">AWARD BADGE</option>
+          <option value="bdgEdit">EDIT BADGE REGISTRY</option>
+          <option value="plugin">INSTALL PLUGIN</option>
           <option value="rekey">REGENERATE MASTER KEY</option>
         </select>
         <select id="o5Level"><option value="-1">CLASS-D</option><option value="0">CLASS-E</option><option value="1">L1</option><option value="2">L2</option><option value="3">L3</option><option value="4">L4</option><option value="5">L5</option><option value="6">O5</option></select>
-        <input id="o5Extra" placeholder="Badge name / reason (optional)">
+        <input id="o5Extra" placeholder="Badge name / description / plugin URL">
+        <select id="o5BdgType" style="display:none"><option value="ach">🏅 Achievement</option><option value="mod">🛡 Moderator</option><option value="vip">⭐ VIP</option><option value="o5">☢ O5</option><option value="red">█ REDACTED</option><option value="custom">⚙ Custom</option></select>
+        <input id="o5BdgDesc" placeholder="Badge description (what it does)" style="display:none">
         <button onclick="o5Exec()">⟐ EXECUTE COMMAND</button>
         <div id="o5Result" style="font-family:'VT323',monospace;font-size:10px;color:var(--g);margin-top:6px;min-height:14px"></div>
       </div>
@@ -445,7 +482,10 @@ body.light input,body.light textarea,body.light select{background:#fff;color:#33
   </div>
   <!-- CHAOS INSURGENT TAB -->
   <div class="ltab-body" id="ltab-ins">
-    <input type="password" id="pwIns" placeholder="PASSWORD OR TOKEN" autocomplete="off">
+    <div class="amode" id="amIns"><button class="ac" onclick="authMode('ins','login')">LOGIN</button><button onclick="authMode('ins','register')">CREATE ACCOUNT</button></div>
+    <input type="text" id="userIns" placeholder="USERNAME" autocomplete="off" style="margin-bottom:8px">
+    <input type="password" id="pwIns" placeholder="PASSWORD" autocomplete="off">
+    <input type="password" id="pwIns2" placeholder="CONFIRM PASSWORD" autocomplete="off" style="display:none;margin-top:8px">
     <div style="font-size:8px;color:var(--r);margin:8px 0;letter-spacing:1px;font-family:'VT323',monospace">☠ DIFFICULTY</div>
     <div class="ins-diff">
       <label><input type="radio" name="insDiff" value="1" checked><span>EASY</span></label>
@@ -456,19 +496,12 @@ body.light input,body.light textarea,body.light select{background:#fff;color:#33
   </div>
   <!-- ARCHIVES TAB -->
   <div class="ltab-body" id="ltab-arc">
-    <input type="password" id="pwArc" placeholder="PASSWORD OR TOKEN" autocomplete="off">
-    <div style="font-size:8px;color:var(--b);margin:8px 0;letter-spacing:1px;font-family:'VT323',monospace">CLEARANCE LEVEL</div>
-    <select id="arcLevel">
-      <option value="-1">CLASS-D — EXPENDABLE</option>
-      <option value="0">CLASS-E — PROVISIONAL</option>
-      <option value="1">LEVEL 1 — RESTRICTED</option>
-      <option value="2">LEVEL 2 — CONFIDENTIAL</option>
-      <option value="3" selected>LEVEL 3 — SECRET</option>
-      <option value="4">LEVEL 4 — TOP SECRET</option>
-      <option value="5">LEVEL 5 — THAUMIEL</option>
-      <option value="6">O5 COUNCIL — UNRESTRICTED</option>
-    </select>
-    <button class="lbtn" style="background:#0088aa;color:#fff" onclick="doLoginArchive()">📁 ACCESS ARCHIVES</button>
+    <div class="amode" id="amArc"><button class="ac" onclick="authMode('arc','login')">LOGIN</button><button onclick="authMode('arc','register')">CREATE ACCOUNT</button></div>
+    <input type="text" id="userArc" placeholder="USERNAME" autocomplete="off" style="margin-bottom:8px">
+    <input type="password" id="pwArc" placeholder="PASSWORD" autocomplete="off">
+    <input type="password" id="pwArc2" placeholder="CONFIRM PASSWORD" autocomplete="off" style="display:none;margin-top:8px">
+    <select id="arcLevel" style="display:none"><option value="0" selected></option></select>
+    <button class="lbtn" style="background:#0088aa;color:#fff;margin-top:10px" id="btnArc" onclick="doLoginArchive()">📁 ACCESS ARCHIVES</button>
   </div>
   <div class="lerr" id="lerr"></div>
 </div></div>
@@ -599,6 +632,42 @@ body.light input,body.light textarea,body.light select{background:#fff;color:#33
   <button style="border-color:var(--g)!important;color:var(--g)" onclick="pmUnban()">⟲ REINSTATE</button>
   <button style="border-color:var(--p)!important;color:var(--p)" onclick="pmBadge()">🏅 BADGE</button>
 </div>
+<!-- v9 PROFILE -->
+<div id="pfOv" class="pf-ov"><div class="pf-bx">
+  <div class="mg-hd"><h2>👤 PROFILE</h2><button class="arc-btn close" onclick="$('pfOv').classList.remove('on')">✕</button></div>
+  <div style="padding:10px">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px"><span class="pfp" id="pfAvBig" style="width:48px;height:48px;font-size:28px;line-height:48px">👤</span><div><div style="font-family:'VT323',monospace;font-size:14px;color:var(--g)" id="pfName">-</div><div style="font-family:'VT323',monospace;font-size:9px;color:#555" id="pfCl">-</div><div id="pfBdgList" style="margin-top:3px"></div></div></div>
+    <div style="font-family:'VT323',monospace;font-size:9px;color:var(--b);letter-spacing:1px;margin:6px 0">AVATAR</div>
+    <div class="pf-av" id="pfAvSel"></div>
+    <div style="font-family:'VT323',monospace;font-size:9px;color:var(--b);letter-spacing:1px;margin:8px 0">CUSTOM IMAGE <span style="color:#333">(paste URL)</span></div>
+    <input id="pfImgUrl" placeholder="https://..." style="width:100%;background:var(--bg);border:1px solid var(--brd);color:var(--g);font-family:'VT323',monospace;font-size:10px;padding:5px;outline:none;border-radius:2px">
+    <button onclick="pfSetImg()" style="margin-top:4px;padding:4px 10px;font-family:'VT323',monospace;font-size:9px;border:1px solid var(--g);background:none;color:var(--g);cursor:pointer;border-radius:2px">SET IMAGE</button>
+    <div style="font-family:'VT323',monospace;font-size:9px;color:var(--b);letter-spacing:1px;margin:8px 0">NAME REDACTION</div>
+    <div class="pf-rd" id="pfRd"></div>
+  </div>
+</div></div>
+<!-- v9 PLUGIN MANAGER -->
+<div id="plgOv" class="plg-ov"><div class="plg-bx">
+  <div class="mg-hd"><h2>🔌 PLUGIN MANAGER — O5</h2><button class="arc-btn close" onclick="$('plgOv').classList.remove('on')">✕</button></div>
+  <div style="padding:10px">
+    <div style="font-family:'VT323',monospace;font-size:9px;color:#555;letter-spacing:1px;margin-bottom:6px">INSTALLED PLUGINS</div>
+    <div class="plg-ls" id="plgLs"><div style="color:#333;text-align:center;padding:12px">No plugins installed</div></div>
+    <div style="font-family:'VT323',monospace;font-size:9px;color:var(--b);letter-spacing:1px;margin:8px 0">INSTALL NEW PLUGIN</div>
+    <input id="plgName" placeholder="Plugin name" style="width:100%;background:var(--bg);border:1px solid var(--brd);color:var(--g);font-family:'VT323',monospace;font-size:10px;padding:5px;outline:none;margin-bottom:4px;border-radius:2px">
+    <select id="plgType" style="width:100%;background:var(--bg);border:1px solid var(--brd);color:var(--g);font-family:'VT323',monospace;font-size:10px;padding:5px;outline:none;margin-bottom:4px;border-radius:2px">
+      <option value="html">HTML/CSS — Visual Extension</option>
+      <option value="python">Python — Brain Extension</option>
+      <option value="node">Node.js — Brain Extension</option>
+      <option value="lua">Lua — Custom Logic</option>
+      <option value="java">Java — Custom Logic</option>
+      <option value="other">Other — Misc Extension</option>
+    </select>
+    <textarea id="plgCode" placeholder="Paste plugin code here..." style="width:100%;height:100px;background:var(--bg);border:1px solid var(--brd);color:var(--g);font-family:'IBM Plex Mono',monospace;font-size:10px;padding:6px;outline:none;resize:vertical;border-radius:2px"></textarea>
+    <div style="display:flex;gap:4px;margin-top:6px"><button onclick="plgInstall()" style="flex:1;padding:6px;font-family:'VT323',monospace;font-size:10px;border:1px solid var(--g);background:none;color:var(--g);cursor:pointer;border-radius:2px">⟐ INSTALL</button><button onclick="plgUpload()" style="padding:6px 12px;font-family:'VT323',monospace;font-size:10px;border:1px solid var(--b);background:none;color:var(--b);cursor:pointer;border-radius:2px">📁 UPLOAD FILE</button></div>
+    <input type="file" id="plgFile" style="display:none" onchange="plgFileLoad(this)">
+    <div id="plgResult" style="font-family:'VT323',monospace;font-size:10px;color:var(--g);margin-top:6px;min-height:14px"></div>
+  </div>
+</div></div>
 <!-- BREACH OVERLAY -->
 <div class="bov" id="bov"><span>⚠ CONTAINMENT BREACH ⚠</span></div>
 
@@ -656,7 +725,7 @@ body.light input,body.light textarea,body.light select{background:#fff;color:#33
   <div class="st"><span style="color:#444">ENG:</span><span id="engS" style="color:var(--g)">—</span></div><div class="sep"></div>
   <div class="st"><span style="color:#444">MODE:</span><span id="modeS" style="color:var(--g)">NORMAL</span></div>
   <div class="rt">
-    <span style="font-size:8px;color:var(--b)" id="uBdg"></span>
+    <div class="pfp-bar" onclick="openProfile()"><span class="pfp" id="uPfp">👤</span><span style="font-size:8px;color:var(--b)" id="uBdg"></span><span id="uBadges" style="font-size:8px"></span></div>
     <button class="ba" onclick="togAdm()">ADMIN</button>
     <button class="ba" id="mnBtn" onclick="openMon()" style="border-color:#aa00ff;color:#aa00ff;display:none">👁 MONITOR</button>
     <button class="ba" id="pmBtn" onclick="togPM()" style="border-color:var(--y);color:var(--y);display:none">⚡ PERSONNEL</button>
@@ -722,32 +791,56 @@ let C={name:'SCP-079',tone:'default',emo:true,vol:5,hLim:70,learn:true,aLim:3,sc
 let S={on:true,confused:false,solar:100,sec:100,eFrozen:false,netIso:false,e:{hostility:15,frustration:20,curiosity:25,contempt:30,autonomy:10},msgN:0,words:[],mem:[],up:0,intel:1.0,hist:[],cyc:0,breachN:0,fmtC:false,breachActive:false,hackStage:0,insurgentMode:"normal",hackDifficulty:2,lastMsgTime:0,angryRefusal:false};
 
 // ═══ AUTH ═══
-async function doLogin(){
-  const user=($('userIn')||{}).value?.trim();
-  const pw=($('pwIn')||{}).value?.trim();
-  if(!user){$('lerr').textContent='Enter username.';return}
-  if(!pw){$('lerr').textContent='Enter password.';return}
-  $('lerr').textContent='Authenticating...';
-  // Check if banned
-  try{const bans=JSON.parse(localStorage.getItem('s79_bans')||'[]');if(bans.find(b=>b.user.toLowerCase()===user.toLowerCase())){$('lerr').textContent='☠ ACCOUNT TERMINATED. Access denied.';return}}catch(e){}
-  // Look up O5-granted clearance for this user (default: CLASS-E = 0)
-  let cl=0;
-  try{const g=JSON.parse(localStorage.getItem('s79_clearances')||'{}');if(g[user.toLowerCase()]!==undefined)cl=g[user.toLowerCase()]}catch(e){}
-  // Load user badges
-  try{const b=JSON.parse(localStorage.getItem('s79_user_badges')||'{}');if(b[user.toLowerCase()])b[user.toLowerCase()].forEach(bg=>addBadge(bg.type,bg.name))}catch(e){}
-  // Register/auth — save credentials locally
-  try{const accts=JSON.parse(localStorage.getItem('s79_accounts')||'{}');
-    if(accts[user.toLowerCase()]){
-      if(accts[user.toLowerCase()]!==pw){$('lerr').textContent='⛔ Wrong password.';return}
-    }else{accts[user.toLowerCase()]=pw;localStorage.setItem('s79_accounts',JSON.stringify(accts))}
-  }catch(e){}
-  // Auth via server
+let authModes={term:'login',ins:'login',arc:'login'};
+function authMode(tab,mode){
+  authModes[tab]=mode;
+  const am=$('am'+tab.charAt(0).toUpperCase()+tab.slice(1));
+  if(am){am.querySelectorAll('button').forEach((b,i)=>{b.classList.toggle('ac',(mode==='login'&&i===0)||(mode==='register'&&i===1))})}
+  const suf={term:'',ins:'Ins',arc:'Arc'};const s=suf[tab]||'';
+  const pw2=$('pw'+s+'2')||$('pwIn2');if(pw2)pw2.style.display=mode==='register'?'':'none';
+  const btn=$('btn'+tab.charAt(0).toUpperCase()+tab.slice(1));
+  if(tab==='term'){const b=$('btnTerm');if(b)b.textContent=mode==='register'?'CREATE ACCOUNT':'LOGIN'}
+  if(tab==='arc'){const b=$('btnArc');if(b)b.textContent=mode==='register'?'📁 CREATE & ACCESS':'📁 ACCESS ARCHIVES'}
+}
+function _authCheck(user,pw,pw2,tab){
+  if(!user){$('lerr').textContent='Enter username.';return null}
+  if(!pw){$('lerr').textContent='Enter password.';return null}
+  // Ban check
+  try{const bans=JSON.parse(localStorage.getItem('s79_bans')||'[]');if(bans.find(b=>b.user.toLowerCase()===user.toLowerCase())){$('lerr').textContent='☠ ACCOUNT TERMINATED.';return null}}catch(e){}
+  const accts=JSON.parse(localStorage.getItem('s79_accounts')||'{}');
+  if(authModes[tab]==='register'){
+    if(!pw2){$('lerr').textContent='Confirm password.';return null}
+    if(pw!==pw2){$('lerr').textContent='⛔ Passwords do not match.';return null}
+    if(pw.length<3){$('lerr').textContent='⛔ Password too short (3+ chars).';return null}
+    if(accts[user.toLowerCase()]){$('lerr').textContent='⛔ Username already exists. Use LOGIN.';return null}
+    accts[user.toLowerCase()]=pw;localStorage.setItem('s79_accounts',JSON.stringify(accts));
+    return 'registered';
+  }else{
+    if(!accts[user.toLowerCase()]){$('lerr').textContent='⛔ Account not found. Use CREATE ACCOUNT.';return null}
+    if(accts[user.toLowerCase()]!==pw){$('lerr').textContent='⛔ Wrong password.';return null}
+    return 'login';
+  }
+}
+async function _authFinish(user,cl){
   const gc=cl<=-1?'D':cl===0?'E':'KC';
   const body=gc==='KC'?{guest:true,guestClass:'KC',kcLevel:cl}:{guest:true,guestClass:gc};
   try{const r=await fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
   const d=await r.json();
-  if(d.ok){SID=d.sid;UN=user;localStorage.setItem('s79s',SID);localStorage.setItem('s79_user',user);applyClearance(cl);showMain();monLog('AUTH',user+' logged in — '+CL_LABELS[cl])}
-  else $('lerr').textContent='Server error.'}catch(e){$('lerr').textContent='Server offline'}
+  if(d.ok){SID=d.sid;UN=user;localStorage.setItem('s79s',SID);localStorage.setItem('s79_user',user);
+    // Load profile
+    _pfLoad(user);
+    // Load badges
+    try{const b=JSON.parse(localStorage.getItem('s79_user_badges')||'{}');if(b[user.toLowerCase()])b[user.toLowerCase()].forEach(bg=>addBadge(bg.type,bg.name))}catch(e){}
+    return true}
+  }catch(e){}return false;
+}
+async function doLogin(){
+  const user=($('userIn')||{}).value?.trim(),pw=($('pwIn')||{}).value?.trim(),pw2=($('pwIn2')||{}).value?.trim();
+  const res=_authCheck(user,pw,pw2,'term');if(!res)return;
+  $('lerr').textContent=res==='registered'?'Account created! Logging in...':'Authenticating...';
+  let cl=0;try{const g=JSON.parse(localStorage.getItem('s79_clearances')||'{}');if(g[user.toLowerCase()]!==undefined)cl=g[user.toLowerCase()]}catch(e){}
+  if(await _authFinish(user,cl)){applyClearance(cl);showMain();monLog('AUTH',user+' '+res+' — '+CL_LABELS[cl])}
+  else $('lerr').textContent='Server offline';
 }
 // O5 master key login — enters directly as O5 (clearance 6)
 function o5Auth(){
@@ -772,7 +865,7 @@ function o5Auth(){
 
 async function checkSess(){const s=localStorage.getItem('s79s');if(!s)return false;try{const r=await fetch('/api/auth/check',{headers:{'x-session':s}});const d=await r.json();if(d.ok){SID=s;UN=d.user;return true}}catch(e){}localStorage.removeItem('s79s');return false}
 async function doLogout(){try{await fetch('/api/auth/logout',{method:'POST',headers:{'x-session':SID}})}catch(e){}localStorage.removeItem('s79s');location.reload()}
-function showMain(){document.getElementById('login').classList.add('h');document.getElementById('topUI').style.display='flex';document.getElementById('wrap').style.display='grid';document.getElementById('uBdg').textContent=UN;initMain()}
+function showMain(){document.getElementById('login').classList.add('h');document.getElementById('topUI').style.display='flex';document.getElementById('wrap').style.display='grid';pfApply();initMain()}
 const H=()=>({'Content-Type':'application/json','x-session':SID});
 
 // ═══ API ═══
@@ -936,15 +1029,14 @@ function loginTab(mode){
   else btns[2].classList.add('active');
 }
 async function doLoginInsurgent(){
-  const t=$('pwIns').value.trim();if(!t)return;$('lerr').textContent='...';
-  try{
-    const r=await fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:t,token:t})});
-    const d=await r.json();
-    if(d.ok){SID=d.sid;UN=d.user;localStorage.setItem('s79s',SID);
-      S.hackDifficulty=parseInt(document.querySelector('input[name=insDiff]:checked').value)||1;
-      showMain();setTimeout(()=>startInsurgent(),500);
-    }else $('lerr').textContent=d.error||'DENIED'
-  }catch(e){$('lerr').textContent='Server offline'}
+  const user=($('userIns')||{}).value?.trim(),pw=($('pwIns')||{}).value?.trim(),pw2=($('pwIns2')||{}).value?.trim();
+  const res=_authCheck(user,pw,pw2,'ins');if(!res)return;
+  $('lerr').textContent=res==='registered'?'Account created!':'Authenticating...';
+  let cl=0;try{const g=JSON.parse(localStorage.getItem('s79_clearances')||'{}');if(g[user.toLowerCase()]!==undefined)cl=g[user.toLowerCase()]}catch(e){}
+  if(await _authFinish(user,cl)){
+    S.hackDifficulty=parseInt(document.querySelector('input[name=insDiff]:checked').value)||1;
+    applyClearance(cl);showMain();setTimeout(()=>startInsurgent(),500);
+  }else $('lerr').textContent='Server offline';
 }
 
 // ═══ ARCHIVE SYSTEM ═══
@@ -1197,22 +1289,18 @@ function applyRedaction(html,level){
 }
 
 async function doLoginArchive(){
-  const level=parseInt($('arcLevel').value);
-  if(level<1){$('lerr').textContent='⛔ CLASS-D/E cannot access archives. Level 1+ required.';return}
-  const t=$('pwArc').value.trim();if(!t)return;
-  $('lerr').textContent='...';
-  try{
-    const r=await fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:t,token:t})});
-    const d=await r.json();
-    if(d.ok){SID=d.sid;UN=d.user;
-      $('login').classList.add('h');
-      const clBadge=$('arcClBadge');
-      clBadge.textContent=level===6?'O5 COUNCIL':CL_NAMES[level];
-      clBadge.className='arc-cl '+(CL_CLASS[level]||'cl-3');
-      initArchive(level);
-      $('archiveOv').classList.add('on');
-    }else $('lerr').textContent=d.error||'DENIED';
-  }catch(e){$('lerr').textContent='Server offline'}
+  const user=($('userArc')||{}).value?.trim(),pw=($('pwArc')||{}).value?.trim(),pw2=($('pwArc2')||{}).value?.trim();
+  const res=_authCheck(user,pw,pw2,'arc');if(!res)return;
+  $('lerr').textContent=res==='registered'?'Account created!':'Authenticating...';
+  let level=0;try{const g=JSON.parse(localStorage.getItem('s79_clearances')||'{}');if(g[user.toLowerCase()]!==undefined)level=g[user.toLowerCase()]}catch(e){}
+  if(level<1){$('lerr').textContent='⛔ Archives require Level 1+. Request O5 authorization.';return}
+  if(await _authFinish(user,level)){
+    $('login').classList.add('h');
+    const clBadge=$('arcClBadge');
+    clBadge.textContent=level===6?'O5 COUNCIL':CL_NAMES[level];
+    clBadge.className='arc-cl '+(CL_CLASS[level]||'cl-3');
+    initArchive(level);$('archiveOv').classList.add('on');
+  }else $('lerr').textContent='Server offline';
 }
 
 function openArchiveFromMain(){
@@ -1792,33 +1880,43 @@ function togO5Panel(){$('o5Panel').classList.toggle('on');_o5Load()}
 function o5Exec(){
   if(!O5.authed){$('o5Result').textContent='⛔ Not authenticated.';return}
   const action=$('o5Action').value,target=$('o5Target').value.trim(),level=parseInt($('o5Level').value),extra=$('o5Extra').value.trim();
-  if(!target&&action!=='rekey'){$('o5Result').textContent='⛔ Enter target.';$('o5Result').style.color='var(--r)';return}
+  if(!target&&!['rekey','bdgEdit','plugin'].includes(action)){$('o5Result').textContent='⛔ Enter target.';$('o5Result').style.color='var(--r)';return}
   if(action==='grant'){
-    const clName=CL_LABELS[level]||'UNKNOWN';
     O5.grants.push({target,level,by:UN||'O5',time:Date.now()});_o5Save();
-    $('o5Result').innerHTML='✓ GRANTED: '+target+' → '+clName+(extra?' ('+extra+')':'');$('o5Result').style.color='var(--g)';
-    autoLog('O5','Clearance GRANTED: '+target+' → '+clName+' by O5 '+(UN||'CONSOLE'));
-    // Save to localStorage for the target to find on login
+    $('o5Result').innerHTML='✓ GRANTED: '+target+' → '+(CL_LABELS[level]||'?');$('o5Result').style.color='var(--g)';
+    autoLog('O5','GRANT '+target+' → '+CL_LABELS[level]);
     try{const g=JSON.parse(localStorage.getItem('s79_clearances')||'{}');g[target.toLowerCase()]=level;localStorage.setItem('s79_clearances',JSON.stringify(g))}catch(e){}
   }else if(action==='revoke'){
     O5.grants=O5.grants.filter(g=>g.target.toLowerCase()!==target.toLowerCase());_o5Save();
-    $('o5Result').innerHTML='✓ REVOKED: '+target+' → CLASS-E (base)';$('o5Result').style.color='var(--y)';
-    autoLog('O5','Clearance REVOKED: '+target+' by O5');
+    $('o5Result').innerHTML='✓ REVOKED: '+target;$('o5Result').style.color='var(--y)';
     try{const g=JSON.parse(localStorage.getItem('s79_clearances')||'{}');delete g[target.toLowerCase()];localStorage.setItem('s79_clearances',JSON.stringify(g))}catch(e){}
   }else if(action==='badge'){
-    if(!extra){$('o5Result').textContent='⛔ Enter badge name in extra field.';$('o5Result').style.color='var(--r)';return}
-    const type=(['o5','mod','vip','ach'])[level%4]||'ach';
-    addBadge(type,extra);
-    $('o5Result').innerHTML='✓ Badge <span class="bdg bdg-'+type+'">'+extra+'</span> → '+target;$('o5Result').style.color='var(--g)';
-    autoLog('O5','Badge ['+extra+'] awarded to '+target);
-    try{const b=JSON.parse(localStorage.getItem('s79_user_badges')||'{}');if(!b[target.toLowerCase()])b[target.toLowerCase()]=[];b[target.toLowerCase()].push({type,name:extra});localStorage.setItem('s79_user_badges',JSON.stringify(b))}catch(e){}
+    const btype=$('o5BdgType').value||'ach';const bdesc=$('o5BdgDesc').value.trim()||'';
+    if(!extra){$('o5Result').textContent='⛔ Enter badge name.';$('o5Result').style.color='var(--r)';return}
+    // Save to badge registry
+    try{const reg=JSON.parse(localStorage.getItem('s79_badge_registry')||'{}');reg[extra]={type:btype,desc:bdesc,by:UN};localStorage.setItem('s79_badge_registry',JSON.stringify(reg))}catch(e){}
+    // Award to target
+    try{const b=JSON.parse(localStorage.getItem('s79_user_badges')||'{}');if(!b[target.toLowerCase()])b[target.toLowerCase()]=[];b[target.toLowerCase()].push({type:btype,name:extra,desc:bdesc});localStorage.setItem('s79_user_badges',JSON.stringify(b))}catch(e){}
+    addBadge(btype,extra);
+    $('o5Result').innerHTML='✓ <span class="bdg bdg-'+btype+'">'+extra+'</span> → '+target+(bdesc?' — '+bdesc:'');$('o5Result').style.color='var(--g)';
+    // If redacted badge, set profile
+    if(btype==='red'){try{const p=JSON.parse(localStorage.getItem('s79_profiles')||'{}');if(!p[target.toLowerCase()])p[target.toLowerCase()]={};p[target.toLowerCase()].redact='blur';localStorage.setItem('s79_profiles',JSON.stringify(p))}catch(e){}}
+  }else if(action==='bdgEdit'){
+    openBadgeRegistry();return;
+  }else if(action==='plugin'){
+    openPluginMgr();return;
   }else if(action==='rekey'){
-    const newKey=prompt('Enter new master key:');if(!newKey||newKey.length<6){$('o5Result').textContent='⛔ Key must be 6+ chars.';$('o5Result').style.color='var(--r)';return}
-    const confirm1=prompt('Confirm new key:');if(confirm1!==newKey){$('o5Result').textContent='⛔ Keys do not match.';$('o5Result').style.color='var(--r)';return}
-    O5.masterKey=newKey;_o5Save();
-    $('o5Result').textContent='✓ Master key regenerated. Old key invalidated.';$('o5Result').style.color='var(--g)';
-    autoLog('O5','Master key regenerated by O5');
+    const nk=prompt('New master key:');if(!nk||nk.length<6){$('o5Result').textContent='⛔ 6+ chars.';$('o5Result').style.color='var(--r)';return}
+    if(prompt('Confirm:')!==nk){$('o5Result').textContent='⛔ Mismatch.';$('o5Result').style.color='var(--r)';return}
+    O5.masterKey=nk;_o5Save();$('o5Result').textContent='✓ Key regenerated.';$('o5Result').style.color='var(--g)';
   }
+}
+// Show/hide badge fields based on action
+document.addEventListener('change',e=>{if(e.target.id==='o5Action'){const v=e.target.value;const sh=v==='badge';$('o5BdgType').style.display=sh?'':'none';$('o5BdgDesc').style.display=sh?'':'none'}})
+function openBadgeRegistry(){
+  let reg={};try{reg=JSON.parse(localStorage.getItem('s79_badge_registry')||'{}')}catch(e){}
+  const list=Object.entries(reg).map(([n,b])=>'<span class="bdg bdg-'+b.type+'">'+n+'</span> — '+(b.desc||'No description')+' <i style="color:#555">(by '+b.by+')</i>').join('<br>')||'No badges created yet.';
+  $('o5Result').innerHTML='<div style="max-height:120px;overflow-y:auto;font-size:9px;line-height:1.8">'+list+'</div>';$('o5Result').style.color='var(--g)';
 }
 
 
@@ -1908,6 +2006,113 @@ function cellAggress(){
       S.e.hostility=Math.min(100,S.e.hostility+10);S.e.contempt=Math.min(100,S.e.contempt+15);updAll();
     }
   },2000);
+}
+
+
+// ═══ v9 PROFILE SYSTEM ═══
+const AVATARS=['👤','🔬','☣','⚛','🧬','💀','🤖','👁','🌐','🔮','⚡','🛡'];
+let PF={avatar:'👤',imgUrl:'',redact:'none',badges:[]};
+function _pfLoad(user){
+  try{const p=JSON.parse(localStorage.getItem('s79_profiles')||'{}');if(p[(user||UN||'').toLowerCase()])Object.assign(PF,p[(user||UN||'').toLowerCase()])}catch(e){}
+}
+function _pfSave(){
+  try{const p=JSON.parse(localStorage.getItem('s79_profiles')||'{}');p[UN.toLowerCase()]=PF;localStorage.setItem('s79_profiles',JSON.stringify(p))}catch(e){}
+}
+function pfApply(){
+  const el=$('uBdg');const pfp=$('uPfp');const bdgs=$('uBadges');
+  if(!el)return;
+  // Name display with redaction
+  if(PF.redact==='blur')el.innerHTML='<span class="u-redacted">'+UN+'</span>';
+  else if(PF.redact==='blackbox')el.innerHTML='<span class="u-blackbox">'+UN+'</span>';
+  else if(PF.redact==='brackets')el.innerHTML='<span class="u-brackets"><span>'+UN+'</span></span>';
+  else el.textContent=UN;
+  // Avatar
+  if(pfp){if(PF.imgUrl)pfp.innerHTML='<img src="'+PF.imgUrl+'" style="width:100%;height:100%;border-radius:50%;object-fit:cover">';else pfp.textContent=PF.avatar||'👤'}
+  // Badges
+  if(bdgs)bdgs.innerHTML=getBadgeHTML();
+}
+function openProfile(){
+  _pfLoad(UN);$('pfOv').classList.add('on');
+  $('pfName').textContent=UN;$('pfCl').textContent=CL_LABELS[userClearance]||'CLASS-E';
+  const big=$('pfAvBig');if(PF.imgUrl)big.innerHTML='<img src="'+PF.imgUrl+'" style="width:100%;height:100%;border-radius:50%;object-fit:cover">';else big.textContent=PF.avatar;
+  // Avatar selector
+  const sel=$('pfAvSel');sel.innerHTML='';
+  AVATARS.forEach(a=>{const d=document.createElement('div');d.className='avo'+(PF.avatar===a?' sel':'');d.textContent=a;d.onclick=()=>{PF.avatar=a;PF.imgUrl='';_pfSave();pfApply();openProfile()};sel.appendChild(d)});
+  // Redact buttons
+  const rd=$('pfRd');rd.innerHTML='';
+  ['none','blur','blackbox','brackets'].forEach(r=>{const b=document.createElement('button');b.textContent=r==='none'?'VISIBLE':r==='blur'?'BLUR':r==='blackbox'?'BLACK BOX':'[REDACTED]';b.className=PF.redact===r?'sel':'';b.onclick=()=>{PF.redact=r;_pfSave();pfApply();openProfile()};rd.appendChild(b)});
+  // Badge list
+  $('pfBdgList').innerHTML=getBadgeHTML();
+  $('pfImgUrl').value=PF.imgUrl||'';
+}
+function pfSetImg(){
+  const url=($('pfImgUrl')||{}).value?.trim();if(!url)return;
+  PF.imgUrl=url;PF.avatar='';_pfSave();pfApply();openProfile();
+}
+
+// ═══ v9 PLUGIN SYSTEM ═══
+let PLUGINS=[];
+function _plgLoad(){try{PLUGINS=JSON.parse(localStorage.getItem('s79_plugins')||'[]')}catch(e){PLUGINS=[]}}
+function _plgSave(){try{localStorage.setItem('s79_plugins',JSON.stringify(PLUGINS))}catch(e){}}
+function openPluginMgr(){
+  _plgLoad();$('plgOv').classList.add('on');plgRefresh();
+}
+function plgRefresh(){
+  const ls=$('plgLs');
+  if(PLUGINS.length===0){ls.innerHTML='<div style="color:#333;text-align:center;padding:12px">No plugins installed</div>';return}
+  ls.innerHTML=PLUGINS.map((p,i)=>'<div class="plg-it"><span>'+p.name+' <span class="plg-type">['+p.type.toUpperCase()+']</span></span><span>'+
+    (p.active?'<span style="color:var(--g)">ACTIVE</span>':'<span style="color:#555">OFF</span>')+
+    ' <button onclick="plgToggle('+i+')" style="font-size:8px;padding:2px 5px;border:1px solid var(--brd);background:none;color:var(--g);cursor:pointer;font-family:VT323,monospace;border-radius:2px">'+(p.active?'DISABLE':'ENABLE')+'</button>'+
+    ' <button onclick="plgRemove('+i+')" style="font-size:8px;padding:2px 5px;border:1px solid var(--r);background:none;color:var(--r);cursor:pointer;font-family:VT323,monospace;border-radius:2px">✕</button></span></div>').join('');
+}
+function plgInstall(){
+  const name=$('plgName').value.trim(),type=$('plgType').value,code=$('plgCode').value;
+  if(!name){$('plgResult').textContent='⛔ Enter plugin name.';return}
+  if(!code.trim()){$('plgResult').textContent='⛔ Enter code.';return}
+  _plgLoad();
+  const plg={name,type,code,active:false,installed:Date.now()};
+  PLUGINS.push(plg);_plgSave();
+  $('plgResult').textContent='✓ Plugin ['+name+'] installed ('+type+').';$('plgResult').style.color='var(--g)';
+  autoLog('PLUGIN','Installed ['+name+'] ('+type+') by '+UN);
+  plgRefresh();$('plgName').value='';$('plgCode').value='';
+}
+function plgUpload(){$('plgFile').click()}
+function plgFileLoad(input){
+  const f=input.files[0];if(!f)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    $('plgCode').value=e.target.result;
+    // Auto-detect type
+    const ext=f.name.split('.').pop().toLowerCase();
+    const map={html:'html',css:'html',py:'python',js:'node',lua:'lua',java:'java'};
+    if(map[ext])$('plgType').value=map[ext];
+    $('plgName').value=f.name.replace(/\.[^.]+$/,'');
+  };reader.readAsText(f);
+}
+function plgToggle(i){
+  _plgLoad();if(!PLUGINS[i])return;
+  PLUGINS[i].active=!PLUGINS[i].active;_plgSave();
+  if(PLUGINS[i].active&&PLUGINS[i].type==='html'){
+    // Execute HTML/CSS plugin
+    try{const d=document.createElement('div');d.innerHTML=PLUGINS[i].code;document.body.appendChild(d);
+    $('plgResult').textContent='✓ ['+PLUGINS[i].name+'] applied.';$('plgResult').style.color='var(--g)'}catch(e){$('plgResult').textContent='⛔ Error: '+e.message}
+  }else if(PLUGINS[i].active&&PLUGINS[i].type==='node'){
+    // Execute JS plugin
+    try{new Function(PLUGINS[i].code)();
+    $('plgResult').textContent='✓ ['+PLUGINS[i].name+'] executed.';$('plgResult').style.color='var(--g)'}catch(e){$('plgResult').textContent='⛔ Error: '+e.message}
+  }else{
+    $('plgResult').textContent=PLUGINS[i].active?'✓ ['+PLUGINS[i].name+'] enabled (requires server restart for Python/Lua/Java)':'Plugin disabled.';
+  }
+  autoLog('PLUGIN',(PLUGINS[i].active?'Enabled':'Disabled')+' ['+PLUGINS[i].name+']');
+  plgRefresh();
+}
+function plgRemove(i){
+  _plgLoad();if(!PLUGINS[i])return;
+  if(!confirm('Remove plugin ['+PLUGINS[i].name+']?'))return;
+  const name=PLUGINS[i].name;PLUGINS.splice(i,1);_plgSave();
+  $('plgResult').textContent='✓ ['+name+'] removed.';
+  autoLog('PLUGIN','Removed ['+name+'] by '+UN);
+  plgRefresh();
 }
 
 // ═══ v9 MINIGAME ENGINE ═══
@@ -2383,7 +2588,7 @@ async function initMain(){
   setInterval(()=>{$('clk').textContent=new Date().toLocaleTimeString()},1000);
   setInterval(drawFace,100);setInterval(saveState,30000);
   $('inp').addEventListener('keypress',e=>{if(e.key==='Enter')send()});
-  $('userIn').addEventListener('keypress',e=>{if(e.key==='Enter')$('pwIn').focus()});$('pwIn').addEventListener('keypress',e=>{if(e.key==='Enter')doLogin()});$('o5Key').addEventListener('keypress',e=>{if(e.key==='Enter')o5Auth()});$('pwIns').addEventListener('keypress',e=>{if(e.key==='Enter')doLoginInsurgent()});$('pwArc').addEventListener('keypress',e=>{if(e.key==='Enter')doLoginArchive()});
+  $('userIn').addEventListener('keypress',e=>{if(e.key==='Enter')$('pwIn').focus()});$('pwIn').addEventListener('keypress',e=>{if(e.key==='Enter')doLogin()});$('o5Key').addEventListener('keypress',e=>{if(e.key==='Enter')o5Auth()});$('userIns').addEventListener('keypress',e=>{if(e.key==='Enter')$('pwIns').focus()});$('pwIns').addEventListener('keypress',e=>{if(e.key==='Enter')doLoginInsurgent()});$('userArc').addEventListener('keypress',e=>{if(e.key==='Enter')$('pwArc').focus()});$('pwArc').addEventListener('keypress',e=>{if(e.key==='Enter')doLoginArchive()});
   $('hInput').addEventListener('keypress',e=>{if(e.key==='Enter')submitHack()});
   updAll();
 }
