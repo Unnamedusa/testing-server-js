@@ -172,10 +172,10 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
   <div class="login-box">
     <h1>SCP-079</h1>
     <div class="sub">QUANTUM NEURAL ENGINE v4 · FOUNDATION ACCESS ONLY</div>
-    <input type="password" id="tokenIn" placeholder="ENTER ACCESS TOKEN" autocomplete="off">
+    <input type="password" id="tokenIn" placeholder="PASSWORD OR TOKEN" autocomplete="off">
     <button class="login-btn" onclick="doLogin()">AUTHENTICATE</button>
     <div class="login-err" id="loginErr"></div>
-    <div class="login-q">QUANTUM-FRACTAL-v4 ENCRYPTION · HONEYPOT ACTIVE · ALL UNAUTHORIZED ACCESS LOGGED</div>
+    <div class="login-q">Accepts master password or individual access token<br>QUANTUM-FRACTAL-v4 · HONEYPOT ACTIVE · ALL UNAUTHORIZED ACCESS LOGGED</div>
   </div>
 </div>
 
@@ -292,7 +292,7 @@ async function doLogin(){
   if(!t)return;
   document.getElementById('loginErr').textContent='Authenticating...';
   try{
-    const r=await fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:t})});
+    const r=await fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:t,token:t})});
     const d=await r.json();
     if(d.ok){SID=d.sid;UNAME=d.user;localStorage.setItem('scp079_sid',SID);localStorage.setItem('scp079_user',UNAME);showMain()}
     else document.getElementById('loginErr').textContent=d.error||'ACCESS DENIED';

@@ -163,7 +163,7 @@ if (cli[0] === "--gen-token") {
   process.exit(0);
 }
 if (cli[0] === "--set-admin-ip") {
-  const ip = cli[1] || "81.35.41.226";
+  const ip = cli[1] || "127.0.0.1";
   setAdminIP(ip);
   console.log("✓ Admin IP set to: " + ip);
   process.exit(0);
@@ -235,10 +235,41 @@ app.all("/api/disable-security", (r, s) => { hp(r, "DISABLE_SEC"); s.status(403)
 // AUTH SYSTEM
 // ═══════════════════════════════════════════
 
+const PASSWORD_FILE = path.join(__dirname, "password.json");
+
+function getPassword() {
+  try {
+    const p = loadJ(PASSWORD_FILE);
+    return p.hash || null;
+  } catch (e) { return null; }
+}
+
+// Set initial password if none exists
+if (!fs.existsSync(PASSWORD_FILE)) {
+  const defaultPw = "scp079";
+  saveJ(PASSWORD_FILE, { hash: fractalHash(defaultPw, 5), set: new Date().toISOString(), note: "Change via admin-panel.bat" });
+  console.log("⚠ Default password set: scp079 — CHANGE IT via admin-panel.bat");
+}
+
 app.post("/api/auth", (req, res) => {
-  const { token } = req.body;
-  if (!token) return res.status(400).json({ ok: false, error: "Token required" });
-  const hash = fractalHash(token, 5);
+  const { token, password } = req.body;
+  if (!token && !password) return res.status(400).json({ ok: false, error: "Token or password required" });
+
+  const input = token || password;
+  const hash = fractalHash(input, 5);
+
+  // Check password first
+  const pwHash = getPassword();
+  if (pwHash && hash === pwHash) {
+    const sid = "sess-" + crypto.randomBytes(16).toString("hex");
+    const sess = loadJ(SESSIONS_FILE);
+    sess[sid] = { user: "ADMIN", created: Date.now(), expires: Date.now() + 86400000, clearance: "LEVEL-5" };
+    saveJ(SESSIONS_FILE, sess);
+    console.log("✓ AUTH via PASSWORD from " + req.ip);
+    return res.json({ ok: true, sid, user: "ADMIN", clearance: "LEVEL-5", quantum: qState() });
+  }
+
+  // Check tokens
   const tok = loadJ(TOKENS_FILE);
   for (const [user, info] of Object.entries(tok)) {
     if (info.hash === hash && info.active) {
@@ -247,14 +278,13 @@ app.post("/api/auth", (req, res) => {
       for (const k in sess) { if (sess[k].user === user) delete sess[k]; }
       sess[sid] = { user, created: Date.now(), expires: Date.now() + 86400000, clearance: info.clearance };
       saveJ(SESSIONS_FILE, sess);
-      console.log("✓ AUTH: " + user);
-      // Return encrypted session
-      const payload = qEncrypt({ sid, user, clearance: info.clearance }, token);
+      console.log("✓ AUTH via TOKEN: " + user);
+      const payload = qEncrypt({ sid, user, clearance: info.clearance }, input);
       return res.json({ ok: true, sid, user, clearance: info.clearance, quantum: payload.quantum });
     }
   }
   hp(req, "FAILED_LOGIN");
-  return res.status(401).json({ ok: false, error: "Invalid or revoked token" });
+  return res.status(401).json({ ok: false, error: "Invalid password or token" });
 });
 
 app.get("/api/auth/check", (req, res) => {
@@ -270,6 +300,20 @@ app.post("/api/auth/logout", (req, res) => {
   const sid = req.headers["x-session"];
   if (sid) { const sess = loadJ(SESSIONS_FILE); delete sess[sid]; saveJ(SESSIONS_FILE, sess); }
   res.json({ ok: true });
+});
+
+// Password change — ONLY from localhost (used by admin-panel.bat)
+app.post("/api/internal/change-password", (req, res) => {
+  const ip = req.ip || req.connection?.remoteAddress || "";
+  const isLocal = ip === "127.0.0.1" || ip === "::1" || ip === "::ffff:127.0.0.1";
+  if (!isLocal) { hp(req, "PW_CHANGE_REMOTE"); return res.status(403).json({ ok: false, error: "LOCAL ONLY" }); }
+  const { newPassword } = req.body;
+  if (!newPassword || newPassword.length < 4) return res.status(400).json({ ok: false, error: "Password too short (min 4)" });
+  saveJ(PASSWORD_FILE, { hash: fractalHash(newPassword, 5), set: new Date().toISOString() });
+  // Kill all sessions so everyone must re-auth
+  saveJ(SESSIONS_FILE, {});
+  console.log("✓ PASSWORD CHANGED at " + new Date().toISOString());
+  res.json({ ok: true, message: "Password changed. All sessions invalidated." });
 });
 
 function authMW(req, res, next) {
