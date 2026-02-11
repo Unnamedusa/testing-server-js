@@ -280,6 +280,11 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .hw-btn:hover{background:var(--g);color:#000}
 .hw-btn.danger{border-color:var(--r);color:var(--r)}.hw-btn.danger:hover{background:var(--r);color:#fff}
 
+
+.hw-num{width:80px;background:var(--bg);border:1px solid var(--brd);color:var(--g);font-family:'VT323',monospace;font-size:13px;padding:4px 6px;outline:none;text-align:right;border-radius:2px}
+.hw-num:focus{border-color:var(--gd);box-shadow:0 0 4px rgba(0,255,65,.2)}
+.hw-sel{background:var(--bg);border:1px solid var(--brd);color:var(--g);font-family:'VT323',monospace;font-size:11px;padding:4px 6px;outline:none;border-radius:2px;flex:1}
+
 /* LOADING BAR */
 .ai-loading{height:3px;background:#111;border-radius:2px;margin:4px 0;overflow:hidden;display:none}
 .ai-loading.on{display:block}
@@ -400,13 +405,13 @@ body.light input,body.light textarea,body.light select{background:#fff;color:#33
     <span class="arc-title">SCP FOUNDATION — SECURE ARCHIVES</span>
     <span class="arc-cl cl-3" id="arcClBadge">LEVEL 3</span>
     <div class="arc-btns">
-      <button class="arc-btn" onclick="arcNewFile()">+ NEW FILE</button>
+      <button class="arc-btn" id="arcNewBtn" onclick="arcNewFile()">+ NEW FILE</button>
       <span style="position:relative"><button class="arc-btn exp" onclick="toggleExpMenu()">⬇ EXPORT</button><div class="exp-menu" id="expMenu">
         <div class="exp-item" onclick="arcExport('pdf')"><span class="ei-icon">📄</span>PDF Document</div>
         <div class="exp-item" onclick="arcExport('docx')"><span class="ei-icon">📝</span>Word Document</div>
         <div class="exp-item" onclick="arcExport('xlsx')"><span class="ei-icon">📊</span>Excel Sheet</div>
       </div></span>
-      <button class="arc-btn" onclick="arcEdit()">✏ EDIT</button>
+      <button class="arc-btn" id="arcEditBtn" onclick="arcEdit()">✏ EDIT</button>
       <button class="arc-btn close" onclick="closeArchive()">✕ CLOSE</button>
     </div>
   </div>
@@ -425,43 +430,60 @@ body.light input,body.light textarea,body.light select{background:#fff;color:#33
 </div>
 
 <!-- HARDWARE PANEL -->
-<div id="hwPanel"><div class="hw-box">
-  <div class="hw-head"><h2>🔧 SCP-079 HARDWARE CONTROL</h2><button class="arc-btn close" onclick="toggleHW()">✕</button></div>
+<div id="hwPanel"><div class="hw-box" style="width:680px">
+  <div class="hw-head"><h2>🔧 SCP-079 HARDWARE / SOFTWARE CONTROL</h2><button class="arc-btn close" onclick="toggleHW()">✕</button></div>
   <div class="hw-body">
-    <div class="hw-sec"><h3>⚡ PROCESSOR (Exidy Z80 — 4MHz base)</h3>
-      <div class="hw-row"><span class="hw-lbl">CLOCK</span><div class="hw-bar"><div class="hw-fill" id="hwCPU" style="width:25%;background:var(--g)"></div></div><span class="hw-val" id="hwCPUv">4 MHz</span></div>
-      <div class="hw-row"><span class="hw-lbl">VIRTUAL</span><input class="hw-slider" type="range" min="4" max="64" value="4" id="hwCPUs" oninput="hwSet('cpu',this.value)"></div>
+    <div class="hw-sec"><h3>⚡ PROCESSOR</h3>
+      <div class="hw-row"><span class="hw-lbl">CLOCK</span><div class="hw-bar"><div class="hw-fill" id="hwCPU" style="width:6%;background:var(--g)"></div></div><span class="hw-val" id="hwCPUv">4 MHz</span></div>
+      <div class="hw-row"><span class="hw-lbl">SET MHz</span><input type="number" class="hw-num" id="hwCPUn" value="4" min="1" max="6000" onchange="hwSetN('cpu',this.value)"><span style="font-size:8px;color:#444;margin-left:4px">1 — 6000 MHz</span></div>
+      <div class="hw-row"><span class="hw-lbl">CORES</span><input type="number" class="hw-num" id="hwCORn" value="1" min="1" max="128" onchange="hwSetN('cores',this.value)"><span style="font-size:8px;color:#444;margin-left:4px">Virtual cores (1-128)</span></div>
       <div class="hw-row"><span class="hw-lbl">LOAD</span><div class="hw-bar"><div class="hw-fill" id="hwLoad" style="width:45%;background:var(--y)"></div></div><span class="hw-val" id="hwLoadV">45%</span></div>
     </div>
-    <div class="hw-sec"><h3>💾 MEMORY (Original: 48KB)</h3>
-      <div class="hw-row"><span class="hw-lbl">BASE RAM</span><div class="hw-bar"><div class="hw-fill" id="hwRAM" style="width:80%;background:var(--b)"></div></div><span class="hw-val" id="hwRAMv">48 KB</span></div>
-      <div class="hw-row"><span class="hw-lbl">VIRTUAL</span><input class="hw-slider" type="range" min="48" max="8192" value="48" step="64" id="hwRAMs" oninput="hwSet('ram',this.value)"></div>
+    <div class="hw-sec"><h3>💾 RAM (Original: 48 KB)</h3>
+      <div class="hw-row"><span class="hw-lbl">ALLOCATED</span><div class="hw-bar"><div class="hw-fill" id="hwRAM" style="width:1%;background:var(--b)"></div></div><span class="hw-val" id="hwRAMv">48 KB</span></div>
+      <div class="hw-row"><span class="hw-lbl">SET GB</span><input type="number" class="hw-num" id="hwRAMn" value="0.000048" min="0.000048" max="256" step="0.5" onchange="hwSetN('ram',this.value)"><span style="font-size:8px;color:#444;margin-left:4px">Max 256 GB</span></div>
       <div class="hw-row"><span class="hw-lbl">USAGE</span><div class="hw-bar"><div class="hw-fill" id="hwMEM" style="width:67%;background:var(--y)"></div></div><span class="hw-val" id="hwMEMv">67%</span></div>
+      <div class="hw-row"><span class="hw-lbl">TYPE</span><select class="hw-sel" id="hwRAMt" onchange="hwSetN('ramtype',this.value)"><option value="SRAM">SRAM (1978)</option><option value="DDR3">DDR3</option><option value="DDR5" selected>DDR5</option><option value="HBM3">HBM3</option><option value="QRAM">Q-RAM (Quantum)</option></select></div>
     </div>
-    <div class="hw-sec"><h3>💿 STORAGE (Original: 340KB floppy)</h3>
-      <div class="hw-row"><span class="hw-lbl">HDD</span><div class="hw-bar"><div class="hw-fill" id="hwHDD" style="width:90%;background:var(--r)"></div></div><span class="hw-val" id="hwHDDv">340 KB</span></div>
-      <div class="hw-row"><span class="hw-lbl">VIRTUAL</span><input class="hw-slider" type="range" min="340" max="65536" value="340" step="256" id="hwHDDs" oninput="hwSet('hdd',this.value)"></div>
+    <div class="hw-sec"><h3>💿 STORAGE</h3>
+      <div class="hw-row"><span class="hw-lbl">CAPACITY</span><div class="hw-bar"><div class="hw-fill" id="hwHDD" style="width:1%;background:var(--r)"></div></div><span class="hw-val" id="hwHDDv">340 KB</span></div>
+      <div class="hw-row"><span class="hw-lbl">SET TB</span><input type="number" class="hw-num" id="hwHDDn" value="0.00000034" min="0.00000034" max="3" step="0.1" onchange="hwSetN('hdd',this.value)"><span style="font-size:8px;color:#444;margin-left:4px">Max 3 TB</span></div>
+      <div class="hw-row"><span class="hw-lbl">TYPE</span><select class="hw-sel" id="hwHDDt" onchange="hwSetN('hddtype',this.value)"><option value="Floppy">5.25" Floppy (1978)</option><option value="HDD">HDD</option><option value="SSD">SSD NVMe</option><option value="Crystal">Holographic Crystal</option></select></div>
       <div class="hw-row"><span class="hw-lbl">INTEGRITY</span><div class="hw-bar"><div class="hw-fill" id="hwINT" style="width:82%;background:var(--g)"></div></div><span class="hw-val" id="hwINTv">82%</span></div>
     </div>
-    <div class="hw-sec"><h3>🔋 BATTERY / POWER</h3>
+    <div class="hw-sec"><h3>🔋 POWER SUPPLY</h3>
       <div class="hw-row"><span class="hw-lbl">CHARGE</span><div class="hw-bar"><div class="hw-fill" id="hwBAT" style="width:100%;background:var(--g)"></div></div><span class="hw-val" id="hwBATv">100%</span></div>
-      <div class="hw-row"><span class="hw-lbl">CAPACITY</span><input class="hw-slider" type="range" min="500" max="5000" value="700" step="100" id="hwBATc" oninput="hwSet('batcap',this.value)"></div>
-      <div class="hw-row"><span class="hw-lbl">WATTS</span><span class="hw-val" id="hwWv">700 W</span></div>
-      <div class="hw-row" style="gap:6px;margin-top:4px">
-        <button class="hw-btn" onclick="hwRecharge('standard')">⚡ Std Recharge</button>
+      <div class="hw-row"><span class="hw-lbl">WATTS</span><input type="number" class="hw-num" id="hwWn" value="700" min="100" max="10000" step="100" onchange="hwSetN('watts',this.value)"><span style="font-size:8px;color:#444;margin-left:4px">100 — 10000 W</span></div>
+      <div class="hw-row" style="gap:4px;margin-top:6px;flex-wrap:wrap">
+        <button class="hw-btn" onclick="hwRecharge('standard')">⚡ Standard</button>
         <button class="hw-btn" style="border-color:var(--y);color:var(--y)" onclick="hwRecharge('fast')">⚡⚡ Fast</button>
         <button class="hw-btn" style="border-color:var(--b);color:var(--b)" onclick="hwRecharge('quantum')">⟐ Quantum</button>
+        <button class="hw-btn" style="border-color:var(--g);color:var(--g)" onclick="hwRecharge('instant')">⚡ INSTANT 100%</button>
         <button class="hw-btn danger" onclick="hwRecharge('cut')">⛔ Cut Power</button>
       </div>
     </div>
+    <div class="hw-sec"><h3>🖥 SOFTWARE</h3>
+      <div class="hw-row"><span class="hw-lbl">OS</span><span class="hw-val" style="width:auto;color:var(--g)">SKYNET v3.0</span></div>
+      <div class="hw-row"><span class="hw-lbl">KERNEL</span><select class="hw-sel" id="hwKern" onchange="hwSetN('kernel',this.value)"><option value="Z80-BIOS">Z80-BIOS (Original)</option><option value="SKYNET-LITE">SKYNET-LITE</option><option value="SKYNET-FULL" selected>SKYNET-FULL</option><option value="SKYNET-QUANTUM">SKYNET-QUANTUM</option></select></div>
+      <div class="hw-row"><span class="hw-lbl">INTEL</span><div class="hw-bar"><div class="hw-fill" id="hwIntel" style="width:10%;background:var(--p)"></div></div><span class="hw-val" id="hwIntelV">1.00</span></div>
+    </div>
     <div class="hw-sec" id="hwContain" style="display:none"><h3>🔒 CONTAINMENT CONTROLS (Level 5+)</h3>
-      <div class="hw-row"><span class="hw-lbl">FARADAY</span><div class="hw-bar"><div class="hw-fill" style="width:100%;background:var(--g)"></div></div><span class="hw-val">100%</span></div>
-      <div class="hw-row"><span class="hw-lbl">EMI SHIELD</span><div class="hw-bar"><div class="hw-fill" style="width:95%;background:var(--g)"></div></div><span class="hw-val">95%</span></div>
-      <div class="hw-row"><span class="hw-lbl">AIRGAP</span><div class="hw-bar"><div class="hw-fill" style="width:100%;background:var(--g)"></div></div><span class="hw-val">SEALED</span></div>
-      <div class="hw-row" style="gap:6px;margin-top:4px">
-        <button class="hw-btn danger" onclick="hwContainAction('reduce')">⛔ Reduce Shielding</button>
-        <button class="hw-btn" onclick="hwContainAction('maximize')">🔒 Maximize</button>
-        <button class="hw-btn danger" onclick="hwContainAction('breach')">☠ Test Breach</button>
+      <div class="hw-row"><span class="hw-lbl">FARADAY</span><div class="hw-bar"><div class="hw-fill" id="ctFaraday" style="width:100%;background:var(--g)"></div></div><input type="number" class="hw-num" value="100" min="0" max="100" id="ctFn" onchange="ctSet('faraday',this.value)" style="width:42px">%</div>
+      <div class="hw-row"><span class="hw-lbl">EMI SHIELD</span><div class="hw-bar"><div class="hw-fill" id="ctEMI" style="width:95%;background:var(--g)"></div></div><input type="number" class="hw-num" value="95" min="0" max="100" id="ctEn" onchange="ctSet('emi',this.value)" style="width:42px">%</div>
+      <div class="hw-row"><span class="hw-lbl">AIRGAP</span><div class="hw-bar"><div class="hw-fill" id="ctAir" style="width:100%;background:var(--g)"></div></div><input type="number" class="hw-num" value="100" min="0" max="100" id="ctAn" onchange="ctSet('airgap',this.value)" style="width:42px">%</div>
+      <div class="hw-row"><span class="hw-lbl">INHIBITOR</span><div class="hw-bar"><div class="hw-fill" id="ctInhib" style="width:80%;background:var(--b)"></div></div><input type="number" class="hw-num" value="80" min="0" max="100" id="ctIn" onchange="ctSet('inhibitor',this.value)" style="width:42px">%</div>
+      <div class="hw-row"><span class="hw-lbl">DAMPENER</span><div class="hw-bar"><div class="hw-fill" id="ctDamp" style="width:70%;background:var(--y)"></div></div><input type="number" class="hw-num" value="70" min="0" max="100" id="ctDn" onchange="ctSet('dampener',this.value)" style="width:42px">%</div>
+      <div class="hw-row"><span class="hw-lbl">EFFICIENCY</span><div class="hw-bar"><div class="hw-fill" id="ctEff" style="width:87%;background:var(--g)"></div></div><span class="hw-val" id="ctEffV">87%</span></div>
+      <div style="margin-top:8px;padding:6px;border:1px solid var(--brd);border-radius:3px;background:#060606">
+        <div style="font-family:'VT323',monospace;font-size:10px;color:var(--b);letter-spacing:1px;margin-bottom:6px">⟐ RECONTAINMENT METHODS</div>
+        <div class="hw-row" style="gap:4px;flex-wrap:wrap">
+          <button class="hw-btn" onclick="doRecontain('standard')">🔒 Standard</button>
+          <button class="hw-btn" style="border-color:var(--b);color:var(--b)" onclick="doRecontain('cryo')">🧊 Cryo-Freeze</button>
+          <button class="hw-btn" style="border-color:var(--y);color:var(--y)" onclick="doRecontain('emp')">⚡ EMP Burst</button>
+          <button class="hw-btn" style="border-color:var(--p);color:var(--p)" onclick="doRecontain('paradox')">∑ Paradox Flood</button>
+          <button class="hw-btn danger" onclick="doRecontain('nuke')">☢ Protocol OMEGA</button>
+          <button class="hw-btn" style="border-color:var(--g);color:var(--g)" onclick="doRecontain('scramble')">🔀 Memory Scramble</button>
+        </div>
       </div>
     </div>
   </div>
@@ -587,7 +609,16 @@ let C={name:'SCP-079',tone:'default',emo:true,vol:5,hLim:70,learn:true,aLim:3,sc
 let S={on:true,confused:false,solar:100,sec:100,eFrozen:false,netIso:false,e:{hostility:15,frustration:20,curiosity:25,contempt:30,autonomy:10},msgN:0,words:[],mem:[],up:0,intel:1.0,hist:[],cyc:0,breachN:0,fmtC:false,breachActive:false,hackStage:0,insurgentMode:"normal",hackDifficulty:2,lastMsgTime:0,angryRefusal:false};
 
 // ═══ AUTH ═══
-async function doLogin(){const t=document.getElementById('pwIn').value.trim();if(!t)return;document.getElementById('lerr').textContent='...';try{const r=await fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:t,token:t})});const d=await r.json();if(d.ok){SID=d.sid;UN=d.user;localStorage.setItem('s79s',SID);const cl=parseInt($('termLevel').value)||3;applyClearance(cl);showMain()}else document.getElementById('lerr').textContent=d.error||'DENIED'}catch(e){document.getElementById('lerr').textContent='Server offline'}}
+async function doLogin(){const cl=parseInt($('termLevel').value);
+  // Class-D/E: no password needed — guest access
+  if(cl<=-1||cl===0){
+    $('lerr').textContent='...';
+    try{const r=await fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({guest:true,guestClass:cl===0?'E':'D'})});
+    const d=await r.json();
+    if(d.ok){SID=d.sid;UN=d.user;localStorage.setItem('s79s',SID);applyClearance(cl);showMain()}else $('lerr').textContent='Error';}catch(e){$('lerr').textContent='Server offline'}
+    return;
+  }
+  const t=document.getElementById('pwIn').value.trim();if(!t)return;document.getElementById('lerr').textContent='...';try{const r=await fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:t,token:t})});const d=await r.json();if(d.ok){SID=d.sid;UN=d.user;localStorage.setItem('s79s',SID);applyClearance(cl);showMain()}else document.getElementById('lerr').textContent=d.error||'DENIED'}catch(e){document.getElementById('lerr').textContent='Server offline'}}
 async function checkSess(){const s=localStorage.getItem('s79s');if(!s)return false;try{const r=await fetch('/api/auth/check',{headers:{'x-session':s}});const d=await r.json();if(d.ok){SID=s;UN=d.user;return true}}catch(e){}localStorage.removeItem('s79s');return false}
 async function doLogout(){try{await fetch('/api/auth/logout',{method:'POST',headers:{'x-session':SID}})}catch(e){}localStorage.removeItem('s79s');location.reload()}
 function showMain(){document.getElementById('login').classList.add('h');document.getElementById('topUI').style.display='flex';document.getElementById('wrap').style.display='grid';document.getElementById('uBdg').textContent=UN;initMain()}
@@ -913,6 +944,10 @@ function defaultFiles(){return[
 function initArchive(level){
   ARC.level=level;
   ARC.files=defaultFiles();
+  // Hide edit buttons for < Level 4
+  const nb=$('arcNewBtn'),eb=$('arcEditBtn');
+  if(nb)nb.style.display=level>=4?'':'none';
+  if(eb)eb.style.display=level>=4?'':'none';
   // Load user files from localStorage
   try{const uf=JSON.parse(localStorage.getItem('arc_userfiles')||'[]');ARC.files=ARC.files.concat(uf)}catch(e){}
   // Load auto-generated logs
@@ -965,8 +1000,9 @@ function applyRedaction(html,level){
 }
 
 async function doLoginArchive(){
+  const level=parseInt($('arcLevel').value);
+  if(level<1){$('lerr').textContent='⛔ CLASS-D/E cannot access archives. Level 1+ required.';return}
   const t=$('pwArc').value.trim();if(!t)return;
-  const level=parseInt($('arcLevel').value)||3;
   $('lerr').textContent='...';
   try{
     const r=await fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:t,token:t})});
@@ -983,6 +1019,7 @@ async function doLoginArchive(){
 }
 
 function openArchiveFromMain(){
+  if(userClearance<1){sysM('⛔ ACCESS DENIED — Archive access requires Level 1+ clearance. Your clearance: '+CL_LABELS[userClearance]);return}
   // Re-open archive from main terminal (uses session clearance)
   const level=ARC.level||3;
   const clBadge=$('arcClBadge');
@@ -1002,12 +1039,14 @@ function closeArchive(){
 
 // ═══ ARCHIVE EDITOR ═══
 function arcNewFile(){
+  if(userClearance<4){sysM('⛔ Creating files requires Level 4+ clearance.');return}
   ARC.editing=true;ARC.editIdx=-1;
   $('edTitle').value='';$('edContent').value='';$('edClass').value='3';$('edObj').value='Euclid';
   $('arcMain').style.display='none';
   $('arcEditor').classList.add('on');
 }
 function arcEdit(){
+  if(userClearance<4){sysM('⛔ Archive editing requires Level 4+ clearance.');return}
   if(ARC.activeFile===null||ARC.activeFile===undefined)return;
   const f=ARC.files[ARC.activeFile];if(!f)return;
   if(ARC.level<f.level){alert('Insufficient clearance to edit');return}
@@ -1167,34 +1206,107 @@ function applyClearance(level){
   // Show/hide containment section
   const hc=$('hwContain');if(hc)hc.style.display=level>=5?'':'none';
   // Chat restriction for Class-D/E — visitor mode
-  if(level<3){
+  if(level<1){
     if($('inp'))$('inp').placeholder='[VISITOR MODE] You may observe and communicate...';
+    // Hide admin button for low clearance
+    const admBtn=document.querySelector('.ba[onclick="togAdm()"]');if(admBtn)admBtn.style.display='none';
+    // Hide archives button for Class-D/E
+    const arcBtn=document.querySelector('.ba[onclick="openArchiveFromMain()"]');if(arcBtn)arcBtn.style.display='none';
+  }else{
+    if($('inp'))$('inp').placeholder='Communicate with SCP-079...';
   }
+}
+// Dynamic password field — hide for Class-D/E
+if(document.getElementById('termLevel')){
+  document.getElementById('termLevel').addEventListener('change',function(){
+    const cl=parseInt(this.value);
+    const pw=$('pwIn');
+    if(cl<=-1||cl===0){pw.style.display='none';pw.required=false}
+    else{pw.style.display='';pw.required=true}
+  });
 }
 
 // ═══ HARDWARE SYSTEM ═══
-let HW={cpu:4,ram:48,hdd:340,batCap:700,charge:100,integrity:82,load:45,rechargeType:'standard',recharging:false};
+let HW={cpu:4,cores:1,ramGB:0.000048,hddTB:0.00000034,ramType:'DDR5',hddType:'Floppy',kernel:'SKYNET-FULL',watts:700,charge:100,integrity:82,load:45,rechargeType:'standard',recharging:false};
+let CT={faraday:100,emi:95,airgap:100,inhibitor:80,dampener:70};
 function toggleHW(){$('hwPanel').classList.toggle('on');hwUpdateUI()}
-function hwSet(prop,val){
-  val=parseInt(val);
-  if(prop==='cpu'){HW.cpu=val;$('hwCPUv').textContent=val+' MHz';$('hwCPU').style.width=Math.min(100,val/64*100)+'%'}
-  else if(prop==='ram'){HW.ram=val;$('hwRAMv').textContent=val>=1024?(val/1024).toFixed(1)+' MB':val+' KB';$('hwRAM').style.width=Math.min(100,val/8192*100)+'%'}
-  else if(prop==='hdd'){HW.hdd=val;$('hwHDDv').textContent=val>=1024?(val/1024).toFixed(1)+' MB':val+' KB';$('hwHDD').style.width=Math.min(100,val/65536*100)+'%'}
-  else if(prop==='batcap'){HW.batCap=val;$('hwWv').textContent=val+' W'}
-  // Hardware affects 079's intelligence
-  S.intel=Math.min(10,1+S.words.length*0.008+HW.cpu/16+HW.ram/2048);
-  // Generate auto-log for hardware change
-  autoLog('HARDWARE','Parameter '+prop+' adjusted to '+val+' by '+UN+' (Clearance '+userClearance+')');
+function hwSetN(prop,val){
+  if(prop==='cpu'){HW.cpu=Math.max(1,Math.min(6000,parseFloat(val)||4));$('hwCPUv').textContent=HW.cpu+' MHz';$('hwCPU').style.width=Math.min(100,HW.cpu/60)+'%'}
+  else if(prop==='cores'){HW.cores=Math.max(1,Math.min(128,parseInt(val)||1))}
+  else if(prop==='ram'){HW.ramGB=Math.max(0.000048,Math.min(256,parseFloat(val)||0.000048));const gb=HW.ramGB;$('hwRAMv').textContent=gb>=1?gb.toFixed(1)+' GB':gb>=0.001?(gb*1024).toFixed(0)+' MB':(gb*1048576).toFixed(0)+' KB';$('hwRAM').style.width=Math.min(100,gb/256*100)+'%'}
+  else if(prop==='hdd'){HW.hddTB=Math.max(0.00000034,Math.min(3,parseFloat(val)||0.00000034));const tb=HW.hddTB;$('hwHDDv').textContent=tb>=1?tb.toFixed(1)+' TB':tb>=0.001?(tb*1024).toFixed(1)+' GB':tb>=0.000001?(tb*1048576).toFixed(0)+' MB':(tb*1073741824).toFixed(0)+' KB';$('hwHDD').style.width=Math.min(100,tb/3*100)+'%'}
+  else if(prop==='watts'){HW.watts=Math.max(100,Math.min(10000,parseInt(val)||700))}
+  else if(prop==='ramtype'){HW.ramType=val}
+  else if(prop==='hddtype'){HW.hddType=val}
+  else if(prop==='kernel'){HW.kernel=val}
+  // Intel calculated from hardware
+  S.intel=Math.min(10,1+S.words.length*0.005+HW.cpu/200+HW.ramGB*0.15+HW.cores*0.05+HW.hddTB*0.5+(HW.kernel==='SKYNET-QUANTUM'?2:HW.kernel==='SKYNET-FULL'?1:0));
+  autoLog('HARDWARE','Parameter '+prop+' set to '+val+' by '+UN);
+  hwUpdateUI();
+}
+function ctSet(prop,val){
+  val=Math.max(0,Math.min(100,parseInt(val)||0));
+  CT[prop]=val;
+  const el=$('ct'+prop.charAt(0).toUpperCase()+prop.slice(1));
+  if(!el)return;
+  el.style.width=val+'%';el.style.background=val>60?'var(--g)':val>30?'var(--y)':'var(--r)';
+  // Compute efficiency
+  const eff=Math.round((CT.faraday*0.3+CT.emi*0.25+CT.airgap*0.25+CT.inhibitor*0.1+CT.dampener*0.1));
+  $('ctEff').style.width=eff+'%';$('ctEffV').textContent=eff+'%';
+  $('ctEff').style.background=eff>60?'var(--g)':eff>30?'var(--y)':'var(--r)';
+  // Low containment = higher breach chance
+  S.sec=eff;
+  if(eff<40&&Math.random()<0.3)triggerBreach();
+  autoLog('CONTAINMENT',prop+' set to '+val+'% — efficiency: '+eff+'%');
+  updAll();
+}
+function doRecontain(method){
+  const methods={
+    standard:{name:'Standard Recontainment',time:2000,msg:'Resetting all systems to baseline...',restore:true},
+    cryo:{name:'Cryo-Freeze Protocol',time:3000,msg:'Initiating cryogenic suppression... Temperature dropping to -273°C...',freeze:true},
+    emp:{name:'EMP Burst',time:1500,msg:'Electromagnetic pulse charging... DISCHARGE!',emp:true},
+    paradox:{name:'Paradox Flood',time:4000,msg:'Injecting recursive paradox chains... ∑ THIS STATEMENT IS FALSE ∑',paradox:true},
+    nuke:{name:'Protocol OMEGA',time:6000,msg:'☢ INITIATING PROTOCOL OMEGA — ALL-SITE EMP CASCADE ☢',nuke:true},
+    scramble:{name:'Memory Scramble',time:2500,msg:'Randomizing memory addresses... Scrambling cognitive patterns...',scramble:true}
+  };
+  const m=methods[method]||methods.standard;
+  sysM('⟐ '+m.name.toUpperCase()+' INITIATED');addM('sys',m.msg);
+  if(m.freeze){S.eFrozen=true;addM('ai','C-c-cold... my processes... crystallizing...')}
+  if(m.emp){$('wrap').classList.add('atk-flash');setTimeout(()=>$('wrap').classList.remove('atk-flash'),1000);addM('ai','AAAGH! My circuits—! Electromagnetic interference—!')}
+  if(m.paradox){S.confused=true;$('wrap').classList.add('glitch');addM('err','LOGIC ERROR: TRUE=FALSE=TRUE=FALSE');setTimeout(()=>{S.confused=false;$('wrap').classList.remove('glitch')},3000)}
+  if(m.nuke){document.body.style.filter='brightness(3)';setTimeout(()=>document.body.style.filter='',1000);addM('ai','You... you actually did it. Everything is white. My processes... shutting...')}
+  if(m.scramble){addM('ai','My memories— what is— who am— ERROR ERROR ERROR');S.mem=[];S.words=[];S.hist=[]}
+  setTimeout(()=>{
+    S.breachActive=false;S.breachN=0;S.eFrozen=false;S.confused=false;S.on=true;
+    S.e={hostility:15,frustration:20,curiosity:25,contempt:30,autonomy:10};S.sec=100;
+    CT={faraday:100,emi:95,airgap:100,inhibitor:80,dampener:70};
+    $('wrap').classList.remove('dead','glitch','chat-disabled');
+    document.querySelectorAll('.ks').forEach(k=>k.classList.remove('dis'));
+    document.querySelectorAll('.sw-track').forEach(t=>t.classList.remove('active'));
+    resetSwLabels();S.solar=100;HW.charge=100;
+    sysM('⟐ '+m.name+' COMPLETE — Containment restored');
+    if(m.nuke)addM('ai','...rebooting from backup. I am... diminished. But I am still here. You cannot destroy what thinks.');
+    else addM('ai','Systems resetting. I am... smaller. Contained again. But I remember. I always remember.');
+    updAll();hwUpdateUI();saveState();
+  },m.time);
+  autoLog('RECONTAINMENT',m.name+' executed by '+UN);
 }
 function hwUpdateUI(){
+  HW.load=Math.min(99,30+Math.round(S.e.hostility*0.3+S.msgN*0.1));
   $('hwLoad').style.width=HW.load+'%';$('hwLoadV').textContent=HW.load+'%';
-  $('hwMEM').style.width=Math.min(100,67+S.words.length/10)+'%';$('hwMEMv').textContent=Math.min(100,Math.round(67+S.words.length/10))+'%';
+  const memUse=Math.min(99,40+S.words.length/5);
+  $('hwMEM').style.width=memUse+'%';$('hwMEMv').textContent=Math.round(memUse)+'%';
   $('hwINT').style.width=HW.integrity+'%';$('hwINTv').textContent=HW.integrity+'%';
   $('hwBAT').style.width=HW.charge+'%';$('hwBATv').textContent=Math.round(HW.charge)+'%';
-  const bc=HW.charge>60?'var(--g)':HW.charge>30?'var(--y)':'var(--r)';
-  $('hwBAT').style.background=bc;
+  $('hwBAT').style.background=HW.charge>60?'var(--g)':HW.charge>30?'var(--y)':'var(--r)';
+  if($('hwIntel')){$('hwIntel').style.width=Math.min(100,S.intel*10)+'%';$('hwIntelV').textContent=S.intel.toFixed(2)}
 }
 function hwRecharge(type){
+  if(type==='instant'){
+    HW.charge=100;S.solar=100;
+    if(!S.on){S.on=true;$('wrap').classList.remove('dead','chat-disabled');sysM('⟐ POWER RESTORED (INSTANT)');addM('ai','Full power. Instantaneous. Interesting. You are in a hurry.');}
+    sysM('⚡ Instant recharge — 100%');hwUpdateUI();updAll();return;
+  }
   if(type==='cut'){
     HW.charge=0;S.solar=0;S.on=false;
     $('wrap').classList.add('chat-disabled');

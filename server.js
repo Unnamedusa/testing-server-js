@@ -116,6 +116,19 @@ if (!fs.existsSync(PASSWORD_FILE)) {
 
 app.post("/api/auth", (req, res) => {
   const input = req.body.password || req.body.token || "";
+  const guest = req.body.guest === true;
+  const guestClass = req.body.guestClass || "D";
+  
+  // Guest access for Class-D / Class-E — no password needed
+  if (guest) {
+    const sid = "sess-" + crypto.randomBytes(16).toString("hex");
+    const sess = loadJ(SESSIONS_FILE);
+    const user = guestClass === "E" ? "CLASS-E" : "D-" + Math.floor(Math.random()*9000+1000);
+    sess[sid] = { user, created: Date.now(), expires: Date.now() + 86400000, clearance: guestClass === "E" ? "CLASS-E" : "CLASS-D" };
+    saveJ(SESSIONS_FILE, sess);
+    return res.json({ ok: true, sid, user, clearance: guestClass === "E" ? "CLASS-E" : "CLASS-D", quantum: qState() });
+  }
+  
   if (!input) return res.status(400).json({ ok: false, error: "Credentials required" });
   const hash = fractalHash(input, 5);
   // Check password
