@@ -1,8 +1,0 @@
-{
-  "name": "scp-079-v5",
-  "version": "5.0.0",
-  "description": "SCP-079 QNE v5 — Insurgent Mode, Hacking System, Python Response Engine, Recontenment",
-  "main": "server.js",
-  "scripts": { "start": "node server.js", "admin": "node admin-panel.js" },
-  "dependencies": { "@anthropic-ai/sdk": "^0.39.0", "express": "^4.21.0" }
-}
