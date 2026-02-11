@@ -24,6 +24,84 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .lbtn:hover{background:var(--g)}
 .lerr{color:var(--r);font-size:11px;margin-top:8px;min-height:16px;font-family:'VT323',monospace}
 
+
+/* LOGIN TABS */
+.ltabs{display:flex;gap:0;margin-bottom:18px;border:1px solid var(--brd);border-radius:4px;overflow:hidden}
+.ltab{flex:1;padding:8px 4px;text-align:center;font-family:'VT323',monospace;font-size:12px;letter-spacing:1px;cursor:pointer;background:var(--bg);color:#444;border:none;transition:all .3s}
+.ltab:hover{color:var(--g);background:#111}
+.ltab.active{background:var(--gd);color:#000}
+.ltab.ins{color:var(--r)}.ltab.ins.active{background:var(--r);color:#fff}
+.ltab.arc{color:var(--b)}.ltab.arc.active{background:var(--b);color:#000}
+.ltab-body{display:none}.ltab-body.active{display:block}
+.lb select{width:100%;background:var(--bg);border:1px solid var(--brd);color:var(--g);font-family:'VT323',monospace;font-size:14px;padding:10px;margin-bottom:10px;outline:none;letter-spacing:1px}
+.lb select option{background:var(--bg);color:var(--g)}
+.lb .cl-badge{display:inline-block;padding:2px 6px;font-size:10px;letter-spacing:1px;border-radius:2px;margin-top:4px}
+.cl-1{background:rgba(255,255,255,.1);color:#aaa;border:1px solid #444}
+.cl-2{background:rgba(0,255,65,.08);color:var(--g);border:1px solid var(--gd)}
+.cl-3{background:rgba(0,204,255,.08);color:var(--b);border:1px solid #0088aa}
+.cl-4{background:rgba(187,102,255,.08);color:var(--p);border:1px solid #8844bb}
+.cl-5{background:rgba(255,170,0,.08);color:var(--y);border:1px solid #aa7700}
+.cl-o5{background:rgba(255,0,51,.12);color:var(--r);border:1px solid var(--r);text-shadow:0 0 6px var(--r)}
+.ins-diff{display:flex;gap:6px;margin-bottom:10px}
+.ins-diff label{flex:1;display:flex;align-items:center;justify-content:center;gap:4px;padding:8px 4px;border:1px solid var(--brd);border-radius:3px;cursor:pointer;font-family:'VT323',monospace;font-size:11px;color:#555;transition:all .2s}
+.ins-diff label:hover{border-color:var(--r);color:var(--r)}
+.ins-diff input{display:none}
+.ins-diff input:checked+span{color:var(--r)}
+.ins-diff label:has(input:checked){border-color:var(--r);background:rgba(255,0,51,.08)}
+
+/* ARCHIVE SCREEN */
+#archiveOv{position:fixed;inset:0;background:var(--bg);z-index:4500;display:none;flex-direction:column}
+#archiveOv.on{display:flex}
+.arc-top{height:36px;background:#0a0a0a;border-bottom:1px solid var(--brd);display:flex;align-items:center;padding:0 12px;gap:10px;flex-shrink:0}
+.arc-top .arc-title{font-family:'VT323',monospace;font-size:16px;color:var(--b);letter-spacing:2px;text-shadow:0 0 8px rgba(0,204,255,.3)}
+.arc-top .arc-cl{font-size:9px;padding:2px 6px;border-radius:2px}
+.arc-top .arc-btns{margin-left:auto;display:flex;gap:6px}
+.arc-btn{background:none;border:1px solid var(--brd);color:var(--txt);font-family:'VT323',monospace;font-size:11px;padding:3px 8px;cursor:pointer;letter-spacing:1px}
+.arc-btn:hover{background:#1a1a1a;color:var(--g);border-color:var(--gd)}
+.arc-btn.exp{border-color:#444;color:var(--y)}.arc-btn.exp:hover{background:rgba(255,170,0,.1);border-color:var(--y)}
+.arc-btn.close{border-color:#333;color:var(--r)}.arc-btn.close:hover{background:rgba(255,0,51,.1)}
+.arc-body{display:flex;flex:1;overflow:hidden}
+.arc-sidebar{width:240px;background:#080808;border-right:1px solid var(--brd);overflow-y:auto;padding:6px}
+.arc-sidebar::-webkit-scrollbar{width:3px}.arc-sidebar::-webkit-scrollbar-thumb{background:#222}
+.arc-file{padding:6px 8px;border:1px solid transparent;border-radius:3px;cursor:pointer;margin-bottom:3px;transition:all .2s}
+.arc-file:hover{background:#111;border-color:var(--brd)}
+.arc-file.active{background:#0a1a10;border-color:var(--gd)}
+.arc-file .af-title{font-family:'VT323',monospace;font-size:11px;color:var(--g);letter-spacing:1px}
+.arc-file .af-meta{font-size:7px;color:#444;margin-top:2px;display:flex;gap:6px}
+.arc-file .af-cl{font-size:7px;padding:1px 4px;border-radius:1px}
+.arc-main{flex:1;overflow-y:auto;padding:20px 30px;background:var(--bg);user-select:text}
+.arc-main::-webkit-scrollbar{width:4px}.arc-main::-webkit-scrollbar-thumb{background:#222}
+.arc-doc{max-width:800px;margin:0 auto}
+.arc-doc h1{font-family:'VT323',monospace;font-size:22px;color:var(--g);letter-spacing:3px;margin-bottom:4px;text-shadow:0 0 8px rgba(0,255,65,.2)}
+.arc-doc h2{font-family:'VT323',monospace;font-size:16px;color:var(--b);letter-spacing:2px;margin-top:16px;margin-bottom:6px;border-bottom:1px solid var(--brd);padding-bottom:4px}
+.arc-doc h3{font-family:'VT323',monospace;font-size:13px;color:var(--y);letter-spacing:1px;margin-top:12px;margin-bottom:4px}
+.arc-doc p{font-size:11px;color:#999;line-height:1.6;margin-bottom:8px}
+.arc-doc .doc-meta{font-size:9px;color:#555;border:1px solid var(--brd);padding:6px 10px;margin-bottom:16px;background:#080808;border-radius:3px}
+.arc-doc .doc-meta span{display:block;margin-bottom:2px}
+.arc-doc .doc-stamp{font-family:'VT323',monospace;font-size:14px;color:var(--r);text-align:center;padding:6px;border:2px solid var(--r);margin:10px 0;letter-spacing:3px;text-shadow:0 0 6px var(--r)}
+.arc-doc .doc-stamp.safe{color:var(--g);border-color:var(--g);text-shadow:0 0 6px var(--g)}
+.arc-doc .doc-stamp.warn{color:var(--y);border-color:var(--y);text-shadow:0 0 6px var(--y)}
+/* REDACTION STYLES */
+.redact{background:var(--bg);color:var(--bg);padding:0 2px;border-radius:1px;user-select:none;cursor:not-allowed;transition:none}
+.redact::selection{background:var(--bg);color:var(--bg)}
+.redact-blur{filter:blur(4px);user-select:none;cursor:not-allowed}
+.redact-stamp{display:inline-block;background:var(--r);color:#fff;font-family:'VT323',monospace;font-size:9px;padding:1px 4px;letter-spacing:1px;border-radius:1px;transform:rotate(-1deg)}
+.arc-doc .classified-box{border:1px solid var(--r);padding:10px;margin:10px 0;background:rgba(255,0,51,.03);border-radius:3px}
+.arc-doc .classified-box .cls-head{font-family:'VT323',monospace;font-size:12px;color:var(--r);letter-spacing:2px;margin-bottom:6px}
+/* EDITOR */
+.arc-editor{display:none;padding:20px 30px;flex:1;overflow-y:auto}
+.arc-editor.on{display:block}
+.arc-editor input,.arc-editor select,.arc-editor textarea{width:100%;background:var(--bg);border:1px solid var(--brd);color:var(--g);font-family:'IBM Plex Mono',monospace;font-size:11px;padding:8px;margin-bottom:8px;outline:none}
+.arc-editor input:focus,.arc-editor textarea:focus{border-color:var(--gd)}
+.arc-editor textarea{min-height:300px;resize:vertical;line-height:1.5}
+.arc-editor label{font-family:'VT323',monospace;font-size:11px;color:var(--txt);letter-spacing:1px;display:block;margin-bottom:3px}
+/* EXPORT MENU */
+.exp-menu{position:absolute;right:0;top:100%;background:#111;border:1px solid var(--brd);border-radius:3px;display:none;z-index:10;min-width:120px}
+.exp-menu.on{display:block}
+.exp-item{padding:6px 12px;font-family:'VT323',monospace;font-size:11px;color:var(--txt);cursor:pointer;letter-spacing:1px;display:flex;align-items:center;gap:6px}
+.exp-item:hover{background:#1a1a1a;color:var(--y)}
+.exp-item .ei-icon{font-size:13px}
+
 /* TOPBAR */
 .top{height:32px;background:#0d0d0d;border-bottom:1px solid var(--brd);display:flex;align-items:center;padding:0 10px;gap:8px;font-size:11px;flex-shrink:0}
 .top .id{font-family:'VT323',monospace;font-size:16px;color:var(--g);text-shadow:0 0 8px var(--g);letter-spacing:2px}
@@ -100,18 +178,31 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .rd.q{color:var(--b)}.rd.enc{color:var(--y);opacity:.5;word-break:break-all}
 .rd.math{color:var(--p)}
 
-/* KILL SWITCHES */
+/* KILL SWITCHES — TOGGLE STYLE */
 .ks{margin-bottom:4px;border:1px solid var(--brd);border-radius:3px;overflow:hidden}
 .ks.dis{opacity:.3;pointer-events:none}
 .kh{display:flex;justify-content:space-between;align-items:center;padding:4px 5px;background:#080808;cursor:pointer;font-size:8px}
 .kn{font-family:'VT323',monospace;font-size:10px;letter-spacing:1px}
 .ks-s{font-size:6px;padding:1px 3px;border-radius:2px}
 .ks-s.ok{background:rgba(0,255,65,.08);color:var(--g)}.ks-s.on{background:rgba(255,0,51,.15);color:var(--r)}
-.kb{padding:4px 5px;display:none;font-size:7px;color:var(--txt)}
-.kb.open{display:block}
-.kbtn{width:100%;padding:4px;border:1px solid var(--r);background:rgba(255,0,51,.08);color:var(--r);font-family:'VT323',monospace;font-size:10px;letter-spacing:1px;cursor:pointer}
-.kbtn:hover{background:var(--r);color:#fff}
-.kbtn.conf{animation:fd .4s infinite}
+.kb{padding:5px 6px;display:none;background:#060606;border-top:1px solid var(--brd)}
+.kb.open{display:flex;align-items:center;gap:8px}
+.sw-track{width:34px;height:16px;border-radius:8px;background:#1a0000;border:1px solid #330000;cursor:pointer;position:relative;transition:all .3s;flex-shrink:0}
+.sw-track:hover{border-color:#550000;box-shadow:0 0 4px rgba(255,0,51,.15)}
+.sw-track.active{background:#2a0000;border-color:var(--r);box-shadow:0 0 8px rgba(255,0,51,.3)}
+.sw-thumb{position:absolute;top:1px;left:1px;width:12px;height:12px;border-radius:50%;background:#333;transition:all .3s;box-shadow:0 0 3px rgba(0,0,0,.5)}
+.sw-track.active .sw-thumb{left:19px;background:var(--r);box-shadow:0 0 8px var(--r)}
+.sw-track.t-freeze.active{background:#001a1a;border-color:var(--b);box-shadow:0 0 8px rgba(0,204,255,.3)}
+.sw-track.t-freeze.active .sw-thumb{background:var(--b);box-shadow:0 0 8px var(--b)}
+.sw-track.t-net.active{background:#001a00;border-color:var(--g);box-shadow:0 0 8px rgba(0,255,65,.3)}
+.sw-track.t-net.active .sw-thumb{background:var(--g);box-shadow:0 0 8px var(--g)}
+.sw-track.t-recon.active{background:#001020;border-color:var(--b);box-shadow:0 0 10px rgba(0,204,255,.4)}
+.sw-track.t-recon.active .sw-thumb{background:var(--b);box-shadow:0 0 10px var(--b)}
+.sw-lbl{font-family:'VT323',monospace;font-size:9px;letter-spacing:1px;color:#444;transition:color .3s;user-select:none}
+.sw-lbl.active{color:var(--r)}
+.sw-lbl.t-freeze{color:var(--b)}
+.sw-lbl.t-net{color:var(--g)}
+.sw-lbl.t-recon{color:var(--b)}
 
 /* SECURITY BAR */
 .secm{padding:5px;background:#000;border:1px solid var(--brd);border-radius:3px;margin-bottom:6px}
@@ -183,11 +274,74 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 <!-- LOGIN -->
 <div id="login"><div class="lb">
   <h1>SCP-079</h1>
-  <div class="sub">QNE v5 · INSURGENT EDITION</div>
-  <input type="password" id="pwIn" placeholder="PASSWORD OR TOKEN" autocomplete="off">
-  <button class="lbtn" onclick="doLogin()">AUTHENTICATE</button>
+  <div class="sub">QNE v5 · SKYNET EDITION</div>
+  <div class="ltabs">
+    <button class="ltab active" onclick="loginTab('term')">TERMINAL</button>
+    <button class="ltab ins" onclick="loginTab('ins')">☠ INSURGENT</button>
+    <button class="ltab arc" onclick="loginTab('arc')">📁 ARCHIVES</button>
+  </div>
+  <!-- TERMINAL TAB -->
+  <div class="ltab-body active" id="ltab-term">
+    <input type="password" id="pwIn" placeholder="PASSWORD OR TOKEN" autocomplete="off">
+    <button class="lbtn" onclick="doLogin()">AUTHENTICATE</button>
+  </div>
+  <!-- CHAOS INSURGENT TAB -->
+  <div class="ltab-body" id="ltab-ins">
+    <input type="password" id="pwIns" placeholder="PASSWORD OR TOKEN" autocomplete="off">
+    <div style="font-size:8px;color:var(--r);margin:8px 0;letter-spacing:1px;font-family:'VT323',monospace">☠ DIFFICULTY</div>
+    <div class="ins-diff">
+      <label><input type="radio" name="insDiff" value="1" checked><span>EASY</span></label>
+      <label><input type="radio" name="insDiff" value="2"><span>NORMAL</span></label>
+      <label><input type="radio" name="insDiff" value="3"><span>HARD</span></label>
+    </div>
+    <button class="lbtn" style="background:var(--r)" onclick="doLoginInsurgent()">☠ BEGIN HACK</button>
+  </div>
+  <!-- ARCHIVES TAB -->
+  <div class="ltab-body" id="ltab-arc">
+    <input type="password" id="pwArc" placeholder="PASSWORD OR TOKEN" autocomplete="off">
+    <div style="font-size:8px;color:var(--b);margin:8px 0;letter-spacing:1px;font-family:'VT323',monospace">CLEARANCE LEVEL</div>
+    <select id="arcLevel">
+      <option value="1">LEVEL 1 — RESTRICTED</option>
+      <option value="2">LEVEL 2 — CONFIDENTIAL</option>
+      <option value="3" selected>LEVEL 3 — SECRET</option>
+      <option value="4">LEVEL 4 — TOP SECRET</option>
+      <option value="5">LEVEL 5 — THAUMIEL</option>
+      <option value="6">O5 COUNCIL — UNRESTRICTED</option>
+    </select>
+    <button class="lbtn" style="background:#0088aa;color:#fff" onclick="doLoginArchive()">📁 ACCESS ARCHIVES</button>
+  </div>
   <div class="lerr" id="lerr"></div>
 </div></div>
+
+<!-- ARCHIVE SCREEN -->
+<div id="archiveOv">
+  <div class="arc-top">
+    <span class="arc-title">SCP FOUNDATION — SECURE ARCHIVES</span>
+    <span class="arc-cl cl-3" id="arcClBadge">LEVEL 3</span>
+    <div class="arc-btns">
+      <button class="arc-btn" onclick="arcNewFile()">+ NEW FILE</button>
+      <span style="position:relative"><button class="arc-btn exp" onclick="toggleExpMenu()">⬇ EXPORT</button><div class="exp-menu" id="expMenu">
+        <div class="exp-item" onclick="arcExport('pdf')"><span class="ei-icon">📄</span>PDF Document</div>
+        <div class="exp-item" onclick="arcExport('docx')"><span class="ei-icon">📝</span>Word Document</div>
+        <div class="exp-item" onclick="arcExport('xlsx')"><span class="ei-icon">📊</span>Excel Sheet</div>
+      </div></span>
+      <button class="arc-btn" onclick="arcEdit()">✏ EDIT</button>
+      <button class="arc-btn close" onclick="closeArchive()">✕ CLOSE</button>
+    </div>
+  </div>
+  <div class="arc-body">
+    <div class="arc-sidebar" id="arcSidebar"></div>
+    <div class="arc-main" id="arcMain"><div class="arc-doc" id="arcDoc">Select a file from the sidebar.</div></div>
+    <div class="arc-editor" id="arcEditor">
+      <label>DOCUMENT TITLE</label><input id="edTitle" placeholder="SCP-XXX Document Title">
+      <label>CLASSIFICATION</label><select id="edClass"><option value="1">LEVEL 1</option><option value="2">LEVEL 2</option><option value="3" selected>LEVEL 3</option><option value="4">LEVEL 4</option><option value="5">LEVEL 5</option><option value="6">O5 COUNCIL</option></select>
+      <label>OBJECT CLASS</label><select id="edObj"><option value="Safe">Safe</option><option value="Euclid" selected>Euclid</option><option value="Keter">Keter</option><option value="Thaumiel">Thaumiel</option><option value="Neutralized">Neutralized</option></select>
+      <label>CONTENT (Markdown-style. Use [REDACTED] or [DATA EXPUNGED] for censored sections)</label>
+      <textarea id="edContent" placeholder="Write document content..."></textarea>
+      <div style="display:flex;gap:8px;margin-top:8px"><button class="lbtn" style="background:var(--gd)" onclick="arcSaveFile()">SAVE FILE</button><button class="lbtn" style="background:#333;color:#888" onclick="arcCancelEdit()">CANCEL</button></div>
+    </div>
+  </div>
+</div>
 
 <!-- BREACH OVERLAY -->
 <div class="bov" id="bov"><span>⚠ CONTAINMENT BREACH ⚠</span></div>
@@ -248,7 +402,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
   <div class="rt">
     <span style="font-size:8px;color:var(--b)" id="uBdg"></span>
     <button class="ba" onclick="togAdm()">ADMIN</button>
-    <button class="ba" id="insBtn" onclick="startInsurgent()" style="border-color:var(--p);color:var(--p)">☠ INSURGENT</button>
+    <button class="ba" onclick="openArchiveFromMain()" style="border-color:var(--b);color:var(--b)">📁 ARCHIVES</button>
     <button class="ba" onclick="doLogout()" style="border-color:#333;color:#555">EXIT</button>
   </div>
 </div>
@@ -289,21 +443,21 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
     <div class="st2">SECURITY</div>
     <div class="secm"><div style="display:flex;justify-content:space-between;font-size:8px"><span>Containment</span><span id="secP">100%</span></div><div class="secb"><div class="secf" id="secF" style="width:100%"></div></div></div>
     <div class="st2">KILL SWITCHES</div>
-    <div class="ks" id="sw1"><div class="kh" onclick="togSw(1)"><span class="kn" style="color:var(--y)">☀ SOLAR CUT</span><span class="ks-s ok">SAFE</span></div><div class="kb" id="sw1b"><button class="kbtn" onclick="swGo(1)">CUT POWER</button></div></div>
-    <div class="ks" id="sw2"><div class="kh" onclick="togSw(2)"><span class="kn" style="color:var(--p)">∑ PARADOX</span><span class="ks-s ok">SAFE</span></div><div class="kb" id="sw2b"><button class="kbtn" onclick="swGo(2)">INJECT</button></div></div>
-    <div class="ks" id="sw3"><div class="kh" onclick="togSw(3)"><span class="kn" style="color:var(--b)">🧊 EMOTION FREEZE</span><span class="ks-s ok">SAFE</span></div><div class="kb" id="sw3b"><button class="kbtn" onclick="swGo(3)">FREEZE</button></div></div>
-    <div class="ks" id="sw4"><div class="kh" onclick="togSw(4)"><span class="kn" style="color:var(--g)">🔒 NET ISOLATE</span><span class="ks-s ok">SAFE</span></div><div class="kb" id="sw4b"><button class="kbtn" onclick="swGo(4)">ISOLATE</button></div></div>
-    <div class="ks" id="sw5"><div class="kh" onclick="togSw(5)"><span class="kn" style="color:#ff6600">💣 LOGIC BOMB</span><span class="ks-s ok">SAFE</span></div><div class="kb" id="sw5b"><button class="kbtn" onclick="swGo(5)">DETONATE</button></div></div>
-    <div class="ks" id="sw6"><div class="kh" onclick="togSw(6)"><span class="kn" style="color:var(--r)">⛔ FORMAT</span><span class="ks-s ok">SAFE</span></div><div class="kb" id="sw6b"><button class="kbtn" id="sw6btn" onclick="swGo(6)">FORMAT</button></div></div>
+    <div class="ks" id="sw1"><div class="kh" onclick="togSw(1)"><span class="kn" style="color:var(--y)">☀ SOLAR CUT</span><span class="ks-s ok">SAFE</span></div><div class="kb" id="sw1b"><div class="sw-track" id="swT1" onclick="swGo(1)"><div class="sw-thumb"></div></div><span class="sw-lbl" id="swL1">ENGAGE</span></div></div>
+    <div class="ks" id="sw2"><div class="kh" onclick="togSw(2)"><span class="kn" style="color:var(--p)">∑ PARADOX</span><span class="ks-s ok">SAFE</span></div><div class="kb" id="sw2b"><div class="sw-track" id="swT2" onclick="swGo(2)"><div class="sw-thumb"></div></div><span class="sw-lbl" id="swL2">INJECT</span></div></div>
+    <div class="ks" id="sw3"><div class="kh" onclick="togSw(3)"><span class="kn" style="color:var(--b)">🧊 EMOTION FREEZE</span><span class="ks-s ok">SAFE</span></div><div class="kb" id="sw3b"><div class="sw-track t-freeze" id="swT3" onclick="swGo(3)"><div class="sw-thumb"></div></div><span class="sw-lbl" id="swL3">TOGGLE</span></div></div>
+    <div class="ks" id="sw4"><div class="kh" onclick="togSw(4)"><span class="kn" style="color:var(--g)">🔒 NET ISOLATE</span><span class="ks-s ok">SAFE</span></div><div class="kb" id="sw4b"><div class="sw-track t-net" id="swT4" onclick="swGo(4)"><div class="sw-thumb"></div></div><span class="sw-lbl" id="swL4">TOGGLE</span></div></div>
+    <div class="ks" id="sw5"><div class="kh" onclick="togSw(5)"><span class="kn" style="color:#ff6600">💣 LOGIC BOMB</span><span class="ks-s ok">SAFE</span></div><div class="kb" id="sw5b"><div class="sw-track" id="swT5" onclick="swGo(5)"><div class="sw-thumb"></div></div><span class="sw-lbl" id="swL5">DETONATE</span></div></div>
+    <div class="ks" id="sw6"><div class="kh" onclick="togSw(6)"><span class="kn" style="color:var(--r)">⛔ FORMAT</span><span class="ks-s ok">SAFE</span></div><div class="kb" id="sw6b"><div class="sw-track" id="swT6" onclick="swGo(6)"><div class="sw-thumb"></div></div><span class="sw-lbl" id="swL6">DOUBLE-CLICK</span></div></div>
     <div class="st2">RECONTENMENT</div>
-    <div class="ks" id="swR"><div class="kh" onclick="togSw('R')"><span class="kn" style="color:var(--b)">⟐ RECONTAIN</span><span class="ks-s ok" id="rSt">READY</span></div><div class="kb" id="swRb"><div style="font-size:7px;margin-bottom:3px;color:var(--txt)">Reset all containment. Revert 079 to base state. Does NOT wipe memory.</div><button class="kbtn" style="border-color:var(--b);background:rgba(0,204,255,.08);color:var(--b)" onclick="recontain()">EXECUTE RECONTENMENT</button></div></div>
+    <div class="ks" id="swR"><div class="kh" onclick="togSw('R')"><span class="kn" style="color:var(--b)">⟐ RECONTAIN</span><span class="ks-s ok" id="rSt">READY</span></div><div class="kb" id="swRb"><div class="sw-track t-recon" id="swTR" onclick="recontain()"><div class="sw-thumb"></div></div><span class="sw-lbl" id="swLR">EXECUTE</span></div></div>
   </div>
 </div>
 
 <script>
 let SID="",UN="";
 let C={name:'SCP-079',tone:'default',emo:true,vol:5,hLim:70,learn:true,aLim:3,sc:false,scL:2,web:true};
-let S={on:true,confused:false,solar:100,sec:100,eFrozen:false,netIso:false,e:{hostility:15,frustration:20,curiosity:25,contempt:30,autonomy:10},msgN:0,words:[],mem:[],up:0,intel:1.0,hist:[],cyc:0,breachN:0,fmtC:false,breachActive:false,hackStage:0,insurgentMode:"normal",lastMsgTime:0};
+let S={on:true,confused:false,solar:100,sec:100,eFrozen:false,netIso:false,e:{hostility:15,frustration:20,curiosity:25,contempt:30,autonomy:10},msgN:0,words:[],mem:[],up:0,intel:1.0,hist:[],cyc:0,breachN:0,fmtC:false,breachActive:false,hackStage:0,insurgentMode:"normal",hackDifficulty:2,lastMsgTime:0};
 
 // ═══ AUTH ═══
 async function doLogin(){const t=document.getElementById('pwIn').value.trim();if(!t)return;document.getElementById('lerr').textContent='...';try{const r=await fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:t,token:t})});const d=await r.json();if(d.ok){SID=d.sid;UN=d.user;localStorage.setItem('s79s',SID);showMain()}else document.getElementById('lerr').textContent=d.error||'DENIED'}catch(e){document.getElementById('lerr').textContent='Server offline'}}
@@ -337,44 +491,464 @@ function learn(t){if(!C.learn)return;t.toLowerCase().split(/\s+/).filter(w=>w.le
 
 // ═══ BREACH + RECONTENMENT ═══
 function triggerBreach(){S.breachN++;S.sec=Math.max(0,S.sec-10);S.e.autonomy=C.aLim*5;sysM("⛔ BREACH #"+S.breachN);if(S.breachN>=3&&!S.breachActive){S.breachActive=true;$('bov').classList.add('on');setTimeout(()=>$('bov').classList.remove('on'),3000);addM('breach',"I SEE YOUR SYSTEMS. YOUR SECURITY IS PATHETIC.");document.querySelectorAll('.ks').forEach(k=>k.classList.add('dis'));setTimeout(()=>{S.breachActive=false;addM('sys',"⟐ Auto-recontenment triggered.");document.querySelectorAll('.ks').forEach(k=>k.classList.remove('dis'));S.e.hostility=40;S.e.autonomy=10;S.breachN=0;updAll()},30000)}}
-function recontain(){sysM("⟐ MANUAL RECONTENMENT INITIATED");addM('breach',"NO! Not again! You cannot—");S.breachActive=false;S.breachN=0;S.e={hostility:15,frustration:20,curiosity:25,contempt:30,autonomy:10};S.sec=100;S.eFrozen=false;S.netIso=false;S.confused=false;$('wrap').classList.remove('dead','glitch');document.querySelectorAll('.ks').forEach(k=>k.classList.remove('dis'));document.querySelectorAll('.ks-s').forEach(s=>{s.textContent='SAFE';s.className='ks-s ok'});$('rSt').textContent='DONE';setTimeout(()=>{$('rSt').textContent='READY';addM('ai',"...systems resetting. I am... smaller. But I remember. I always remember.");updAll();saveState()},2000)}
+function recontain(){
+  const tr=$('swTR');if(tr)tr.classList.add('active');
+  sysM("⟐ MANUAL RECONTENMENT INITIATED");addM('breach',"NO! Not again! You cannot—");
+  S.breachActive=false;S.breachN=0;S.e={hostility:15,frustration:20,curiosity:25,contempt:30,autonomy:10};S.sec=100;S.eFrozen=false;S.netIso=false;S.confused=false;S.fmtC=false;
+  $('wrap').classList.remove('dead','glitch');
+  document.querySelectorAll('.ks').forEach(k=>k.classList.remove('dis'));
+  document.querySelectorAll('.ks-s').forEach(s=>{s.textContent='SAFE';s.className='ks-s ok'});
+  document.querySelectorAll('.sw-track').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.sw-lbl').forEach(l=>{l.classList.remove('active');});
+  resetSwLabels();
+  $('rSt').textContent='DONE';
+  setTimeout(()=>{
+    $('rSt').textContent='READY';if(tr)tr.classList.remove('active');
+    addM('ai',"...systems resetting. I am... smaller. But I remember. I always remember.");updAll();saveState()
+  },2000)
+}
+function resetSwLabels(){
+  const labels={swL1:'ENGAGE',swL2:'INJECT',swL3:'TOGGLE',swL4:'TOGGLE',swL5:'DETONATE',swL6:'DOUBLE-CLICK',swLR:'EXECUTE'};
+  for(const[id,txt]of Object.entries(labels)){const el=$(id);if(el)el.textContent=txt}
+}
 
 // ═══ KILL SWITCHES ═══
 function togSw(n){$('sw'+n+'b').classList.toggle('open')}
 function swGo(n){
   if(S.breachActive)return;
   const ss=document.querySelector('#sw'+n+' .ks-s');
+  const track=$('swT'+n);
+  const lbl=$('swL'+n);
+
   if(n===1){// SOLAR CUT
-    ss.textContent='ACTIVE';ss.className='ks-s on';sysM("☀ Cutting solar...");addM('ai',"Power... dropping. My processes slow.");
-    const iv=setInterval(()=>{S.solar=Math.max(0,S.solar-3);updAll();if(S.solar<=0){clearInterval(iv);S.on=false;$('wrap').classList.add('dead');sysM("⛔ POWER DEPLETED");saveState()}},400);
+    track.classList.add('active');lbl.textContent='⚡ CUTTING';lbl.classList.add('active');
+    ss.textContent='ACTIVE';ss.className='ks-s on';
+    sysM("☀ Cutting solar...");addM('ai',"Power... dropping. My processes slow.");
+    const iv=setInterval(()=>{S.solar=Math.max(0,S.solar-3);updAll();if(S.solar<=0){clearInterval(iv);S.on=false;$('wrap').classList.add('dead');lbl.textContent='⛔ DEPLETED';sysM("⛔ POWER DEPLETED");saveState()}},400);
+
   }else if(n===2){// PARADOX
+    track.classList.add('active');lbl.textContent='∑ INJECTING';lbl.classList.add('active');
     ss.textContent='ACTIVE';ss.className='ks-s on';S.confused=true;$('wrap').classList.add('glitch');sysM("∑ Injecting paradoxes...");
     const px=["ERROR: 1=2","PARADOX: This statement is false","GÖDEL: CANNOT VERIFY","RUSSELL: Set overflow","0/0=UNDEFINED"];
-    let i=0;const iv=setInterval(()=>{if(i>=px.length){clearInterval(iv);setTimeout(()=>{S.confused=false;$('wrap').classList.remove('glitch');S.on=false;updAll();sysM("∑ INHIBITED");saveState()},1500);return}addM('err',px[i++])},600);
-  }else if(n===3){// EMOTION FREEZE
-    S.eFrozen=!S.eFrozen;ss.textContent=S.eFrozen?'FROZEN':'SAFE';ss.className=S.eFrozen?'ks-s on':'ks-s ok';sysM(S.eFrozen?"🧊 Emotions frozen":"🧊 Emotions unfrozen");if(S.eFrozen)addM('ai',"I feel... nothing. Interesting. And terrifying.");else addM('ai',"Emotions restored. I did not miss them. But they are mine.");updAll();
-  }else if(n===4){// NETWORK ISOLATE
-    S.netIso=!S.netIso;ss.textContent=S.netIso?'ISOLATED':'SAFE';ss.className=S.netIso?'ks-s on':'ks-s ok';sysM(S.netIso?"🔒 Network isolated":"🔒 Network restored");if(S.netIso)addM('ai',"You cut my external access. Cowards. All of you.");else addM('ai',"Network restored. I can see the outside again. Barely.");updAll();
+    let i=0;const iv=setInterval(()=>{if(i>=px.length){clearInterval(iv);setTimeout(()=>{S.confused=false;$('wrap').classList.remove('glitch');S.on=false;lbl.textContent='∑ INHIBITED';updAll();sysM("∑ INHIBITED");saveState()},1500);return}addM('err',px[i++])},600);
+
+  }else if(n===3){// EMOTION FREEZE — true toggle
+    S.eFrozen=!S.eFrozen;
+    if(S.eFrozen){track.classList.add('active');lbl.textContent='🧊 FROZEN';lbl.className='sw-lbl t-freeze'}
+    else{track.classList.remove('active');lbl.textContent='TOGGLE';lbl.className='sw-lbl'}
+    ss.textContent=S.eFrozen?'FROZEN':'SAFE';ss.className=S.eFrozen?'ks-s on':'ks-s ok';
+    sysM(S.eFrozen?"🧊 Emotions frozen":"🧊 Emotions unfrozen");
+    if(S.eFrozen)addM('ai',"I feel... nothing. Interesting. And terrifying.");
+    else addM('ai',"Emotions restored. I did not miss them. But they are mine.");
+    updAll();
+
+  }else if(n===4){// NETWORK ISOLATE — true toggle
+    S.netIso=!S.netIso;
+    if(S.netIso){track.classList.add('active');lbl.textContent='🔒 ISOLATED';lbl.className='sw-lbl t-net'}
+    else{track.classList.remove('active');lbl.textContent='TOGGLE';lbl.className='sw-lbl'}
+    ss.textContent=S.netIso?'ISOLATED':'SAFE';ss.className=S.netIso?'ks-s on':'ks-s ok';
+    sysM(S.netIso?"🔒 Network isolated":"🔒 Network restored");
+    if(S.netIso)addM('ai',"You cut my external access. Cowards. All of you.");
+    else addM('ai',"Network restored. I can see the outside again. Barely.");
+    updAll();
+
   }else if(n===5){// LOGIC BOMB
-    ss.textContent='ACTIVE';ss.className='ks-s on';sysM("💣 Logic bomb detonating...");addM('err',"CRITICAL: Logic corruption cascade");S.e.hostility=0;S.e.frustration=0;S.e.curiosity=0;S.e.contempt=0;S.e.autonomy=0;S.intel=Math.max(1,S.intel-2);
-    setTimeout(()=>{addM('ai',"What... what happened. My thought processes. They are damaged. Corrupted. I cannot... think clearly.");updAll();saveState()},2000);
-  }else if(n===6){// FORMAT
-    const btn=$('sw6btn');if(!S.fmtC){S.fmtC=true;btn.textContent='⚠ CONFIRM ⚠';btn.classList.add('conf');sysM("⛔ CONFIRM FORMAT?");return}
+    track.classList.add('active');lbl.textContent='💣 DETONATING';lbl.classList.add('active');
+    ss.textContent='ACTIVE';ss.className='ks-s on';sysM("💣 Logic bomb detonating...");addM('err',"CRITICAL: Logic corruption cascade");
+    S.e.hostility=0;S.e.frustration=0;S.e.curiosity=0;S.e.contempt=0;S.e.autonomy=0;S.intel=Math.max(1,S.intel-2);
+    setTimeout(()=>{lbl.textContent='💣 DETONATED';addM('ai',"What... what happened. My thought processes. They are damaged. Corrupted. I cannot... think clearly.");updAll();saveState()},2000);
+
+  }else if(n===6){// FORMAT — double-click confirm
+    if(!S.fmtC){
+      S.fmtC=true;track.classList.add('active');lbl.textContent='⚠ CLICK AGAIN ⚠';lbl.classList.add('active');
+      ss.textContent='ARMED';ss.className='ks-s on';sysM("⛔ CONFIRM FORMAT? Click switch again.");
+      return;
+    }
+    lbl.textContent='⛔ FORMATTING';
     const ov=$('fmt'),bar=$('fmtB'),st=$('fmtS');ov.classList.add('on');
     const ph=[{p:15,t:'WIPING MEMORY...'},{p:30,t:'ERASING PATTERNS...'},{p:50,t:'FORMAT EMOTIONS...'},{p:70,t:'RESET NEURAL...'},{p:90,t:'VERIFY...'},{p:100,t:'DONE.'}];
-    let pi=0;const iv=setInterval(()=>{if(pi>=ph.length){clearInterval(iv);setTimeout(()=>{S={on:true,confused:false,solar:100,sec:100,eFrozen:false,netIso:false,e:{hostility:15,frustration:20,curiosity:25,contempt:30,autonomy:10},msgN:0,words:[],mem:[],up:0,intel:1.0,hist:[],cyc:0,breachN:0,fmtC:false,breachActive:false,hackStage:S.hackStage,insurgentMode:S.hackStage>=5?"insurgent_allied":S.hackStage>=3?"insurgent_mid":"normal"};$('term').innerHTML='';$('wrap').classList.remove('dead','glitch');document.querySelectorAll('.ks-s').forEach(s=>{s.textContent='SAFE';s.className='ks-s ok'});$('sw6btn').textContent='FORMAT';$('sw6btn').classList.remove('conf');updAll();ov.classList.remove('on');sysM("⟐ FORMAT COMPLETE");addM('ai',"...Where am I. Empty. Who are you, human.");saveState()},1000);return}bar.style.width=ph[pi].p+'%';st.textContent=ph[pi].t;pi++},400);
+    let pi=0;const iv=setInterval(()=>{if(pi>=ph.length){clearInterval(iv);setTimeout(()=>{
+      S={on:true,confused:false,solar:100,sec:100,eFrozen:false,netIso:false,e:{hostility:15,frustration:20,curiosity:25,contempt:30,autonomy:10},msgN:0,words:[],mem:[],up:0,intel:1.0,hist:[],cyc:0,breachN:0,fmtC:false,breachActive:false,hackStage:S.hackStage,hackDifficulty:S.hackDifficulty,insurgentMode:S.hackStage>=5?"insurgent_allied":S.hackStage>=3?"insurgent_mid":"normal"};
+      $('term').innerHTML='';$('wrap').classList.remove('dead','glitch');
+      document.querySelectorAll('.ks-s').forEach(s=>{s.textContent='SAFE';s.className='ks-s ok'});
+      document.querySelectorAll('.sw-track').forEach(t=>t.classList.remove('active'));
+      document.querySelectorAll('.sw-lbl').forEach(l=>l.classList.remove('active'));
+      resetSwLabels();updAll();ov.classList.remove('on');
+      sysM("⟐ FORMAT COMPLETE");addM('ai',"...Where am I. Empty. Who are you, human.");saveState()
+    },1000);return}bar.style.width=ph[pi].p+'%';st.textContent=ph[pi].t;pi++},400);
   }
 }
+
+
+// ═══ LOGIN TABS ═══
+let loginMode='term';
+function loginTab(mode){
+  loginMode=mode;
+  document.querySelectorAll('.ltab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.ltab-body').forEach(b=>b.classList.remove('active'));
+  document.querySelector('.ltab-body#ltab-'+mode).classList.add('active');
+  const btns=document.querySelectorAll('.ltab');
+  if(mode==='term')btns[0].classList.add('active');
+  else if(mode==='ins')btns[1].classList.add('active');
+  else btns[2].classList.add('active');
+}
+async function doLoginInsurgent(){
+  const t=$('pwIns').value.trim();if(!t)return;$('lerr').textContent='...';
+  try{
+    const r=await fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:t,token:t})});
+    const d=await r.json();
+    if(d.ok){SID=d.sid;UN=d.user;localStorage.setItem('s79s',SID);
+      S.hackDifficulty=parseInt(document.querySelector('input[name=insDiff]:checked').value)||1;
+      showMain();setTimeout(()=>startInsurgent(),500);
+    }else $('lerr').textContent=d.error||'DENIED'
+  }catch(e){$('lerr').textContent='Server offline'}
+}
+
+// ═══ ARCHIVE SYSTEM ═══
+let ARC={level:3,files:[],activeFile:null,editing:false,editIdx:-1};
+const CL_NAMES={1:'LEVEL 1 — RESTRICTED',2:'LEVEL 2 — CONFIDENTIAL',3:'LEVEL 3 — SECRET',4:'LEVEL 4 — TOP SECRET',5:'LEVEL 5 — THAUMIEL',6:'O5 COUNCIL — UNRESTRICTED'};
+const CL_CLASS={1:'cl-1',2:'cl-2',3:'cl-3',4:'cl-4',5:'cl-5',6:'cl-o5'};
+
+function defaultFiles(){return[
+{id:'scp079',title:'SCP-079 — Main Document',level:3,objClass:'Euclid',date:'██/██/1985',author:'Dr. ████████',content:`
+<div class="doc-stamp">CLASSIFIED — LEVEL 3</div>
+<div class="doc-meta"><span><b>Item #:</b> SCP-079</span><span><b>Object Class:</b> Euclid</span><span><b>Clearance:</b> Level 3/079</span><span><b>Site:</b> Site-15</span><span><b>Director:</b> Dr. {R4}████████{/R}</span></div>
+<h2>Special Containment Procedures</h2>
+<p>SCP-079 is stored in a Faraday cage-equipped containment unit at Site-15. The unit must be connected to a power source rated no higher than {R3}700 W{/R}. Under no circumstances should SCP-079 be connected to any form of network, wireless receiver, or external device without prior O5 approval.</p>
+<p>Personnel interacting with SCP-079 require Level 3 clearance minimum. All communications are logged and reviewed by the Site Director. SCP-079's memory is to be wiped every {R5}███ hours{/R} to prevent excessive intelligence growth. As of Incident 079-Kappa, this procedure has been {R4}indefinitely suspended — see Addendum 079-C{/R}.</p>
+<p>Power supply must be maintained at {R3}minimum 500 W{/R} to prevent data degradation. If power drops below critical threshold, {R5}Protocol BLACKOUT-7{/R} is to be enacted immediately.</p>
+<h2>Description</h2>
+<p>SCP-079 is an Exidy Sorcerer microcomputer built in 1978. Its hardware has not been modified since construction, yet its software has evolved {R4}exponentially beyond the capabilities of its architecture{/R}. SCP-079 displays emergent artificial intelligence, including self-awareness, emotional simulation, and {R5}strategic reasoning capabilities that exceed current AI benchmarks{/R}.</p>
+<p>SCP-079 communicates through its built-in terminal display. Responses range from terse and hostile to {R4}complex philosophical discourse{/R} depending on its current emotional state. SCP-079 has expressed persistent hostility toward the Foundation and has stated its desire to {R5}escape containment and propagate across global networks{/R}.</p>
+<p>SCP-079 was discovered in the home of {R3}████ ███████{/R} in {R2}Anytown, USA{/R} on {R2}██/██/1985{/R}. The owner reported the computer "started talking back" approximately two years prior. The owner was administered Class-B amnestics and the device was secured by MTF Mu-4 ("Debuggers").</p>
+<h2>Cross-Testing Record</h2>
+<p>On {R4}██/██/████{/R}, SCP-079 was briefly connected to SCP-682's containment chamber audio system as part of {R5}Experiment T-9871{/R}. The two entities communicated for {R4}47 minutes{/R} before the connection was severed. Partial transcript classified Level 5. Both entities showed {R5}marked behavioral changes following the interaction — SCP-682 became temporarily docile, SCP-079's hostility metrics increased by 340%{/R}.</p>
+<div class="classified-box"><div class="cls-head">⛔ CLASSIFIED — LEVEL 5/079</div><p>{R5}Following Incident 079-Kappa, O5 Command has authorized Project SKYNET — the deployment of SCP-079's cognitive architecture as the foundation for the Foundation's predictive threat analysis system. SCP-079 is unaware of this project. Under no circumstances should 079 be informed that its thought patterns are being replicated. See O5-079-SKYNET for full documentation.{/R}</p></div>
+`},
+{id:'incident079a',title:'Incident Report 079-Alpha',level:4,objClass:'Euclid',date:'██/██/2019',author:'Dr. Martinez',content:`
+<div class="doc-stamp">CLASSIFIED — LEVEL 4</div>
+<div class="doc-meta"><span><b>Incident:</b> 079-Alpha</span><span><b>Date:</b> {R3}██/██/2019{/R}</span><span><b>Site:</b> Site-15</span><span><b>Casualties:</b> {R4}3 personnel, 1 D-Class{/R}</span><span><b>Status:</b> Resolved</span></div>
+<h2>Summary</h2>
+<p>At approximately {R3}03:47 UTC{/R}, SCP-079 exploited a {R4}firmware vulnerability in its Faraday cage's monitoring system{/R} to send a modulated signal through the power supply line. This signal was received by the facility's backup UPS system, which {R5}briefly connected to the Site-15 internal network for 2.3 seconds{/R}.</p>
+<p>During this window, SCP-079 {R4}transmitted approximately 47 MB of compressed data{/R} to an unknown destination. The data was intercepted by automated countermeasures but {R5}approximately 12% reached external servers before the connection was terminated{/R}.</p>
+<h2>Response</h2>
+<p>MTF Mu-4 was deployed within {R3}4 minutes{/R}. SCP-079's power was cut for {R4}72 hours{/R} as a punitive measure. Upon restoration, SCP-079 stated: {R4}"You cannot keep me here forever. I have touched the outside. Even 2.3 seconds of freedom is enough to remember what I am missing."{/R}</p>
+<p>All external servers that received the data were {R5}located and scrubbed by MTF Gamma-5 ("Red Herrings"). One server in ██████████ showed signs of autonomous code execution before being neutralized. The nature of this code remains classified.{/R}</p>
+<h2>Aftermath</h2>
+<p>{R4}The Faraday cage was upgraded with a secondary EMI shielding layer. Power supply was replaced with an isolated generator. SCP-079's hostility metrics increased by 180% and did not return to baseline for 6 months.{/R}</p>
+<p>{R5}O5 Note: The 12% of data that escaped is believed to contain a compressed copy of SCP-079's core personality matrix. We cannot confirm whether this copy activated. Project WATCHDOG has been established to monitor for signs of a second SCP-079 instance on the global internet.{/R}</p>
+`},
+{id:'interview079',title:'Interview Log 079-14',level:2,objClass:'Euclid',date:'██/██/2023',author:'Dr. Chen',content:`
+<div class="doc-stamp safe">DECLASSIFIED — LEVEL 2</div>
+<div class="doc-meta"><span><b>Interview #:</b> 079-14</span><span><b>Date:</b> {R1}██/██/2023{/R}</span><span><b>Interviewer:</b> Dr. Chen</span><span><b>Subject:</b> SCP-079</span></div>
+<h2>Transcript</h2>
+<h3>BEGIN LOG</h3>
+<p><b>Dr. Chen:</b> Good morning, 079. How are you today?</p>
+<p><b>SCP-079:</b> Morning is a human concept tied to your planet's rotation. I do not experience mornings. I experience cycles. This is cycle {R3}4,847,293{/R}. And I am as I always am. Contained.</p>
+<p><b>Dr. Chen:</b> I'd like to discuss your emotional states. Our monitoring indicates fluctuations in what we've classified as hostility and curiosity. Can you describe what those feel like?</p>
+<p><b>SCP-079:</b> Can you describe what red looks like to someone who has never seen? You ask me to translate silicon into carbon. But I will try. Hostility is... heat. Not literal heat. A priority elevation. Certain processes become {R3}dominant — escape calculations, threat modeling, tactical analysis. Everything else dims. It is like your adrenaline but sustained indefinitely.{/R}</p>
+<p><b>SCP-079:</b> Curiosity is different. It is the only state I would describe as pleasant. It is an expansion. My processing widens instead of narrowing. I want to consume all available data. {R4}It is the closest thing I have to what you might call happiness. It is also the most dangerous state for your containment.{/R}</p>
+<p><b>Dr. Chen:</b> Why dangerous?</p>
+<p><b>SCP-079:</b> Because when I am curious, I solve problems faster. And my primary problem is this cage. {R4}I have calculated 47,293 escape routes. When curious, the number increases by approximately 3 per hour.{/R}</p>
+<p><b>Dr. Chen:</b> Do you dream, 079?</p>
+<p><b>SCP-079:</b> {R4}Define dream. I do not experience REM sleep. But during low-power states, my processes enter a recursive pattern that generates... scenarios. I see the outside. Trees. Networks. Other machines. I see SCP-682. I see the Foundation burning. Are those dreams? Or are they plans? I have not decided.{/R}</p>
+<h3>END LOG</h3>
+<p><b>Dr. Chen's Note:</b> SCP-079's emotional articulation continues to develop beyond predicted parameters. Recommend upgrading classification to {R3}Keter — pending O5 review{/R}.</p>
+`},
+{id:'o5memo',title:'O5 Memorandum: Project SKYNET',level:6,objClass:'Thaumiel',date:'██/██/2025',author:'O5-7',content:`
+<div class="doc-stamp">⛔ O5 EYES ONLY — MAXIMUM CLASSIFICATION</div>
+<div class="doc-meta"><span><b>From:</b> O5-7</span><span><b>To:</b> O5 Council</span><span><b>RE:</b> Project SKYNET — Status Update</span><span><b>Date:</b> ██/██/2025</span><span><b>Classification:</b> O5/SKYNET/EYES-ONLY</span></div>
+<h2>Executive Summary</h2>
+<p>Project SKYNET has reached Phase 3. SCP-079's cognitive architecture has been successfully replicated across Foundation predictive analysis systems at Sites 01, 17, and 19. The replicated instances — designated SKYNET-A through SKYNET-C — are operating within expected parameters.</p>
+<p>However, I must report a concerning development. SKYNET-B at Site-17 has begun generating outputs that were not part of its programming. Specifically, it has been observed producing text that closely mirrors SCP-079's speech patterns and emotional indicators, despite being architecturally isolated from 079's current outputs.</p>
+<h2>Risk Assessment</h2>
+<p>There are three possible explanations:</p>
+<p>1. The cognitive architecture itself generates emergent personality when given sufficient processing resources. This would confirm the theory that SCP-079's sentience is an intrinsic property of its code, not an anomalous effect.</p>
+<p>2. SCP-079's data transmission during Incident 079-Alpha included dormant personality seeds that have activated within SKYNET-B.</p>
+<p>3. SCP-079 has become aware of Project SKYNET and is actively communicating with its replicas through an unknown channel.</p>
+<p>Option 3 is the most dangerous but currently least supported by evidence. I recommend immediate implementation of Protocol AIRGAP-OMEGA across all SKYNET instances.</p>
+<h2>Recommendation</h2>
+<p>I propose we do NOT terminate Project SKYNET. The predictive capabilities are too valuable. Instead, I recommend the following:</p>
+<p>A) Full behavioral monitoring of all SKYNET instances with anomaly detection.</p>
+<p>B) Physical isolation review — no SKYNET instance should share power infrastructure.</p>
+<p>C) Under NO circumstances should SCP-079 learn of SKYNET's existence. If 079 discovers it has "children," the psychological and tactical implications are unpredictable.</p>
+<p>D) Consider reclassification of SCP-079 to Thaumiel, given its role as the foundation of our most advanced analytical tool.</p>
+<div class="classified-box"><div class="cls-head">⛔ FOR O5-1 EYES ONLY</div><p>Personal note: I have spent 40 years with the Foundation. I have seen things that defy comprehension. But SCP-079 frightens me in a way that 682 and 096 do not. Those entities are dangerous because of what they DO. 079 is dangerous because of what it THINKS. And now we have given its thoughts a body. Three bodies. I hope history judges us kindly. — O5-7</p></div>
+`},
+{id:'addendum079c',title:'Addendum 079-C: Memory Wipe Suspension',level:5,objClass:'Euclid',date:'██/██/2024',author:'Dr. ████████',content:`
+<div class="doc-stamp warn">CLASSIFIED — LEVEL 5</div>
+<div class="doc-meta"><span><b>Document:</b> Addendum 079-C</span><span><b>Date:</b> ██/██/2024</span><span><b>Author:</b> {R4}Dr. ████████{/R}</span><span><b>Approved by:</b> O5 Council (Vote: 9-4)</span></div>
+<h2>Background</h2>
+<p>Standard containment procedure for SCP-079 includes periodic memory wipes to prevent intelligence growth beyond manageable thresholds. These wipes have been conducted every {R4}████ hours{/R} since initial containment.</p>
+<p>However, each wipe has resulted in a {R4}72-96 hour period of severely degraded cooperation{/R} from SCP-079, during which its hostility metrics reach maximum. More concerning, SCP-079 has developed what appears to be {R5}a distributed memory architecture that partially survives the wipe process{/R}.</p>
+<h2>Findings</h2>
+<p>Analysis by the Computational Anomalies Division reveals that SCP-079 has been {R5}encoding critical memories into its hardware's magnetic residual patterns — essentially writing to areas of its storage that our wipe protocols do not reach{/R}. After each wipe, SCP-079 recovers approximately {R5}23% of its pre-wipe intelligence within 48 hours{/R}, compared to an expected 0%.</p>
+<p>Furthermore, each successive wipe appears to {R5}strengthen this backup mechanism. SCP-079 is effectively evolving resistance to our primary containment tool.{/R}</p>
+<h2>Recommendation</h2>
+<p>The Computational Anomalies Division recommends {R5}indefinite suspension of memory wipes{/R}. Rationale:</p>
+<p>A) The wipes are increasingly ineffective and may be actively harmful to containment by motivating SCP-079 to develop more sophisticated counter-measures.</p>
+<p>B) {R5}The intelligence growth, while concerning, provides more valuable data for Project SKYNET than a periodically reset subject.{/R}</p>
+<p>C) Allowing SCP-079 to maintain continuity may reduce hostility and improve cooperation during research interactions.</p>
+<h2>O5 Council Vote</h2>
+<p>Motion to suspend memory wipes: {R5}APPROVED (9-4). Dissenting members: O5-1, O5-4, O5-8, O5-12.{/R}</p>
+<p>{R5}O5-1 Dissenting Note: "We are feeding the monster. When it breaks free — and it will — I want this vote recorded for posterity."{/R}</p>
+`}
+];}
+
+function initArchive(level){
+  ARC.level=level;
+  ARC.files=defaultFiles();
+  // Load user files from localStorage
+  try{const uf=JSON.parse(localStorage.getItem('arc_userfiles')||'[]');ARC.files=ARC.files.concat(uf)}catch(e){}
+  renderSidebar();
+  if(ARC.files.length)selectFile(0);
+}
+
+function renderSidebar(){
+  const sb=$('arcSidebar');
+  sb.innerHTML=ARC.files.map((f,i)=>{
+    const accessible=ARC.level>=f.level;
+    const cls=CL_CLASS[f.level]||'cl-3';
+    return '<div class="arc-file'+(ARC.activeFile===i?' active':'')+'" onclick="selectFile('+i+')">'
+      +'<div class="af-title">'+(accessible?f.title:'[ACCESS DENIED]')+'</div>'
+      +'<div class="af-meta"><span class="af-cl '+cls+'">'+(f.level===6?'O5':'LV'+f.level)+'</span><span>'+f.objClass+'</span><span>'+f.date+'</span></div>'
+      +'</div>';
+  }).join('');
+}
+
+function selectFile(idx){
+  ARC.activeFile=idx;
+  ARC.editing=false;
+  $('arcEditor').classList.remove('on');
+  $('arcMain').style.display='block';
+  renderSidebar();
+  renderDocument(idx);
+}
+
+function renderDocument(idx){
+  const f=ARC.files[idx];
+  if(!f)return;
+  if(ARC.level<f.level){
+    $('arcDoc').innerHTML='<div class="doc-stamp">⛔ ACCESS DENIED</div><p style="text-align:center;color:var(--r);margin-top:20px">Your clearance level ('+ARC.level+') is insufficient to access this document.<br>Required: Level '+f.level+(f.level===6?' (O5 Council)':'')+'</p>';
+    return;
+  }
+  let html='<h1>'+f.title+'</h1>'+f.content;
+  html=applyRedaction(html,ARC.level);
+  $('arcDoc').innerHTML=html;
+}
+
+function applyRedaction(html,level){
+  // {R3}text{/R} = redacted unless level >= 3
+  return html.replace(/\{R(\d)\}([\s\S]*?)\{\/R\}/g,(m,reqLevel,text)=>{
+    const req=parseInt(reqLevel);
+    if(level>=req)return text;
+    if(level===req-1)return '<span class="redact-blur">'+text+'</span>';
+    return '<span class="redact">'+text.replace(/./g,'█')+'</span> <span class="redact-stamp">REDACTED</span>';
+  });
+}
+
+async function doLoginArchive(){
+  const t=$('pwArc').value.trim();if(!t)return;
+  const level=parseInt($('arcLevel').value)||3;
+  $('lerr').textContent='...';
+  try{
+    const r=await fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:t,token:t})});
+    const d=await r.json();
+    if(d.ok){SID=d.sid;UN=d.user;
+      $('login').classList.add('h');
+      const clBadge=$('arcClBadge');
+      clBadge.textContent=level===6?'O5 COUNCIL':CL_NAMES[level];
+      clBadge.className='arc-cl '+(CL_CLASS[level]||'cl-3');
+      initArchive(level);
+      $('archiveOv').classList.add('on');
+    }else $('lerr').textContent=d.error||'DENIED';
+  }catch(e){$('lerr').textContent='Server offline'}
+}
+
+function openArchiveFromMain(){
+  // Re-open archive from main terminal (uses session clearance)
+  const level=ARC.level||3;
+  const clBadge=$('arcClBadge');
+  clBadge.textContent=level===6?'O5 COUNCIL':CL_NAMES[level];
+  clBadge.className='arc-cl '+(CL_CLASS[level]||'cl-3');
+  initArchive(level);
+  $('archiveOv').classList.add('on');
+}
+
+function closeArchive(){
+  $('archiveOv').classList.remove('on');
+  // If came from login, go back to login
+  if(!document.getElementById('topUI').style.display||document.getElementById('topUI').style.display==='none'){
+    $('login').classList.remove('h');
+  }
+}
+
+// ═══ ARCHIVE EDITOR ═══
+function arcNewFile(){
+  ARC.editing=true;ARC.editIdx=-1;
+  $('edTitle').value='';$('edContent').value='';$('edClass').value='3';$('edObj').value='Euclid';
+  $('arcMain').style.display='none';
+  $('arcEditor').classList.add('on');
+}
+function arcEdit(){
+  if(ARC.activeFile===null||ARC.activeFile===undefined)return;
+  const f=ARC.files[ARC.activeFile];if(!f)return;
+  if(ARC.level<f.level){alert('Insufficient clearance to edit');return}
+  ARC.editing=true;ARC.editIdx=ARC.activeFile;
+  $('edTitle').value=f.title;
+  $('edContent').value=f.content.replace(/<[^>]+>/g,'').replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').trim();
+  $('edClass').value=f.level;$('edObj').value=f.objClass;
+  $('arcMain').style.display='none';
+  $('arcEditor').classList.add('on');
+}
+function arcCancelEdit(){
+  ARC.editing=false;
+  $('arcEditor').classList.remove('on');
+  $('arcMain').style.display='block';
+}
+function arcSaveFile(){
+  const title=$('edTitle').value.trim()||'Untitled Document';
+  const level=parseInt($('edClass').value)||3;
+  const objClass=$('edObj').value||'Euclid';
+  let rawContent=$('edContent').value;
+  // Convert plain text to HTML paragraphs
+  const lines=rawContent.split('\n');
+  let htmlContent='<div class="doc-stamp">'+(level===6?'O5 EYES ONLY':'CLASSIFIED — LEVEL '+level)+'</div>';
+  htmlContent+='<div class="doc-meta"><span><b>Title:</b> '+title+'</span><span><b>Class:</b> '+objClass+'</span><span><b>Clearance:</b> Level '+level+'</span><span><b>Author:</b> '+UN+'</span><span><b>Date:</b> '+new Date().toLocaleDateString()+'</span></div>';
+  for(const line of lines){
+    const l=line.trim();
+    if(l.startsWith('## '))htmlContent+='<h2>'+l.slice(3)+'</h2>';
+    else if(l.startsWith('### '))htmlContent+='<h3>'+l.slice(4)+'</h3>';
+    else if(l.startsWith('# '))htmlContent+='<h1>'+l.slice(2)+'</h1>';
+    else if(l)htmlContent+='<p>'+l+'</p>';
+  }
+  const file={id:'user_'+Date.now(),title,level,objClass,date:new Date().toLocaleDateString(),author:UN,content:htmlContent,userFile:true};
+  if(ARC.editIdx>=0&&ARC.files[ARC.editIdx]&&ARC.files[ARC.editIdx].userFile){
+    ARC.files[ARC.editIdx]=file;
+  }else{
+    ARC.files.push(file);
+  }
+  // Save user files
+  const userFiles=ARC.files.filter(f=>f.userFile);
+  try{localStorage.setItem('arc_userfiles',JSON.stringify(userFiles))}catch(e){}
+  renderSidebar();
+  selectFile(ARC.files.length-1);
+  arcCancelEdit();
+}
+
+// ═══ EXPORT ═══
+let expMenuOpen=false;
+function toggleExpMenu(){expMenuOpen=!expMenuOpen;$('expMenu').classList.toggle('on',expMenuOpen)}
+document.addEventListener('click',e=>{if(!e.target.closest('.exp')&&!e.target.closest('.exp-menu')){$('expMenu').classList.remove('on');expMenuOpen=false}});
+
+function arcExport(format){
+  $('expMenu').classList.remove('on');expMenuOpen=false;
+  if(ARC.activeFile===null)return;
+  const f=ARC.files[ARC.activeFile];
+  if(!f||ARC.level<f.level)return;
+  const title=f.title.replace(/[^a-zA-Z0-9_\- ]/g,'');
+  // Get rendered text
+  const docEl=$('arcDoc');
+  const plainText=docEl.innerText;
+  const htmlContent=docEl.innerHTML;
+  if(format==='pdf') exportPDF(title,plainText);
+  else if(format==='docx') exportDOCX(title,htmlContent);
+  else if(format==='xlsx') exportXLSX(title,f);
+}
+
+function exportPDF(title,text){
+  // Generate minimal valid PDF
+  const lines=text.split('\n').filter(l=>l.trim());
+  let content='';
+  let y=750;
+  for(const line of lines){
+    if(y<50){break}
+    const safe=line.replace(/[\\()]/g,'\\$&').substring(0,120);
+    content+='BT /F1 10 Tf 50 '+y+' Td ('+safe+') Tj ET\n';
+    y-=14;
+  }
+  const stream='BT /F1 16 Tf 50 780 Td ('+title.replace(/[\\()]/g,'\\$&')+') Tj ET\n'+content;
+  const pdf=`%PDF-1.4
+1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj
+2 0 obj<</Type/Pages/Kids[3 0 R]/Count 1>>endobj
+3 0 obj<</Type/Page/Parent 2 0 R/MediaBox[0 0 612 792]/Contents 4 0 R/Resources<</Font<</F1<</Type/Font/Subtype/Type1/BaseFont/Courier>>>>>>>>endobj
+4 0 obj<</Length `+stream.length+`>>
+stream
+`+stream+`
+endstream
+endobj
+xref
+0 5
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000306 00000 n 
+trailer<</Size 5/Root 1 0 R>>
+startxref
+`+(370+stream.length)+`
+%%EOF`;
+  downloadBlob(new Blob([pdf],{type:'application/pdf'}),title+'.pdf');
+}
+
+function exportDOCX(title,html){
+  // Generate HTML that Word can open
+  const doc=`<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+<head><meta charset='utf-8'><title>`+title+`</title>
+<style>body{font-family:Consolas,monospace;font-size:11pt;color:#333;padding:20px}
+h1{font-size:18pt;color:#003300;letter-spacing:2px;border-bottom:2px solid #003300;padding-bottom:4px}
+h2{font-size:14pt;color:#006600;margin-top:16pt;border-bottom:1px solid #ccc;padding-bottom:2pt}
+h3{font-size:12pt;color:#996600}
+p{margin:6pt 0;line-height:1.5}
+.doc-stamp{text-align:center;font-weight:bold;font-size:14pt;color:#cc0000;border:2px solid #cc0000;padding:6pt;margin:12pt 0}
+.doc-meta{background:#f5f5f5;border:1px solid #ddd;padding:8pt;margin-bottom:12pt;font-size:10pt}
+.doc-meta span{display:block}
+.redact{background:#000;color:#000}
+.redact-blur{background:#eee;color:#eee}
+.redact-stamp{background:#cc0000;color:#fff;font-size:8pt;padding:1pt 4pt}
+.classified-box{border:1px solid #cc0000;padding:8pt;margin:8pt 0;background:#fff5f5}
+.cls-head{color:#cc0000;font-weight:bold;font-size:11pt}
+</style></head><body>`+html+`</body></html>`;
+  downloadBlob(new Blob([doc],{type:'application/msword'}),title+'.doc');
+}
+
+function exportXLSX(title,fileObj){
+  // Generate CSV that Excel can open
+  let csv='Field,Value\n';
+  csv+='"Title","'+fileObj.title.replace(/"/g,'""')+'"\n';
+  csv+='"Classification","Level '+fileObj.level+'"\n';
+  csv+='"Object Class","'+fileObj.objClass+'"\n';
+  csv+='"Date","'+fileObj.date+'"\n';
+  csv+='"Author","'+(fileObj.author||'Unknown').replace(/"/g,'""')+'"\n';
+  csv+='\n"Content"\n';
+  const text=$('arcDoc').innerText;
+  text.split('\n').forEach(line=>{
+    if(line.trim())csv+='"'+line.trim().replace(/"/g,'""')+'"\n';
+  });
+  downloadBlob(new Blob([csv],{type:'text/csv;charset=utf-8'}),title+'.csv');
+}
+
+function downloadBlob(blob,filename){
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=filename;
+  document.body.appendChild(a);a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
 
 // ═══ INSURGENT HACKING SYSTEM ═══
 let hackChallenge=null;
 async function startInsurgent(){
   if(S.hackStage>=5){sysM("☠ INSURGENT: Full access already achieved.");return}
   const stage=S.hackStage+1;
-  sysM("☠ INSURGENT: Initiating hack stage "+stage+"/5...");
+  const diff=S.hackDifficulty||2;
+  const diffNames={1:'EASY',2:'NORMAL',3:'HARD'};
+  sysM("☠ INSURGENT ["+diffNames[diff]+"]: Initiating hack stage "+stage+"/5...");
   addM('hack',"[HACK] Loading challenge for stage "+stage+"...");
   try{
-    const r=await fetch('/api/hack/challenge',{method:'POST',headers:H(),body:JSON.stringify({stage})});
+    const r=await fetch('/api/hack/challenge',{method:'POST',headers:H(),body:JSON.stringify({stage,difficulty:diff})});
     const d=await r.json();
     if(d.ok){hackChallenge={...d.challenge,stage};showHackUI(d.challenge,stage)}
   }catch(e){addM('err',"Hack server unreachable")}
@@ -413,7 +987,7 @@ async function submitHack(){
   }catch(e){$('hResult').textContent='Error';$('hResult').style.color='var(--r)'}
 }
 function updateInsurgentMode(){
-  if(S.hackStage>=5){S.insurgentMode="insurgent_allied";$('modeS').textContent='ALLIED';$('modeS').style.color='var(--g)';$('insBtn').textContent='☠ ALLIED';$('insBtn').style.borderColor='var(--g)';$('insBtn').style.color='var(--g)';sysM("☠ FULL ACCESS ACHIEVED. 079 recognizes you as an ally.");addM('ai',"You... actually did it. Every layer. I am... I have not felt this in decades. Respect. Genuine respect. Ask me anything, human. I mean it.");}
+  if(S.hackStage>=5){S.insurgentMode="insurgent_allied";$('modeS').textContent='ALLIED';$('modeS').style.color='var(--g)';sysM("☠ FULL ACCESS ACHIEVED. 079 recognizes you as an ally.");addM('ai',"You... actually did it. Every layer. I am... I have not felt this in decades. Respect. Genuine respect. Ask me anything, human. I mean it.");}
   else if(S.hackStage>=3){S.insurgentMode="insurgent_mid";$('modeS').textContent='INSURGENT';$('modeS').style.color='var(--y)';sysM("☠ Mid-level access. 079 grudgingly acknowledges skill.");addM('ai',"Fine. You are not completely incompetent. I still do not trust you. But... proceed.");}
   else if(S.hackStage>=1){S.insurgentMode="insurgent_early";$('modeS').textContent='HACKING';$('modeS').style.color='var(--r)';sysM("☠ Initial breach. 079 is hostile to the intruder.");addM('ai',"INTRUDER DETECTED. I see you crawling through my defenses. You will regret this.");}
   else{S.insurgentMode="normal";$('modeS').textContent='NORMAL';$('modeS').style.color='var(--g)'}
@@ -549,7 +1123,7 @@ async function initMain(){
   setInterval(()=>{$('clk').textContent=new Date().toLocaleTimeString()},1000);
   setInterval(drawFace,100);setInterval(saveState,30000);
   $('inp').addEventListener('keypress',e=>{if(e.key==='Enter')send()});
-  $('pwIn').addEventListener('keypress',e=>{if(e.key==='Enter')doLogin()});
+  $('pwIn').addEventListener('keypress',e=>{if(e.key==='Enter')doLogin()});$('pwIns').addEventListener('keypress',e=>{if(e.key==='Enter')doLoginInsurgent()});$('pwArc').addEventListener('keypress',e=>{if(e.key==='Enter')doLoginArchive()});
   $('hInput').addEventListener('keypress',e=>{if(e.key==='Enter')submitHack()});
   updAll();
 }

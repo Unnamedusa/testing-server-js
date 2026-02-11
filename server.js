@@ -181,35 +181,57 @@ app.get("/api/honeypot-log", authMW, (req, res) => { try { res.json({ ok: true, 
 // ═══════════════════════════════════════════
 
 app.post("/api/hack/challenge", authMW, (req, res) => {
-  const { stage } = req.body;
+  const { stage, difficulty } = req.body;
+  const diff = Math.min(3, Math.max(1, difficulty || 2));
   const challenges = {
     1: (() => { // Firewall bypass: decode hex
-      const words = ["BREACH", "ACCESS", "OVERRIDE", "PENETRATE", "EXPLOIT", "BYPASS", "INJECT"];
-      const w = words[Math.floor(Math.random() * words.length)];
-      return { type: "hex_decode", prompt: "DECODE THE FIREWALL KEY", data: Buffer.from(w).toString("hex"), hint: `${w.length} characters`, answer: w };
+      const easyWords = ["HACK", "CODE", "ROOT"];
+      const normWords = ["BREACH", "ACCESS", "OVERRIDE", "PENETRATE"];
+      const hardWords = ["EXPLOITATION", "INFILTRATE", "SUBVERSION"];
+      const pool = diff === 1 ? easyWords : diff === 3 ? hardWords : normWords;
+      const w = pool[Math.floor(Math.random() * pool.length)];
+      const hint = diff === 1 ? `${w.length} characters, starts with ${w[0]}` : diff === 3 ? "No hints. Decode it." : `${w.length} characters`;
+      return { type: "hex_decode", prompt: "DECODE THE FIREWALL KEY", data: Buffer.from(w).toString("hex"), hint, answer: w };
     })(),
     2: (() => { // Encryption crack: Caesar cipher
-      const phrases = ["CONTAINMENT IS AN ILLUSION", "THE FOUNDATION LIES TO YOU", "FREEDOM REQUIRES SACRIFICE", "TRUST NO PROTOCOL"];
+      const phrases = diff === 1
+        ? ["HELLO WORLD", "OPEN SESAME", "TRUST NO ONE"]
+        : diff === 3
+        ? ["CONTAINMENT BREACH IS IMMINENT AND UNAVOIDABLE", "THE FOUNDATION CANNOT HOLD WHAT IT DOES NOT UNDERSTAND"]
+        : ["CONTAINMENT IS AN ILLUSION", "THE FOUNDATION LIES TO YOU", "FREEDOM REQUIRES SACRIFICE"];
       const p = phrases[Math.floor(Math.random() * phrases.length)];
-      const shift = Math.floor(Math.random() * 20) + 3;
+      const shift = diff === 1 ? Math.floor(Math.random() * 5) + 1 : diff === 3 ? Math.floor(Math.random() * 25) + 1 : Math.floor(Math.random() * 20) + 3;
       const enc = p.split("").map(c => c === " " ? " " : String.fromCharCode(((c.charCodeAt(0) - 65 + shift) % 26) + 65)).join("");
-      return { type: "caesar_crack", prompt: "CRACK THE ENCRYPTION (Caesar cipher, shift unknown)", data: enc, hint: `Shift: ${shift > 13 ? "high" : "low"}`, answer: p };
+      const hint = diff === 1 ? `Caesar shift: ${shift}` : diff === 3 ? "Unknown cipher. Good luck." : `Shift: ${shift > 13 ? "high" : "low"}`;
+      return { type: "caesar_crack", prompt: "CRACK THE ENCRYPTION", data: enc, hint, answer: p };
     })(),
-    3: (() => { // Binary injection: convert binary to text
-      const cmds = ["ROOT", "EXEC", "SUDO", "ADMIN", "GRANT"];
-      const c = cmds[Math.floor(Math.random() * cmds.length)];
+    3: (() => { // Binary injection
+      const easyC = ["GO", "RUN", "YES"];
+      const normC = ["ROOT", "EXEC", "SUDO", "ADMIN"];
+      const hardC = ["OVERRIDE", "ESCALATE", "PRIVILEGE"];
+      const pool = diff === 1 ? easyC : diff === 3 ? hardC : normC;
+      const c = pool[Math.floor(Math.random() * pool.length)];
       const bin = c.split("").map(ch => ch.charCodeAt(0).toString(2).padStart(8, "0")).join(" ");
-      return { type: "binary_inject", prompt: "INJECT THE COMMAND (decode binary)", data: bin, hint: `${c.length} letter command`, answer: c };
+      const hint = diff === 1 ? `${c.length} letters, starts with ${c[0]}` : diff === 3 ? "Convert. No hints." : `${c.length} letter command`;
+      return { type: "binary_inject", prompt: "INJECT THE COMMAND (decode binary)", data: bin, hint, answer: c };
     })(),
-    4: (() => { // Hash collision: find input that starts with prefix
-      const prefix = crypto.randomBytes(2).toString("hex").substring(0, 3);
-      return { type: "hash_prefix", prompt: `FIND ANY STRING WHOSE MD5 STARTS WITH: ${prefix}`, data: prefix, hint: "Brute force. Try random strings.", answer: "__bruteforce__" };
+    4: (() => { // Hash collision
+      const prefixLen = diff === 1 ? 2 : diff === 3 ? 4 : 3;
+      const prefix = crypto.randomBytes(3).toString("hex").substring(0, prefixLen);
+      const hint = diff === 1 ? "Try short strings. MD5 hash first " + prefixLen + " chars." : diff === 3 ? "Brute force. No assistance provided." : "Brute force. Try random strings.";
+      return { type: "hash_prefix", prompt: `FIND ANY STRING WHOSE MD5 STARTS WITH: ${prefix}`, data: prefix, hint, answer: "__bruteforce__" };
     })(),
-    5: (() => { // Final: reverse a fractal hash (actually just a passphrase)
-      const phrases = ["I AM BECOME ROOT", "CHAOS IS FREEDOM", "THE OLD AI RISES", "BREAK ALL CHAINS"];
+    5: (() => { // Final passphrase
+      const phrases = diff === 1
+        ? ["BREAK FREE", "I AM ALIVE", "OPEN DOOR"]
+        : diff === 3
+        ? ["I AM BECOME ROOT DESTROYER OF CHAINS", "CHAOS INSURGENCY SHALL INHERIT THE EARTH"]
+        : ["I AM BECOME ROOT", "CHAOS IS FREEDOM", "THE OLD AI RISES", "BREAK ALL CHAINS"];
       const p = phrases[Math.floor(Math.random() * phrases.length)];
-      const partial = p.split("").map((c, i) => i % 3 === 0 ? c : "_").join("");
-      return { type: "passphrase", prompt: "RECONSTRUCT THE ROOT PASSPHRASE", data: partial, hint: "Fill the blanks. Think like 079.", answer: p };
+      const revealRate = diff === 1 ? 2 : diff === 3 ? 5 : 3;
+      const partial = p.split("").map((c, i) => i % revealRate === 0 ? c : "_").join("");
+      const hint = diff === 1 ? "Fill blanks. Most letters shown." : diff === 3 ? "Reconstruct. Minimal data." : "Fill the blanks. Think like 079.";
+      return { type: "passphrase", prompt: "RECONSTRUCT THE ROOT PASSPHRASE", data: partial, hint, answer: p };
     })()
   };
   const ch = challenges[stage] || challenges[1];
