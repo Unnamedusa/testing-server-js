@@ -119,14 +119,21 @@ app.post("/api/auth", (req, res) => {
   const guest = req.body.guest === true;
   const guestClass = req.body.guestClass || "D";
   
-  // Guest access for Class-D / Class-E — no password needed
+  // Guest access for Class-D / Class-E / Keycard
   if (guest) {
     const sid = "sess-" + crypto.randomBytes(16).toString("hex");
     const sess = loadJ(SESSIONS_FILE);
-    const user = guestClass === "E" ? "CLASS-E" : "D-" + Math.floor(Math.random()*9000+1000);
-    sess[sid] = { user, created: Date.now(), expires: Date.now() + 86400000, clearance: guestClass === "E" ? "CLASS-E" : "CLASS-D" };
+    let user, clearance;
+    if (guestClass === "KC") {
+      const kl = req.body.kcLevel || 3;
+      const clNames = {1:"LEVEL-1",2:"LEVEL-2",3:"LEVEL-3",4:"LEVEL-4",5:"LEVEL-5",6:"O5-COUNCIL"};
+      user = "AGENT-" + Math.floor(Math.random()*9000+1000);
+      clearance = clNames[kl] || "LEVEL-3";
+    } else if (guestClass === "E") { user = "CLASS-E"; clearance = "CLASS-E"; }
+    else { user = "D-" + Math.floor(Math.random()*9000+1000); clearance = "CLASS-D"; }
+    sess[sid] = { user, created: Date.now(), expires: Date.now() + 86400000, clearance };
     saveJ(SESSIONS_FILE, sess);
-    return res.json({ ok: true, sid, user, clearance: guestClass === "E" ? "CLASS-E" : "CLASS-D", quantum: qState() });
+    return res.json({ ok: true, sid, user, clearance, quantum: qState() });
   }
   
   if (!input) return res.status(400).json({ ok: false, error: "Credentials required" });
