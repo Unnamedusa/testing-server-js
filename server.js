@@ -302,19 +302,7 @@ app.post("/api/auth/logout", (req, res) => {
   res.json({ ok: true });
 });
 
-// Password change — ONLY from localhost (used by admin-panel.bat)
-app.post("/api/internal/change-password", (req, res) => {
-  const ip = req.ip || req.connection?.remoteAddress || "";
-  const isLocal = ip === "127.0.0.1" || ip === "::1" || ip === "::ffff:127.0.0.1";
-  if (!isLocal) { hp(req, "PW_CHANGE_REMOTE"); return res.status(403).json({ ok: false, error: "LOCAL ONLY" }); }
-  const { newPassword } = req.body;
-  if (!newPassword || newPassword.length < 4) return res.status(400).json({ ok: false, error: "Password too short (min 4)" });
-  saveJ(PASSWORD_FILE, { hash: fractalHash(newPassword, 5), set: new Date().toISOString() });
-  // Kill all sessions so everyone must re-auth
-  saveJ(SESSIONS_FILE, {});
-  console.log("✓ PASSWORD CHANGED at " + new Date().toISOString());
-  res.json({ ok: true, message: "Password changed. All sessions invalidated." });
-});
+// Password change is handled by admin-panel.bat (edits files directly, no server needed)
 
 function authMW(req, res, next) {
   const sid = req.headers["x-session"];
