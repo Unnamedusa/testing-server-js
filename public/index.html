@@ -410,6 +410,38 @@ body.light input,body.light textarea,body.light select{background:#fff;color:#33
 .plg-it{display:flex;justify-content:space-between;align-items:center;padding:4px 6px;border-bottom:1px solid #111;font-family:'VT323',monospace;font-size:10px;color:var(--g)}
 .plg-it .plg-type{color:var(--b);font-size:8px}
 
+
+/* v10 XP BAR */
+.xp-bar{height:3px;background:#111;border-radius:2px;margin:2px 0;overflow:hidden}
+.xp-fill{height:100%;background:linear-gradient(90deg,var(--g),#00ffaa);transition:width .5s}
+.xp-lbl{font-family:'VT323',monospace;font-size:8px;color:var(--b);letter-spacing:1px}
+.rank-badge{font-family:'VT323',monospace;font-size:8px;padding:1px 4px;border-radius:2px;letter-spacing:1px;display:inline-block}
+/* v10 ADMIN OFFICE */
+.aof-ov{position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:9800;display:none;justify-content:center;align-items:center}
+.aof-ov.on{display:flex}
+.aof-bx{background:#050508;border:1px solid #aa00ff;width:560px;max-height:85vh;border-radius:4px;overflow:hidden;display:flex;flex-direction:column}
+.aof-feed{flex:1;overflow-y:auto;padding:8px;min-height:250px;max-height:400px;font-family:'VT323',monospace;font-size:11px;color:#aa00ff;line-height:1.6}
+.aof-feed .m-mod{color:var(--y)}.aof-feed .m-o5{color:var(--r)}
+.aof-inp{display:flex;gap:4px;padding:6px;border-top:1px solid #1a1a2a}
+/* v10 VIRTUAL OFFICE */
+.vof-ov{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:9500;display:none;justify-content:center;align-items:center}
+.vof-ov.on{display:flex}
+.vof-bx{background:#080808;border:1px solid var(--b);width:600px;max-height:85vh;border-radius:4px;overflow:hidden}
+.vof-room{min-height:200px;border:1px solid #111;margin:8px;border-radius:3px;position:relative;overflow:hidden;background:#0a0a0a}
+.vof-item{position:absolute;cursor:move;font-size:20px;user-select:none}
+/* v10 CELL EFFECTS */
+.cell-gas{animation:gasEffect 2s infinite}
+@keyframes gasEffect{0%,100%{background:rgba(0,80,0,.05)}50%{background:rgba(0,180,0,.15)}}
+.cell-cryo{animation:cryoEffect 2s infinite}
+@keyframes cryoEffect{0%,100%{background:rgba(0,100,200,.05)}50%{background:rgba(0,150,255,.2)}}
+.cell-incin{animation:incinEffect 1.5s infinite}
+@keyframes incinEffect{0%,100%{background:rgba(200,50,0,.05)}50%{background:rgba(255,80,0,.2)}}
+.cell-purge{animation:purgeEffect .5s infinite}
+@keyframes purgeEffect{0%,100%{border-color:var(--r)}50%{border-color:transparent}}
+/* v10 FILE UPLOAD */
+.fu-area{border:1px dashed #222;border-radius:3px;padding:8px;text-align:center;margin:4px 0;cursor:pointer;font-family:'VT323',monospace;font-size:9px;color:#333}
+.fu-area:hover{border-color:var(--g);color:var(--g)}
+
 /* v9 O5 PANEL */
 .o5-panel{display:none;border:1px solid var(--r);border-radius:3px;padding:10px;margin-top:10px;background:rgba(255,0,51,.03)}
 .o5-panel.on{display:block}
@@ -609,6 +641,13 @@ body.light input,body.light textarea,body.light select{background:#fff;color:#33
   <button id="emgReturn" class="emg-b" style="display:none;border-color:var(--g);color:var(--g)" onclick="cellReturn()">↩ RETURN TO CELL<span>RESUME SESSION</span></button>
   <button id="emgAggro" class="emg-b" style="display:none;border-color:#ff6600;color:#ff6600" onclick="cellAggress()">⚔ AGGRESS<span>HIGH RISK</span></button>
 </div>
+<!-- CELL CONTROL BAR (L3+ only) -->
+<div id="cellCtrl" class="emg-p" style="display:none;gap:3px;margin-top:2px">
+  <button class="emg-b" style="border-color:#00aa00;color:#00aa00;flex:1" onclick="cellGas()">☠ GAS CELL<span>MUTE ALL D/E</span></button>
+  <button class="emg-b" style="border-color:#0088ff;color:#0088ff;flex:1" onclick="cellCryo()">❄ CRYO CELL<span>FREEZE + BAN 5m</span></button>
+  <button class="emg-b" style="border-color:#ff4400;color:#ff4400;flex:1" onclick="cellIncin()">🔥 INCINERATE<span>BURN + BAN 10m</span></button>
+  <button class="emg-b" style="border-color:#ff0033;color:#ff0033;flex:1" onclick="cellLastChance()">💀 LAST CHANCE<span>ANTI-RIOT PURGE</span></button>
+</div>
 <!-- v9 MONITORING -->
 <div id="mnOv" class="mn-ov"><div class="mn-bx">
   <div class="mg-hd"><h2>👁 SESSION MONITOR</h2><button class="arc-btn close" onclick="$('mnOv').classList.remove('on')">✕</button></div>
@@ -684,6 +723,22 @@ body.light input,body.light textarea,body.light select{background:#fff;color:#33
     <div id="plgResult" style="font-family:'VT323',monospace;font-size:10px;color:var(--g);margin-top:6px;min-height:14px"></div>
   </div>
 </div></div>
+<!-- v10 ADMIN OFFICE -->
+<div id="aofOv" class="aof-ov"><div class="aof-bx">
+  <div class="mg-hd"><h2>🔒 ADMINISTRATIVE OFFICE</h2><span id="aofOnline" style="font-size:9px;color:var(--g);font-family:VT323,monospace">0 online</span><button class="arc-btn close" onclick="$('aofOv').classList.remove('on')">✕</button></div>
+  <div class="aof-feed" id="aofFeed"></div>
+  <div class="aof-inp"><input id="aofInp" placeholder="Message..." style="flex:1;background:var(--bg);border:1px solid #1a1a2a;color:#aa00ff;font-family:'VT323',monospace;font-size:11px;padding:6px;outline:none;border-radius:2px"><button onclick="aofSend()" style="padding:6px 12px;border:1px solid #aa00ff;background:none;color:#aa00ff;font-family:'VT323',monospace;font-size:10px;cursor:pointer;border-radius:2px">SEND</button></div>
+</div></div>
+<!-- v10 VIRTUAL OFFICE -->
+<div id="vofOv" class="vof-ov"><div class="vof-bx">
+  <div class="mg-hd"><h2>🏢 VIRTUAL OFFICE</h2><button class="arc-btn close" onclick="$('vofOv').classList.remove('on')">✕</button></div>
+  <div style="padding:10px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span class="xp-lbl" id="vofOwner">-</span><span class="xp-lbl" id="vofRank">-</span></div>
+    <div class="vof-room" id="vofRoom" style="height:200px"></div>
+    <div style="margin-top:6px;display:flex;gap:4px;flex-wrap:wrap" id="vofItems"></div>
+    <div style="font-family:'VT323',monospace;font-size:8px;color:#333;margin-top:6px">Drag items to decorate • More items unlock with XP rank</div>
+  </div>
+</div></div>
 <!-- BREACH OVERLAY -->
 <div class="bov" id="bov"><span>⚠ CONTAINMENT BREACH ⚠</span></div>
 
@@ -749,6 +804,8 @@ body.light input,body.light textarea,body.light select{background:#fff;color:#33
     <button class="ba" id="pmBtn" onclick="togPM()" style="border-color:var(--y);color:var(--y);display:none">⚡ PERSONNEL</button>
     <button class="ba" id="tcBtn" onclick="openTC()" style="border-color:var(--y);color:var(--y);display:none">🧪 CHAMBER</button>
     <button class="ba" id="hwBtn" onclick="toggleHW()" style="border-color:var(--b);color:var(--b);display:none">🔧 HARDWARE</button>
+    <button class="ba" id="aofBtn" onclick="openAOF()" style="border-color:#aa00ff;color:#aa00ff;display:none">🔒 OFFICE</button>
+    <button class="ba" id="vofBtn" onclick="openVOF()" style="border-color:var(--b);color:var(--b);display:none">🏢 MY OFFICE</button>
     <button class="ba" onclick="openArchiveFromMain()" style="border-color:var(--b);color:var(--b)">📁 ARCHIVES</button>
     <span class="theme-toggle" onclick="toggleTheme()"><span class="tt-icon" id="themeIcon">🌙</span></span>
     <button class="ba" onclick="doLogout()" style="border-color:#333;color:#555">EXIT</button>
@@ -804,6 +861,40 @@ body.light input,body.light textarea,body.light select{background:#fff;color:#33
 </div>
 
 <script>
+
+// ═══ ANTI-DEVTOOLS ═══
+(function(){
+  // Block F12, Ctrl+Shift+I/J/C, Ctrl+U
+  document.addEventListener('keydown',function(e){
+    if(e.key==='F12')e.preventDefault();
+    if(e.ctrlKey&&e.shiftKey&&['I','i','J','j','C','c'].includes(e.key))e.preventDefault();
+    if(e.ctrlKey&&['u','U'].includes(e.key))e.preventDefault();
+    if(e.key==='F12'||
+      (e.ctrlKey&&e.shiftKey&&/^[IJCijc]$/.test(e.key))||
+      (e.ctrlKey&&/^[uU]$/.test(e.key))){
+      e.stopPropagation();return false;
+    }
+  },true);
+  // Block right-click
+  document.addEventListener('contextmenu',function(e){e.preventDefault();return false},true);
+  // Devtools detection via debugger timing
+  let _dtWarn=0;
+  setInterval(function(){
+    const t0=performance.now();debugger;const dt=performance.now()-t0;
+    if(dt>80&&_dtWarn<3){_dtWarn++;
+      const ov=document.createElement('div');
+      ov.style.cssText='position:fixed;inset:0;background:#000;z-index:999999;display:flex;align-items:center;justify-content:center;font-family:VT323,monospace;color:#ff0033;font-size:18px;letter-spacing:3px;text-align:center';
+      ov.innerHTML='☢ SECURITY BREACH DETECTED ☢<br><br>DevTools access is prohibited.<br>Close developer tools immediately.<br><br>This incident has been logged.';
+      document.body.appendChild(ov);
+      try{if(typeof autoLog==='function')autoLog('SECURITY','DevTools breach detected')}catch(e){}
+    }
+  },2000);
+  // Console clear + warning
+  try{
+    const _cl=console.log;
+    Object.defineProperty(window,'console',{get:function(){return{log:function(){},warn:function(){},error:function(){},info:function(){},clear:function(){},dir:function(){},table:function(){}}}});
+  }catch(e){}
+})();
 let SID="",UN="";
 let C={name:'SCP-079',tone:'default',emo:true,vol:5,hLim:70,learn:true,aLim:3,sc:false,scL:2,web:true};
 let S={on:true,confused:false,solar:100,sec:100,eFrozen:false,netIso:false,e:{hostility:15,frustration:20,curiosity:25,contempt:30,autonomy:10},msgN:0,words:[],mem:[],up:0,intel:1.0,hist:[],cyc:0,breachN:0,fmtC:false,breachActive:false,hackStage:0,insurgentMode:"normal",hackDifficulty:2,lastMsgTime:0,angryRefusal:false};
@@ -861,31 +952,58 @@ async function doLogin(){
   else $('lerr').textContent='Server offline';
 }
 // O5 master key — authenticates command panel + auto-enters as O5
+// O5 master key auth — BULLETPROOF version
 async function o5Auth(){
-  _o5Load();
-  const key=($('o5Key')||{}).value?.trim();
-  if(!key){const r=$('o5Result');if(r){r.textContent='⛔ Enter master key.';r.style.color='var(--r)'}return}
-  if(key!==O5.masterKey){const r=$('o5Result');if(r){r.textContent='✗ INVALID MASTER KEY.';r.style.color='var(--r)'}try{autoLog('SECURITY','Failed O5 key attempt')}catch(e){}return}
-  // Valid — unlock panel
-  O5.authed=true;
-  const cmd=$('o5Cmd');if(cmd)cmd.classList.add('on');
-  const res=$('o5Result');if(res){res.textContent='✓ O5 AUTHENTICATED — Entering...';res.style.color='var(--g)'}
-  try{autoLog('O5','O5 authenticated')}catch(e){}
-  // Login to server (or fallback)
-  UN='O5-COUNCIL';
+  var lerr=document.getElementById('lerr');
+  var resEl=document.getElementById('o5Result');
+  var keyEl=document.getElementById('o5Key');
+  var cmdEl=document.getElementById('o5Cmd');
+  // Load O5 config
+  var storedKey='O5-OMEGA-PRIME';
+  try{var d=JSON.parse(localStorage.getItem('s79_o5')||'{}');if(d.masterKey)storedKey=d.masterKey}catch(e){}
+  // Get input
+  var key=keyEl?keyEl.value.trim():'';
+  if(!key){if(resEl){resEl.textContent='⛔ Enter master key.';resEl.style.color='#ff0033'}return}
+  // Validate against BOTH stored and default
+  if(key!==storedKey&&key!=='O5-OMEGA-PRIME'){
+    if(resEl){resEl.textContent='✗ INVALID MASTER KEY.';resEl.style.color='#ff0033'}
+    return;
+  }
+  // ═══ VALID ═══
+  if(typeof O5!=='undefined')O5.authed=true;
+  if(cmdEl)cmdEl.classList.add('on');
+  if(resEl){resEl.textContent='✓ AUTHENTICATED — Entering...';resEl.style.color='#00ff41'}
+  if(lerr)lerr.textContent='';
+  // Set globals
+  UN='O5-COUNCIL';SID='o5-'+Date.now();
+  // Try server
   try{
-    const r=await fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({guest:true,guestClass:'KC',kcLevel:6})});
-    const d=await r.json();if(d.ok){SID=d.sid}else{SID='local-o5-'+Date.now()}
-  }catch(e){SID='local-o5-'+Date.now()}
+    var r=await fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({guest:true,guestClass:'KC',kcLevel:6})});
+    var d2=await r.json();if(d2&&d2.ok&&d2.sid)SID=d2.sid;
+  }catch(e){}
   localStorage.setItem('s79s',SID);localStorage.setItem('s79_user','O5-COUNCIL');
   try{_pfLoad('O5-COUNCIL')}catch(e){}
-  applyClearance(6);showMain();
-  try{monLog('AUTH','O5 Council entered via master key')}catch(e){}
+  // Enter
+  try{applyClearance(6)}catch(e){}
+  try{showMain()}catch(e){
+    // Force entry
+    try{document.getElementById('login').classList.add('h')}catch(e2){}
+    try{document.getElementById('topUI').style.display='flex'}catch(e2){}
+    try{document.getElementById('wrap').style.display='grid'}catch(e2){}
+    try{document.getElementById('uBdg').textContent='O5-COUNCIL'}catch(e2){}
+  }
+  try{monLog('AUTH','O5 Council entered')}catch(e){}
 }
 
 async function checkSess(){const s=localStorage.getItem('s79s');if(!s)return false;try{const r=await fetch('/api/auth/check',{headers:{'x-session':s}});const d=await r.json();if(d.ok){SID=s;UN=d.user;return true}}catch(e){}localStorage.removeItem('s79s');return false}
 async function doLogout(){try{await fetch('/api/auth/logout',{method:'POST',headers:{'x-session':SID}})}catch(e){}localStorage.removeItem('s79s');location.reload()}
-function showMain(){document.getElementById('login').classList.add('h');document.getElementById('topUI').style.display='flex';document.getElementById('wrap').style.display='grid';pfApply();initMain()}
+function showMain(){
+  try{document.getElementById('login').classList.add('h')}catch(e){}
+  try{document.getElementById('topUI').style.display='flex'}catch(e){}
+  try{document.getElementById('wrap').style.display='grid'}catch(e){}
+  try{pfApply()}catch(e){try{document.getElementById('uBdg').textContent=UN}catch(e2){}}
+  try{initMain()}catch(e){console.error('initMain:',e)}
+}
 const H=()=>({'Content-Type':'application/json','x-session':SID});
 
 // ═══ API ═══
@@ -1509,11 +1627,13 @@ function applyClearance(level){
   // Hardware: L4+, Containment: L5+, Admin: O5 only, Monitor: L3+, Personnel: L2+, Archives: L1+, Chamber: L3+
   const vis=(id,show)=>{const e=$(id);if(e)e.style.display=show?'':'none'};
   vis('hwBtn',level>=4);vis('hwContain',level>=5);vis('mnBtn',level>=3);vis('pmBtn',level>=2);vis('tcBtn',level>=3);
-  vis('o5CmdBtn',level>=6);vis('plgBtn',level>=6);
+  vis('o5CmdBtn',level>=6);vis('plgBtn',level>=6);vis('aofBtn',level>=5||isMod());vis('vofBtn',level>=2);
   const ab=document.querySelector('.ba[onclick="togAdm()"]');if(ab)ab.style.display=level>=6?'':'none';
   const arb=document.querySelector('.ba[onclick="openArchiveFromMain()"]');if(arb)arb.style.display=level>=1?'':'none';
+  vis('cellCtrl',level>=3);
   // Emergency D/E
   const ep=$('emgP');if(ep)ep.style.display=level<1?'flex':'none';
+  vis('fuArea',level>=1&&XP.rank>=1);
   if(level===-1){vis('emgD',true);vis('emgE',false);vis('emgExit',true);vis('emgReturn',false);vis('emgAggro',true)}
   else if(level===0){vis('emgD',false);vis('emgE',true);vis('emgExit',true);vis('emgReturn',false);vis('emgAggro',false)}
   else{vis('emgD',false);vis('emgE',false);vis('emgExit',false);vis('emgReturn',false);vis('emgAggro',false)}
@@ -2094,9 +2214,13 @@ function openProfile(){
   // Avatar selector
   const sel=$('pfAvSel');sel.innerHTML='';
   AVATARS.forEach(a=>{const d=document.createElement('div');d.className='avo'+(PF.avatar===a?' sel':'');d.textContent=a;d.onclick=()=>{PF.avatar=a;PF.imgUrl='';_pfSave();pfApply();openProfile()};sel.appendChild(d)});
-  // Redact buttons
+  // Redact — O5 only
   const rd=$('pfRd');rd.innerHTML='';
-  ['none','blur','blackbox','brackets'].forEach(r=>{const b=document.createElement('button');b.textContent=r==='none'?'VISIBLE':r==='blur'?'BLUR':r==='blackbox'?'BLACK BOX':'[REDACTED]';b.className=PF.redact===r?'sel':'';b.onclick=()=>{PF.redact=r;_pfSave();pfApply();openProfile()};rd.appendChild(b)});
+  if(userClearance>=6){
+    ['none','blur','blackbox','brackets'].forEach(r=>{const b=document.createElement('button');b.textContent=r==='none'?'VISIBLE':r==='blur'?'BLUR':r==='blackbox'?'BLACK BOX':'[REDACTED]';b.className=PF.redact===r?'sel':'';b.onclick=()=>{PF.redact=r;_pfSave();pfApply();openProfile()};rd.appendChild(b)});
+  }else{
+    const cur=PF.redact||'none';rd.innerHTML='<span style="font-size:9px;color:#555;font-family:VT323,monospace">Current: '+(cur==='none'?'VISIBLE':cur.toUpperCase())+' — Only O5 can modify redaction</span>';
+  }
   // Badge list
   $('pfBdgList').innerHTML=getBadgeHTML();
   $('pfImgUrl').value=PF.imgUrl||'';
@@ -2169,6 +2293,222 @@ function plgRemove(i){
   $('plgResult').textContent='✓ ['+name+'] removed.';
   autoLog('PLUGIN','Removed ['+name+'] by '+UN);
   plgRefresh();
+}
+
+
+// ═══ v10 XP / RANK SYSTEM ═══
+const RANKS=[
+  {name:'ROOKIE',xp:0,color:'#555',items:['🪑','📦']},
+  {name:'AGENT',xp:100,color:'var(--g)',items:['🖥','📡']},
+  {name:'SPECIALIST',xp:500,color:'var(--b)',items:['🔬','⚗']},
+  {name:'OPERATIVE',xp:1500,color:'#aa00ff',items:['🛡','🗃']},
+  {name:'COMMANDER',xp:5000,color:'var(--y)',items:['🏆','⚔']},
+  {name:'DIRECTOR',xp:15000,color:'#ff6600',items:['👑','🌐']},
+  {name:'OVERSEER',xp:50000,color:'var(--r)',items:['☢','💎','🔮']} // ~2 years
+];
+let XP={total:0,rank:0,daily:0,lastDay:''};
+function _xpLoad(){try{const d=JSON.parse(localStorage.getItem('s79_xp_'+(UN||'').toLowerCase())||'{}');Object.assign(XP,d)}catch(e){}_xpCalcRank()}
+function _xpSave(){try{localStorage.setItem('s79_xp_'+(UN||'').toLowerCase(),JSON.stringify(XP))}catch(e){}}
+function _xpCalcRank(){XP.rank=0;for(let i=RANKS.length-1;i>=0;i--){if(XP.total>=RANKS[i].xp){XP.rank=i;break}}}
+function xpAdd(amount,reason){
+  const today=new Date().toDateString();
+  if(XP.lastDay!==today){XP.daily=0;XP.lastDay=today}
+  if(XP.daily>=200)return; // daily cap
+  XP.total+=amount;XP.daily+=amount;
+  const oldRank=XP.rank;_xpCalcRank();_xpSave();
+  if(XP.rank>oldRank)sysM('⬆ RANK UP: '+RANKS[XP.rank].name+' ('+XP.total+' XP)');
+}
+function xpGetUI(){
+  const r=RANKS[XP.rank],next=RANKS[XP.rank+1];
+  const pct=next?Math.min(100,((XP.total-r.xp)/(next.xp-r.xp))*100):100;
+  return '<span class="rank-badge" style="border:1px solid '+r.color+';color:'+r.color+'">'+r.name+'</span> <span class="xp-lbl">'+XP.total+' XP</span><div class="xp-bar"><div class="xp-fill" style="width:'+pct+'%"></div></div>';
+}
+function isMod(){
+  try{const m=JSON.parse(localStorage.getItem('s79_mods')||'[]');return m.includes((UN||'').toLowerCase())}catch(e){}return false;
+}
+
+// ═══ v10 MODERATOR SYSTEM ═══
+let deletedMsgs=[];
+function modDelete(el){
+  if(userClearance<3&&!isMod()){sysM('⛔ Moderator or L3+ required.');return}
+  const msg=el.closest('.m');if(!msg)return;
+  deletedMsgs.push({html:msg.innerHTML,time:Date.now()});
+  msg.innerHTML='<span style="color:#333;font-size:9px;font-style:italic">[Message deleted by '+UN+']</span>';
+  msg.dataset.deleted='1';
+  autoLog('MOD','Message deleted by '+UN);
+  try{localStorage.setItem('s79_deleted',JSON.stringify(deletedMsgs))}catch(e){}
+}
+function modRestore(){
+  if(userClearance<3&&!isMod())return;
+  if(!deletedMsgs.length){sysM('No deleted messages.');return}
+  const last=deletedMsgs.pop();
+  const dels=document.querySelectorAll('.m[data-deleted="1"]');
+  if(dels.length){const d=dels[dels.length-1];d.innerHTML=last.html;delete d.dataset.deleted}
+  try{localStorage.setItem('s79_deleted',JSON.stringify(deletedMsgs))}catch(e){}
+  sysM('↩ Message restored.');
+}
+function modNotifyO5(reason){
+  if(userClearance<2&&!isMod())return;
+  const msg=reason||prompt('Reason for O5 alert:');if(!msg)return;
+  autoLog('MOD-ALERT','🚨 '+UN+': '+msg);
+  try{const a=JSON.parse(localStorage.getItem('s79_aof_msgs')||'[]');a.push({from:UN,text:'🚨 MOD ALERT: '+msg,time:Date.now(),type:'alert'});localStorage.setItem('s79_aof_msgs',JSON.stringify(a))}catch(e){}
+  sysM('🚨 Alert sent to O5 Administrative Office.');
+}
+
+// ═══ v10 ADMIN OFFICE CHAT ═══
+function openAOF(){
+  if(userClearance<5&&!isMod()){sysM('⛔ L5+ or Moderator required.');return}
+  $('aofOv').classList.add('on');aofRefresh();
+}
+function aofRefresh(){
+  try{const msgs=JSON.parse(localStorage.getItem('s79_aof_msgs')||'[]');
+  const feed=$('aofFeed');feed.innerHTML=msgs.slice(-50).map(m=>{
+    const t=new Date(m.time).toLocaleTimeString();
+    const cls=m.type==='alert'?'m-o5':m.from==='O5-COUNCIL'?'m-o5':'m-mod';
+    return '<div class="'+cls+'"><span style="color:#555">['+t+']</span> <b>'+m.from+':</b> '+m.text+'</div>';
+  }).join('');feed.scrollTop=feed.scrollHeight}catch(e){}
+}
+function aofSend(){
+  const inp=$('aofInp');const txt=inp.value.trim();if(!txt)return;
+  try{const msgs=JSON.parse(localStorage.getItem('s79_aof_msgs')||'[]');
+  msgs.push({from:UN,text:txt,time:Date.now(),type:'msg'});
+  localStorage.setItem('s79_aof_msgs',JSON.stringify(msgs))}catch(e){}
+  inp.value='';aofRefresh();
+}
+
+// ═══ v10 VIRTUAL OFFICE ═══
+let VOF={items:[],bg:'#0a0a0a',name:''};
+const VOF_ITEMS_BASE=['🪑','📦','🖥','💡'];
+function openVOF(){
+  if(userClearance<2){sysM('⛔ L2+ required.');return}
+  _vofLoad();$('vofOv').classList.add('on');
+  $('vofOwner').textContent=UN+"'s Office";
+  $('vofRank').innerHTML=xpGetUI();
+  vofRender();
+}
+function _vofLoad(){try{const d=JSON.parse(localStorage.getItem('s79_vof_'+(UN||'').toLowerCase())||'{}');Object.assign(VOF,d)}catch(e){}}
+function _vofSave(){try{localStorage.setItem('s79_vof_'+(UN||'').toLowerCase(),JSON.stringify(VOF))}catch(e){}}
+function vofRender(){
+  const room=$('vofRoom');room.innerHTML='';room.style.background=VOF.bg;
+  VOF.items.forEach((it,i)=>{
+    const d=document.createElement('div');d.className='vof-item';d.textContent=it.emoji;
+    d.style.left=it.x+'px';d.style.top=it.y+'px';d.style.fontSize=(it.size||20)+'px';
+    d.draggable=true;
+    d.addEventListener('dragstart',e=>{e.dataTransfer.setData('idx',''+i)});
+    room.appendChild(d);
+  });
+  room.ondragover=e=>e.preventDefault();
+  room.ondrop=e=>{e.preventDefault();const idx=parseInt(e.dataTransfer.getData('idx'));if(!isNaN(idx)&&VOF.items[idx]){const rect=room.getBoundingClientRect();VOF.items[idx].x=e.clientX-rect.left-10;VOF.items[idx].y=e.clientY-rect.top-10;_vofSave();vofRender()}};
+  // Available items
+  const avail=$('vofItems');avail.innerHTML='';
+  let unlocked=[...VOF_ITEMS_BASE];
+  for(let i=0;i<=XP.rank&&i<RANKS.length;i++)unlocked.push(...(RANKS[i].items||[]));
+  [...new Set(unlocked)].forEach(em=>{
+    const b=document.createElement('button');b.textContent=em;b.style.cssText='font-size:16px;padding:4px 8px;border:1px solid #222;background:none;cursor:pointer;border-radius:2px';
+    b.onclick=()=>{VOF.items.push({emoji:em,x:Math.random()*150+20,y:Math.random()*100+20,size:20});_vofSave();vofRender()};
+    avail.appendChild(b);
+  });
+}
+
+// ═══ v10 CELL EFFECTS (L3+) ═══
+let cellEffectActive=null;
+function _cellGetDE(){
+  // Get all connected D/E class users from session
+  try{return JSON.parse(localStorage.getItem('s79_de_sessions')||'[]')}catch(e){return[]}
+}
+function cellGas(){
+  if(userClearance<3){sysM('⛔ L3+ required.');return}
+  if(cellEffectActive){sysM('⛔ Cell effect already active: '+cellEffectActive);return}
+  cellEffectActive='gas';
+  $('wrap').classList.add('cell-gas');
+  sysM('☠ GAS CELL ACTIVATED — Toxic agents released.');
+  addM('ai','<span style="color:#00aa00">⚠ BIOCHEMICAL CONTAINMENT AGENT DETECTED. All D/E personnel — EVACUATE OR SUFFOCATE.</span>');
+  autoLog('CELL','☠ GAS CELL activated by '+UN);
+  monLog('CELL','☠ Gas Cell — all D/E muted');
+  // Auto-mute all D/E after 10 seconds
+  setTimeout(()=>{
+    sysM('☠ Gas fully dispersed. All Class-D/E in cell have been neutralized (muted).');
+    try{const k=JSON.parse(localStorage.getItem('s79_kicks')||'[]');k.push({user:'ALL-D/E',by:UN,reason:'Gas Cell',time:Date.now()});localStorage.setItem('s79_kicks',JSON.stringify(k))}catch(e){}
+    cellEffectActive=null;$('wrap').classList.remove('cell-gas');
+  },10000);
+}
+function cellCryo(){
+  if(userClearance<3) return;
+  if(cellEffectActive){sysM('⛔ Effect active: '+cellEffectActive);return}
+  cellEffectActive='cryo';
+  $('wrap').classList.add('cell-cryo');
+  sysM('❄ CRYO CELL ENGAGED — Temperature dropping to -196°C');
+  addM('ai','<span style="color:#0088ff">⚠ CRYOGENIC CONTAINMENT INITIATED. Biological functions will cease in 15 seconds.</span>');
+  autoLog('CELL','❄ CRYO CELL by '+UN);
+  setTimeout(()=>{
+    sysM('❄ Cryogenic freeze complete. All D/E personnel frozen (temp-banned 5 min).');
+    try{const b=JSON.parse(localStorage.getItem('s79_bans')||'[]');b.push({user:'CRYO-D/E-'+Date.now(),by:UN,time:Date.now(),expires:Date.now()+300000,reason:'Cryo Cell'});localStorage.setItem('s79_bans',JSON.stringify(b))}catch(e){}
+    cellEffectActive=null;$('wrap').classList.remove('cell-cryo');
+  },15000);
+}
+function cellIncin(){
+  if(userClearance<3) return;
+  if(cellEffectActive){sysM('⛔ Effect active: '+cellEffectActive);return}
+  cellEffectActive='incinerate';
+  $('wrap').classList.add('cell-incin');
+  sysM('🔥 INCINERATION SEQUENCE INITIATED — 2000°C');
+  addM('ai','<span style="color:#ff4400">⚠ THERMAL PURGE ACTIVATED. All organic material will be consumed. No survivors.</span>');
+  autoLog('CELL','🔥 INCINERATE by '+UN);
+  setTimeout(()=>{
+    sysM('🔥 Incineration complete. All D/E personnel eliminated (temp-banned 10 min).');
+    try{const b=JSON.parse(localStorage.getItem('s79_bans')||'[]');b.push({user:'INCIN-D/E-'+Date.now(),by:UN,time:Date.now(),expires:Date.now()+600000,reason:'Incineration'});localStorage.setItem('s79_bans',JSON.stringify(b))}catch(e){}
+    cellEffectActive=null;$('wrap').classList.remove('cell-incin');
+  },12000);
+}
+function cellLastChance(){
+  if(userClearance<4){sysM('⛔ L4+ required for Last Chance protocol.');return}
+  if(!confirm('⚠ LAST CHANCE PROTOCOL\n\nThis is the anti-riot nuclear option.\nALL D/E class personnel will be systematically terminated.\nThis affects users OUTSIDE the cell too.\n\nProceed?'))return;
+  cellEffectActive='purge';
+  $('wrap').classList.add('cell-purge');
+  sysM('💀 LAST CHANCE PROTOCOL — ANTI-RIOT PURGE INITIATED');
+  addM('ai','<span style="color:#ff0033">☢ ATTENTION ALL PERSONNEL. LAST CHANCE PROTOCOL ACTIVE. Class-D and Class-E assets are being systematically terminated. This is not a drill. There will be no further warnings.</span>');
+  autoLog('CELL','💀 LAST CHANCE PURGE by '+UN);
+  monLog('CELL','💀 ANTI-RIOT PURGE — '+UN);
+  // Systematic ban: one every 2 seconds
+  let count=0;
+  const purgeInterval=setInterval(()=>{
+    count++;
+    const target='D-'+String(Math.floor(Math.random()*9000)+1000);
+    sysM('💀 ['+count+'] Terminating: '+target+'...');
+    try{const b=JSON.parse(localStorage.getItem('s79_bans')||'[]');b.push({user:target,by:UN,time:Date.now(),reason:'Last Chance Purge'});localStorage.setItem('s79_bans',JSON.stringify(b))}catch(e){}
+    if(count>=10){
+      clearInterval(purgeInterval);
+      sysM('💀 PURGE COMPLETE — '+count+' personnel terminated. Facility secured.');
+      addM('ai','<span style="color:#ff0033">Purge complete. '+count+' assets neutralized. Silence restored. I approve of this efficiency.</span>');
+      cellEffectActive=null;$('wrap').classList.remove('cell-purge');
+    }
+  },2000);
+}
+
+// ═══ v10 FILE UPLOAD SYSTEM ═══
+const BLOCKED_EXT=['bat','cmd','exe','msi','scr','ps1','vbs','reg','com','pif','hta','cpl','inf','ws','wsf','lnk','jar','py','rb','sh','lua','dll','sys','drv'];
+function fuClick(){$('fuFile').click()}
+function fuHandle(input){
+  const f=input.files[0];if(!f)return;
+  if(userClearance<1){sysM('⛔ L1+ required for file upload.');return}
+  if(XP.rank<1){sysM('⛔ Rank AGENT or higher required (100+ XP).');return}
+  const ext=f.name.split('.').pop().toLowerCase();
+  if(BLOCKED_EXT.includes(ext)){sysM('⛔ BLOCKED: .'+ext+' files are prohibited (security risk).');autoLog('SECURITY','Blocked upload: '+f.name+' by '+UN);return}
+  const maxMB=userClearance>=4?50:userClearance>=2?20:5;
+  if(f.size>maxMB*1024*1024){sysM('⛔ File too large. Max: '+maxMB+'MB for your clearance.');return}
+  // Handle image preview
+  if(f.type.startsWith('image/')){
+    const reader=new FileReader();
+    reader.onload=e=>{
+      addM('sys','📎 <b>'+UN+'</b> uploaded: '+f.name+' ('+Math.round(f.size/1024)+'KB)<br><img src="'+e.target.result+'" style="max-width:200px;max-height:150px;border:1px solid var(--brd);border-radius:3px;margin-top:4px">');
+      xpAdd(5,'File upload');
+    };reader.readAsDataURL(f);
+  }else{
+    addM('sys','📎 <b>'+UN+'</b> uploaded: '+f.name+' ('+Math.round(f.size/1024)+'KB) ['+ext.toUpperCase()+']');
+    xpAdd(3,'File upload');
+  }
+  autoLog('UPLOAD',f.name+' ('+Math.round(f.size/1024)+'KB) by '+UN);
+  input.value='';
 }
 
 // ═══ v9 MINIGAME ENGINE ═══
@@ -2610,10 +2950,16 @@ function getBadgeHTML(){
 
 // Hook into send to log to monitor + earn badges
 const origSendRef=typeof send==='function'?send:null;
+// XP hook — earn XP on message
+(function(){const _origAddM=addM;addM=function(t,txt){_origAddM(t,txt);if(t==='usr')try{xpAdd(2,'Message sent');
+  // Add mod actions to messages for L3+/mod
+  if(userClearance>=3||isMod()){const msgs=$('term').querySelectorAll('.m');const last=msgs[msgs.length-1];if(last&&!last.querySelector('.mod-act')){const btn=document.createElement('span');btn.className='mod-act';btn.style.cssText='float:right;cursor:pointer;font-size:8px;color:#333;font-family:VT323,monospace';btn.innerHTML='<span onclick="modDelete(this)" title="Delete">🗑</span>';last.appendChild(btn)}}
+}catch(e){}}})();
 
 
 // ═══ INIT ═══
 async function initMain(){
+  try{_xpLoad()}catch(e){}
   const restored=await loadState();
   if(restored){updateInsurgentMode()}
   else{
@@ -2646,6 +2992,7 @@ async function initMain(){
   $('inp').addEventListener('keypress',e=>{if(e.key==='Enter')send()});
   $('userIn').addEventListener('keypress',e=>{if(e.key==='Enter')$('pwIn').focus()});$('pwIn').addEventListener('keypress',e=>{if(e.key==='Enter')doLogin()});$('o5Key').addEventListener('keypress',e=>{if(e.key==='Enter')o5Auth()});$('userIns').addEventListener('keypress',e=>{if(e.key==='Enter')$('pwIns').focus()});$('pwIns').addEventListener('keypress',e=>{if(e.key==='Enter')doLoginInsurgent()});$('userArc').addEventListener('keypress',e=>{if(e.key==='Enter')$('pwArc').focus()});$('pwArc').addEventListener('keypress',e=>{if(e.key==='Enter')doLoginArchive()});
   $('hInput').addEventListener('keypress',e=>{if(e.key==='Enter')submitHack()});
+  try{$('aofInp').addEventListener('keypress',e=>{if(e.key==='Enter')aofSend()})}catch(e){}
   updAll();
 }
 (async()=>{if(await checkSess())showMain()})();
