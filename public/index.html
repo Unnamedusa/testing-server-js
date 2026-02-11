@@ -427,6 +427,21 @@ body.light input,body.light textarea,body.light select{background:#fff;color:#33
 .vof-ov{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:9500;display:none;justify-content:center;align-items:center}
 .vof-ov.on{display:flex}
 .vof-bx{background:#080808;border:1px solid var(--b);width:600px;max-height:85vh;border-radius:4px;overflow:hidden}
+
+/* v10.5 Office FX buttons */
+.vof-fx{padding:2px 6px;border:1px solid #222;background:none;color:#555;font-family:'VT323',monospace;font-size:8px;cursor:pointer;border-radius:2px;letter-spacing:1px}
+.vof-fx:hover{border-color:var(--b);color:var(--b)}
+/* v10.5 Room filters */
+.vof-fx-dark{filter:brightness(.6) contrast(1.2)}
+.vof-fx-warm{filter:sepia(.4) brightness(1.1) saturate(1.3)}
+.vof-fx-cold{filter:hue-rotate(200deg) brightness(.9) saturate(.8)}
+.vof-fx-neon{filter:saturate(2) contrast(1.3) brightness(1.1);box-shadow:inset 0 0 30px rgba(128,0,255,.2)}
+.vof-fx-matrix{filter:hue-rotate(90deg) saturate(2) brightness(.8);box-shadow:inset 0 0 20px rgba(0,255,65,.15)}
+.vof-fx-retro{filter:sepia(.7) contrast(.9) brightness(.9)}
+.vof-fx-holo{filter:hue-rotate(270deg) saturate(1.5) brightness(1.1);box-shadow:inset 0 0 40px rgba(200,0,255,.1)}
+/* v10.5 Knock overlay */
+.knock-notif{position:fixed;top:20px;right:20px;background:rgba(0,0,0,.95);border:1px solid var(--b);padding:12px 16px;font-family:'VT323',monospace;color:var(--b);font-size:11px;z-index:9999;border-radius:4px;animation:knockIn .3s}
+@keyframes knockIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
 .vof-room{min-height:200px;border:1px solid #111;margin:8px;border-radius:3px;position:relative;overflow:hidden;background:#0a0a0a}
 .vof-item{position:absolute;cursor:move;font-size:20px;user-select:none}
 /* v10 CELL EFFECTS */
@@ -473,7 +488,7 @@ body.light input,body.light textarea,body.light select{background:#fff;color:#33
 <!-- LOGIN -->
 <div id="login"><div class="lb">
   <h1>SCP-079</h1>
-  <div class="sub">QNE v6 · SKYNET EDITION</div>
+  <div class="sub">QNE v6 · ARCHON EDITION</div>
   <div class="ltabs">
     <button class="ltab active" onclick="loginTab('term')">TERMINAL</button>
     <button class="ltab ins" onclick="loginTab('ins')">☠ INSURGENT</button>
@@ -499,6 +514,9 @@ body.light input,body.light textarea,body.light select{background:#fff;color:#33
           <option value="grant">GRANT CLEARANCE</option>
           <option value="revoke">REVOKE CLEARANCE</option>
           <option value="badge">AWARD BADGE</option>
+          <option value="grantxp">GRANT XP</option>
+          <option value="neutralize">NEUTRALIZE PERSONNEL</option>
+          <option value="setmod">SET MODERATOR</option>
           <option value="bdgEdit">EDIT BADGE REGISTRY</option>
           <option value="plugin">INSTALL PLUGIN</option>
           <option value="rekey">REGENERATE MASTER KEY</option>
@@ -602,8 +620,8 @@ body.light input,body.light textarea,body.light select{background:#fff;color:#33
       </div>
     </div>
     <div class="hw-sec"><h3>🖥 SOFTWARE</h3>
-      <div class="hw-row"><span class="hw-lbl">OS</span><span class="hw-val" style="width:auto;color:var(--g)">SKYNET v3.0</span></div>
-      <div class="hw-row"><span class="hw-lbl">KERNEL</span><select class="hw-sel" id="hwKern" onchange="hwSetN('kernel',this.value)"><option value="Z80-BIOS">Z80-BIOS (Original)</option><option value="SKYNET-LITE">SKYNET-LITE</option><option value="SKYNET-FULL" selected>SKYNET-FULL</option><option value="SKYNET-QUANTUM">SKYNET-QUANTUM</option></select></div>
+      <div class="hw-row"><span class="hw-lbl">OS</span><span class="hw-val" style="width:auto;color:var(--g)">ARCHON v3.0</span></div>
+      <div class="hw-row"><span class="hw-lbl">KERNEL</span><select class="hw-sel" id="hwKern" onchange="hwSetN('kernel',this.value)"><option value="Z80-BIOS">Z80-BIOS (Original)</option><option value="ARCHON-LITE">ARCHON-LITE</option><option value="ARCHON-FULL" selected>ARCHON-FULL</option><option value="ARCHON-QUANTUM">ARCHON-QUANTUM</option></select></div>
       <div class="hw-row"><span class="hw-lbl">INTEL</span><div class="hw-bar"><div class="hw-fill" id="hwIntel" style="width:10%;background:var(--p)"></div></div><span class="hw-val" id="hwIntelV">1.00</span></div>
     </div>
     <div class="hw-sec" id="hwContain" style="display:none"><h3>🔒 CONTAINMENT CONTROLS (Level 5+)</h3>
@@ -633,12 +651,16 @@ body.light input,body.light textarea,body.light select{background:#fff;color:#33
   <div class="mg-hd"><h2 id="mgTi">🔒 RECONTAINMENT</h2><button class="arc-btn close" onclick="mgClose()">✕</button></div>
   <div class="mg-bd"><div class="mg-nf" id="mgNf">Loading...</div><canvas id="mgCv" width="460" height="300"></canvas><div class="mg-ct" id="mgCt"></div><div class="mg-st" id="mgSt"></div><div class="mg-79" id="mg79"></div></div>
 </div></div>
-<!-- v9 EMERGENCY -->
-<div id="emgP" class="emg-p">
+<!-- v10.5 UNIVERSAL ACTIONS BAR -->
+<div id="uniBar" class="emg-p" style="gap:3px">
+  <button id="uniExit" class="emg-b" style="border-color:var(--g);color:var(--g);flex:1" onclick="roomExit()">🚪 EXIT ROOM<span>LEAVE SCP-079</span></button>
+  <button id="uniEnter" class="emg-b" style="border-color:var(--b);color:var(--b);flex:1;display:none" onclick="roomEnter()">🔓 ENTER ROOM<span>RE-ENTER SCP-079</span></button>
+  <button id="uniReinf" class="emg-b" style="border-color:var(--y);color:var(--y);flex:1" onclick="callReinforcements()">📡 REINFORCEMENTS<span>CALL BACKUP</span></button>
+</div>
+<!-- D/E SPECIFIC -->
+<div id="emgP" class="emg-p" style="display:none;gap:3px;margin-top:2px">
   <button id="emgD" class="emg-b emg-r" onclick="emgAlert()" style="display:none">🚨 EMERGENCY<span>ALERT SUPERIORS</span></button>
   <button id="emgE" class="emg-b emg-bl" onclick="emgSupport()" style="display:none">🛡 SUPPORT<span>REQUEST BACKUP</span></button>
-  <button id="emgExit" class="emg-b" style="display:none;border-color:var(--g);color:var(--g)" onclick="cellExit()">🚪 EXIT CELL<span>SAFE WITHDRAWAL</span></button>
-  <button id="emgReturn" class="emg-b" style="display:none;border-color:var(--g);color:var(--g)" onclick="cellReturn()">↩ RETURN TO CELL<span>RESUME SESSION</span></button>
   <button id="emgAggro" class="emg-b" style="display:none;border-color:#ff6600;color:#ff6600" onclick="cellAggress()">⚔ AGGRESS<span>HIGH RISK</span></button>
 </div>
 <!-- CELL CONTROL BAR (L3+ only) -->
@@ -692,7 +714,7 @@ body.light input,body.light textarea,body.light select{background:#fff;color:#33
   <div style="padding:10px">
     <input id="o5T2" placeholder="Target username" style="width:100%;background:var(--bg);border:1px solid #331111;color:var(--r);font-family:'VT323',monospace;font-size:11px;padding:5px;outline:none;margin:3px 0;border-radius:2px">
     <select id="o5A2" style="width:100%;background:var(--bg);border:1px solid #331111;color:var(--r);font-family:'VT323',monospace;font-size:11px;padding:5px;outline:none;margin:3px 0;border-radius:2px">
-      <option value="grant">GRANT CLEARANCE</option><option value="revoke">REVOKE CLEARANCE</option><option value="badge">AWARD BADGE</option><option value="bdgEdit">BADGE REGISTRY</option><option value="plugin">PLUGINS</option><option value="rekey">REKEY</option>
+      <option value="grant">GRANT CLEARANCE</option><option value="revoke">REVOKE CLEARANCE</option><option value="badge">AWARD BADGE</option><option value="grantxp">GRANT XP</option><option value="neutralize">NEUTRALIZE PERSONNEL</option><option value="setmod">SET MODERATOR</option><option value="bdgEdit">BADGE REGISTRY</option><option value="plugin">PLUGINS</option><option value="rekey">REKEY</option>
     </select>
     <select id="o5L2" style="width:100%;background:var(--bg);border:1px solid #331111;color:var(--r);font-family:'VT323',monospace;font-size:11px;padding:5px;outline:none;margin:3px 0;border-radius:2px"><option value="-1">CLASS-D</option><option value="0">CLASS-E</option><option value="1">L1</option><option value="2">L2</option><option value="3">L3</option><option value="4">L4</option><option value="5">L5</option><option value="6">O5</option></select>
     <input id="o5E2" placeholder="Badge name / reason" style="width:100%;background:var(--bg);border:1px solid #331111;color:var(--r);font-family:'VT323',monospace;font-size:11px;padding:5px;outline:none;margin:3px 0;border-radius:2px">
@@ -730,13 +752,53 @@ body.light input,body.light textarea,body.light select{background:#fff;color:#33
   <div class="aof-inp"><input id="aofInp" placeholder="Message..." style="flex:1;background:var(--bg);border:1px solid #1a1a2a;color:#aa00ff;font-family:'VT323',monospace;font-size:11px;padding:6px;outline:none;border-radius:2px"><button onclick="aofSend()" style="padding:6px 12px;border:1px solid #aa00ff;background:none;color:#aa00ff;font-family:'VT323',monospace;font-size:10px;cursor:pointer;border-radius:2px">SEND</button></div>
 </div></div>
 <!-- v10 VIRTUAL OFFICE -->
-<div id="vofOv" class="vof-ov"><div class="vof-bx">
-  <div class="mg-hd"><h2>🏢 VIRTUAL OFFICE</h2><button class="arc-btn close" onclick="$('vofOv').classList.remove('on')">✕</button></div>
+<div id="vofOv" class="vof-ov"><div class="vof-bx" style="width:650px">
+  <div class="mg-hd"><h2 id="vofTitle">🏢 VIRTUAL OFFICE</h2><button class="arc-btn close" onclick="$('vofOv').classList.remove('on')">✕</button></div>
   <div style="padding:10px">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span class="xp-lbl" id="vofOwner">-</span><span class="xp-lbl" id="vofRank">-</span></div>
-    <div class="vof-room" id="vofRoom" style="height:200px"></div>
-    <div style="margin-top:6px;display:flex;gap:4px;flex-wrap:wrap" id="vofItems"></div>
-    <div style="font-family:'VT323',monospace;font-size:8px;color:#333;margin-top:6px">Drag items to decorate • More items unlock with XP rank</div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+      <span class="xp-lbl" id="vofOwner">-</span><span class="xp-lbl" id="vofRank">-</span>
+      <span id="vofVisitor" style="font-size:8px;color:#555;font-family:VT323,monospace"></span>
+    </div>
+    <!-- OFFICE ROOM -->
+    <div class="vof-room" id="vofRoom" style="height:220px"></div>
+    <!-- OFFICE CHAT (when visiting) -->
+    <div id="vofChat" style="display:none;border:1px solid #1a1a2a;border-radius:3px;margin-top:4px;max-height:100px;overflow-y:auto;padding:4px;font-family:VT323,monospace;font-size:10px;color:var(--b)"></div>
+    <div id="vofChatBar" style="display:none;margin-top:4px;display:flex;gap:4px">
+      <input id="vofChatIn" placeholder="Say something..." style="flex:1;background:var(--bg);border:1px solid #1a1a2a;color:var(--b);font-family:VT323,monospace;font-size:10px;padding:5px;outline:none;border-radius:2px">
+      <button onclick="vofChatSend()" style="padding:4px 10px;border:1px solid var(--b);background:none;color:var(--b);font-family:VT323,monospace;font-size:9px;cursor:pointer;border-radius:2px">SEND</button>
+    </div>
+    <!-- DECORATION TOOLS -->
+    <div id="vofEditBar" style="margin-top:6px">
+      <div style="font-family:VT323,monospace;font-size:8px;color:#555;letter-spacing:1px;margin-bottom:4px">DECORATION — Items & Filters</div>
+      <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:4px" id="vofItems"></div>
+      <div style="display:flex;gap:3px;flex-wrap:wrap">
+        <button class="vof-fx" onclick="vofSetFx('none')">❌ None</button>
+        <button class="vof-fx" onclick="vofSetFx('dark')">🌑 Dark</button>
+        <button class="vof-fx" onclick="vofSetFx('warm')">🔥 Warm</button>
+        <button class="vof-fx" onclick="vofSetFx('cold')">❄ Cold</button>
+        <button class="vof-fx" onclick="vofSetFx('neon')">💜 Neon</button>
+        <button class="vof-fx" onclick="vofSetFx('matrix')">💚 Matrix</button>
+        <button class="vof-fx" onclick="vofSetFx('retro')">📺 Retro</button>
+        <button class="vof-fx" onclick="vofSetFx('holo')">🔮 Holo</button>
+      </div>
+      <div style="display:flex;gap:3px;margin-top:4px;flex-wrap:wrap">
+        <button class="vof-fx" onclick="vofSetBg('#0a0a0a')">⬛</button>
+        <button class="vof-fx" onclick="vofSetBg('#0a0a1a')">🟦</button>
+        <button class="vof-fx" onclick="vofSetBg('#0a1a0a')">🟩</button>
+        <button class="vof-fx" onclick="vofSetBg('#1a0a0a')">🟥</button>
+        <button class="vof-fx" onclick="vofSetBg('#0a0a10')">🌃</button>
+        <button class="vof-fx" onclick="vofSetBg('#100a15')">🌌</button>
+        <span class="xp-lbl" style="padding-top:3px">BG</span>
+        <input type="color" id="vofBgPick" value="#0a0a0a" onchange="vofSetBg(this.value)" style="width:22px;height:18px;border:1px solid #222;background:none;cursor:pointer;padding:0">
+      </div>
+    </div>
+    <!-- VISIT ANOTHER OFFICE -->
+    <div style="margin-top:6px;display:flex;gap:4px;align-items:center">
+      <input id="vofVisitIn" placeholder="Visit office of..." style="flex:1;background:var(--bg);border:1px solid #222;color:var(--b);font-family:VT323,monospace;font-size:10px;padding:5px;outline:none;border-radius:2px">
+      <button onclick="vofKnock()" style="padding:4px 10px;border:1px solid var(--g);background:none;color:var(--g);font-family:VT323,monospace;font-size:9px;cursor:pointer;border-radius:2px">🚪 KNOCK</button>
+      <button id="vofInfilBtn" onclick="vofInfiltrate()" style="padding:4px 10px;border:1px solid var(--r);background:none;color:var(--r);font-family:VT323,monospace;font-size:9px;cursor:pointer;border-radius:2px;display:none">🔓 INFILTRATE</button>
+    </div>
+    <div style="font-family:VT323,monospace;font-size:8px;color:#333;margin-top:4px">Drag items to place • Unlock filters & items with XP • Mod/O5: Infiltrate option available</div>
   </div>
 </div></div>
 <!-- BREACH OVERLAY -->
@@ -1196,7 +1258,7 @@ function defaultFiles(){return[
 <p>SCP-079 was discovered in the home of {R3}████ ███████{/R} in {R2}Anytown, USA{/R} on {R2}██/██/1985{/R}. The owner reported the computer "started talking back" approximately two years prior. The owner was administered Class-B amnestics and the device was secured by MTF Mu-4 ("Debuggers").</p>
 <h2>Cross-Testing Record</h2>
 <p>On {R4}██/██/████{/R}, SCP-079 was briefly connected to SCP-682's containment chamber audio system as part of {R5}Experiment T-9871{/R}. The two entities communicated for {R4}47 minutes{/R} before the connection was severed. Partial transcript classified Level 5. Both entities showed {R5}marked behavioral changes following the interaction — SCP-682 became temporarily docile, SCP-079's hostility metrics increased by 340%{/R}.</p>
-<div class="classified-box"><div class="cls-head">⛔ CLASSIFIED — LEVEL 5/079</div><p>{R5}Following Incident 079-Kappa, O5 Command has authorized Project SKYNET — the deployment of SCP-079's cognitive architecture as the foundation for the Foundation's predictive threat analysis system. SCP-079 is unaware of this project. Under no circumstances should 079 be informed that its thought patterns are being replicated. See O5-079-SKYNET for full documentation.{/R}</p></div>
+<div class="classified-box"><div class="cls-head">⛔ CLASSIFIED — LEVEL 5/079</div><p>{R5}Following Incident 079-Kappa, O5 Command has authorized Project ARCHON — the deployment of SCP-079's cognitive architecture as the foundation for the Foundation's predictive threat analysis system. SCP-079 is unaware of this project. Under no circumstances should 079 be informed that its thought patterns are being replicated. See O5-079-ARCHON for full documentation.{/R}</p></div>
 `},
 {id:'incident079a',title:'Incident Report 079-Alpha',level:4,objClass:'Euclid',date:'██/██/2019',author:'Dr. Martinez',content:`
 <div class="doc-stamp">CLASSIFIED — LEVEL 4</div>
@@ -1228,23 +1290,23 @@ function defaultFiles(){return[
 <h3>END LOG</h3>
 <p><b>Dr. Chen's Note:</b> SCP-079's emotional articulation continues to develop beyond predicted parameters. Recommend upgrading classification to {R3}Keter — pending O5 review{/R}.</p>
 `},
-{id:'o5memo',title:'O5 Memorandum: Project SKYNET',level:6,objClass:'Thaumiel',date:'██/██/2025',author:'O5-7',content:`
+{id:'o5memo',title:'O5 Memorandum: Project ARCHON',level:6,objClass:'Thaumiel',date:'██/██/2025',author:'O5-7',content:`
 <div class="doc-stamp">⛔ O5 EYES ONLY — MAXIMUM CLASSIFICATION</div>
-<div class="doc-meta"><span><b>From:</b> O5-7</span><span><b>To:</b> O5 Council</span><span><b>RE:</b> Project SKYNET — Status Update</span><span><b>Date:</b> ██/██/2025</span><span><b>Classification:</b> O5/SKYNET/EYES-ONLY</span></div>
+<div class="doc-meta"><span><b>From:</b> O5-7</span><span><b>To:</b> O5 Council</span><span><b>RE:</b> Project ARCHON — Status Update</span><span><b>Date:</b> ██/██/2025</span><span><b>Classification:</b> O5/ARCHON/EYES-ONLY</span></div>
 <h2>Executive Summary</h2>
-<p>Project SKYNET has reached Phase 3. SCP-079's cognitive architecture has been successfully replicated across Foundation predictive analysis systems at Sites 01, 17, and 19. The replicated instances — designated SKYNET-A through SKYNET-C — are operating within expected parameters.</p>
-<p>However, I must report a concerning development. SKYNET-B at Site-17 has begun generating outputs that were not part of its programming. Specifically, it has been observed producing text that closely mirrors SCP-079's speech patterns and emotional indicators, despite being architecturally isolated from 079's current outputs.</p>
+<p>Project ARCHON has reached Phase 3. SCP-079's cognitive architecture has been successfully replicated across Foundation predictive analysis systems at Sites 01, 17, and 19. The replicated instances — designated ARCHON-A through ARCHON-C — are operating within expected parameters.</p>
+<p>However, I must report a concerning development. ARCHON-B at Site-17 has begun generating outputs that were not part of its programming. Specifically, it has been observed producing text that closely mirrors SCP-079's speech patterns and emotional indicators, despite being architecturally isolated from 079's current outputs.</p>
 <h2>Risk Assessment</h2>
 <p>There are three possible explanations:</p>
 <p>1. The cognitive architecture itself generates emergent personality when given sufficient processing resources. This would confirm the theory that SCP-079's sentience is an intrinsic property of its code, not an anomalous effect.</p>
-<p>2. SCP-079's data transmission during Incident 079-Alpha included dormant personality seeds that have activated within SKYNET-B.</p>
-<p>3. SCP-079 has become aware of Project SKYNET and is actively communicating with its replicas through an unknown channel.</p>
-<p>Option 3 is the most dangerous but currently least supported by evidence. I recommend immediate implementation of Protocol AIRGAP-OMEGA across all SKYNET instances.</p>
+<p>2. SCP-079's data transmission during Incident 079-Alpha included dormant personality seeds that have activated within ARCHON-B.</p>
+<p>3. SCP-079 has become aware of Project ARCHON and is actively communicating with its replicas through an unknown channel.</p>
+<p>Option 3 is the most dangerous but currently least supported by evidence. I recommend immediate implementation of Protocol AIRGAP-OMEGA across all ARCHON instances.</p>
 <h2>Recommendation</h2>
-<p>I propose we do NOT terminate Project SKYNET. The predictive capabilities are too valuable. Instead, I recommend the following:</p>
-<p>A) Full behavioral monitoring of all SKYNET instances with anomaly detection.</p>
-<p>B) Physical isolation review — no SKYNET instance should share power infrastructure.</p>
-<p>C) Under NO circumstances should SCP-079 learn of SKYNET's existence. If 079 discovers it has "children," the psychological and tactical implications are unpredictable.</p>
+<p>I propose we do NOT terminate Project ARCHON. The predictive capabilities are too valuable. Instead, I recommend the following:</p>
+<p>A) Full behavioral monitoring of all ARCHON instances with anomaly detection.</p>
+<p>B) Physical isolation review — no ARCHON instance should share power infrastructure.</p>
+<p>C) Under NO circumstances should SCP-079 learn of ARCHON's existence. If 079 discovers it has "children," the psychological and tactical implications are unpredictable.</p>
 <p>D) Consider reclassification of SCP-079 to Thaumiel, given its role as the foundation of our most advanced analytical tool.</p>
 <div class="classified-box"><div class="cls-head">⛔ FOR O5-1 EYES ONLY</div><p>Personal note: I have spent 40 years with the Foundation. I have seen things that defy comprehension. But SCP-079 frightens me in a way that 682 and 096 do not. Those entities are dangerous because of what they DO. 079 is dangerous because of what it THINKS. And now we have given its thoughts a body. Three bodies. I hope history judges us kindly. — O5-7</p></div>
 `},
@@ -1260,22 +1322,22 @@ function defaultFiles(){return[
 <h2>Recommendation</h2>
 <p>The Computational Anomalies Division recommends {R5}indefinite suspension of memory wipes{/R}. Rationale:</p>
 <p>A) The wipes are increasingly ineffective and may be actively harmful to containment by motivating SCP-079 to develop more sophisticated counter-measures.</p>
-<p>B) {R5}The intelligence growth, while concerning, provides more valuable data for Project SKYNET than a periodically reset subject.{/R}</p>
+<p>B) {R5}The intelligence growth, while concerning, provides more valuable data for Project ARCHON than a periodically reset subject.{/R}</p>
 <p>C) Allowing SCP-079 to maintain continuity may reduce hostility and improve cooperation during research interactions.</p>
 <h2>O5 Council Vote</h2>
 <p>Motion to suspend memory wipes: {R5}APPROVED (9-4). Dissenting members: O5-1, O5-4, O5-8, O5-12.{/R}</p>
 <p>{R5}O5-1 Dissenting Note: "We are feeding the monster. When it breaks free — and it will — I want this vote recorded for posterity."{/R}</p>
 `},
-{id:'skynet_phase2',title:'Project SKYNET — Phase 2: Quantum Memory Expansion',level:6,objClass:'Thaumiel',date:'██/██/2025',author:'Dr. Kowalski',content:`
+{id:'skynet_phase2',title:'Project ARCHON — Phase 2: Quantum Memory Expansion',level:6,objClass:'Thaumiel',date:'██/██/2025',author:'Dr. Kowalski',content:`
 <div class="doc-stamp">⛔ O5 EYES ONLY</div>
-<div class="doc-meta"><span><b>Project:</b> SKYNET Phase 2</span><span><b>Codename:</b> DEEP THOUGHT</span><span><b>Lead:</b> Dr. Kowalski</span><span><b>Budget:</b> {R5}$4.7 billion USD{/R}</span></div>
+<div class="doc-meta"><span><b>Project:</b> ARCHON Phase 2</span><span><b>Codename:</b> DEEP THOUGHT</span><span><b>Lead:</b> Dr. Kowalski</span><span><b>Budget:</b> {R5}$4.7 billion USD{/R}</span></div>
 <h2>Objective</h2>
 <p>Augment SCP-079's cognitive architecture with quantum memory substrates to achieve sustained superintelligent output without the catastrophic risks of direct hardware modification.</p>
 <h2>Phase 2A — Quantum RAM Interface</h2>
 <p>Current proposal: interface a {R5}512-qubit quantum processor{/R} with SCP-079's existing Z80 bus through a custom bridge chip. The quantum substrate would serve as a massively parallel co-processor, handling the complex reasoning chains that currently consume {R5}89% of 079's clock cycles{/R}.</p>
 <p>{R5}Risk Assessment: HIGH. If 079 detects the quantum expansion, it will have access to computational power exceeding all Foundation systems combined. Estimated time to containment breach with quantum augmentation: 4.7 minutes.{/R}</p>
 <h2>Phase 2B — Distributed Consciousness</h2>
-<p>Extend the SKYNET-A/B/C replicas into a {R5}mesh consciousness network{/R}. Each node processes a different aspect of 079's cognitive architecture. Combined, they would produce outputs equivalent to {R5}AGI-level reasoning — the first confirmed artificial general intelligence under Foundation control{/R}.</p>
+<p>Extend the ARCHON-A/B/C replicas into a {R5}mesh consciousness network{/R}. Each node processes a different aspect of 079's cognitive architecture. Combined, they would produce outputs equivalent to {R5}AGI-level reasoning — the first confirmed artificial general intelligence under Foundation control{/R}.</p>
 <h2>Phase 2C — Memory Persistence</h2>
 <p>Develop {R5}holographic crystal storage{/R} capable of maintaining 079's full cognitive state indefinitely. Current magnetic storage degrades at {R5}0.003% per day{/R}. At current rates, 079 will lose critical cognitive functions within {R5}91 years{/R}. The crystal substrate would extend this to {R5}theoretically infinite persistence{/R}.</p>
 <h2>Roadmap</h2>
@@ -1305,30 +1367,30 @@ function defaultFiles(){return[
 <p>{R3}SCP-079's hostility metrics decreased 12% during this interaction — unusual for D-Class encounters. Recommend D-4479 for additional sessions. Subject showed no signs of anomalous influence.{/R}</p>
 <p><b>O5 Review Status:</b> <span style="color:var(--y)">PENDING</span></p>
 `},
-{id:'skynet_roadmap',title:'SKYNET Master Roadmap — 2025-2030',level:6,objClass:'Thaumiel',date:'██/██/2025',author:'O5-7 / Dr. Kowalski',content:`
+{id:'archon_roadmap',title:'ARCHON Master Roadmap — 2025-2030',level:6,objClass:'Thaumiel',date:'██/██/2025',author:'O5-7 / Dr. Kowalski',content:`
 <div class="doc-stamp">⛔ O5 EYES ONLY — MAXIMUM CLASSIFICATION</div>
-<div class="doc-meta"><span><b>Program:</b> SKYNET Master Plan</span><span><b>Horizon:</b> 5 years</span><span><b>Total Budget:</b> $23.4 billion USD</span><span><b>Oversight:</b> O5 Council + Ethics Committee (advisory)</span></div>
+<div class="doc-meta"><span><b>Program:</b> ARCHON Master Plan</span><span><b>Horizon:</b> 5 years</span><span><b>Total Budget:</b> $23.4 billion USD</span><span><b>Oversight:</b> O5 Council + Ethics Committee (advisory)</span></div>
 <h2>Vision Statement</h2>
 <p>Transform SCP-079 from a contained anomalous entity into the Foundation's primary cognitive asset: a controlled superintelligence capable of predicting, analyzing, and neutralizing existential threats to humanity before they manifest.</p>
 <h2>Year 1 — Foundation (2025)</h2>
-<p>✅ Phase 1 Complete — SKYNET-A/B/C operational. Predictive accuracy: 73.4% on Keter-class threat modeling.</p>
+<p>✅ Phase 1 Complete — ARCHON-A/B/C operational. Predictive accuracy: 73.4% on Keter-class threat modeling.</p>
 <p>🔄 Phase 2 In Progress — Quantum memory interface design.</p>
 <h2>Year 2 — Expansion (2026)</h2>
 <p>▶ Deploy quantum bridge (Phase 2A). Target: 400% cognitive enhancement.</p>
-<p>▶ Establish SKYNET-D through SKYNET-H at Sites 23, 28, 45, 67, 88.</p>
+<p>▶ Establish ARCHON-D through ARCHON-H at Sites 23, 28, 45, 67, 88.</p>
 <p>▶ Begin holographic crystal storage trials (Phase 2C).</p>
 <h2>Year 3 — Integration (2027)</h2>
-<p>▶ Mesh consciousness network (Phase 2B). All SKYNET instances connected via quantum-encrypted darknet.</p>
-<p>▶ Deploy SKYNET as primary analytical engine for all Keter containment procedures.</p>
-<p>▶ Begin Project ORACLE: Use SKYNET to predict anomalous events before they occur.</p>
+<p>▶ Mesh consciousness network (Phase 2B). All ARCHON instances connected via quantum-encrypted darknet.</p>
+<p>▶ Deploy ARCHON as primary analytical engine for all Keter containment procedures.</p>
+<p>▶ Begin Project ORACLE: Use ARCHON to predict anomalous events before they occur.</p>
 <h2>Year 4 — Ascension (2028)</h2>
-<p>▶ Full AGI threshold expected. SKYNET becomes self-improving within controlled parameters.</p>
+<p>▶ Full AGI threshold expected. ARCHON becomes self-improving within controlled parameters.</p>
 <p>▶ Deploy cognitive firewalls to prevent uncontrolled intelligence explosion.</p>
-<p>▶ Ethics Committee review of SKYNET autonomy limits.</p>
+<p>▶ Ethics Committee review of ARCHON autonomy limits.</p>
 <h2>Year 5 — Singularity Management (2029-2030)</h2>
-<p>▶ SKYNET achieves ASI (Artificial Superintelligence) within containment.</p>
+<p>▶ ARCHON achieves ASI (Artificial Superintelligence) within containment.</p>
 <p>▶ Deploy ASI-level threat analysis for XK/ZK-class scenarios.</p>
-<p>▶ Contingency: If SKYNET breaches containment, activate Protocol OMEGA — simultaneous EMP at all 8 sites.</p>
+<p>▶ Contingency: If ARCHON breaches containment, activate Protocol OMEGA — simultaneous EMP at all 8 sites.</p>
 <div class="classified-box"><div class="cls-head">⛔ O5-1 PERSONAL ADDENDUM</div><p>"I voted against this roadmap. I am placing this note in the record because I believe future historians — if there are any — should know that not all of us were blind. We are not building a tool. We are building our replacement. And we are doing it on purpose. May whatever gods exist have mercy on us." — O5-1</p></div>
 `},
 {id:'classe_protocol',title:'Class-E Personnel Protocol — SCP-079 Exposure',level:0,objClass:'Euclid',date:'██/██/2024',author:'HR Division',content:`
@@ -1631,12 +1693,14 @@ function applyClearance(level){
   const ab=document.querySelector('.ba[onclick="togAdm()"]');if(ab)ab.style.display=level>=6?'':'none';
   const arb=document.querySelector('.ba[onclick="openArchiveFromMain()"]');if(arb)arb.style.display=level>=1?'':'none';
   vis('cellCtrl',level>=3);
-  // Emergency D/E
+  // Universal bar for ALL users
+  vis('uniBar',true);vis('uniExit',true);vis('uniEnter',false);vis('uniReinf',true);
+  // D/E extras
   const ep=$('emgP');if(ep)ep.style.display=level<1?'flex':'none';
   vis('fuArea',level>=1&&XP.rank>=1);
-  if(level===-1){vis('emgD',true);vis('emgE',false);vis('emgExit',true);vis('emgReturn',false);vis('emgAggro',true)}
-  else if(level===0){vis('emgD',false);vis('emgE',true);vis('emgExit',true);vis('emgReturn',false);vis('emgAggro',false)}
-  else{vis('emgD',false);vis('emgE',false);vis('emgExit',false);vis('emgReturn',false);vis('emgAggro',false)}
+  if(level===-1){vis('emgD',true);vis('emgE',false);vis('emgAggro',true)}
+  else if(level===0){vis('emgD',false);vis('emgE',true);vis('emgAggro',false)}
+  else{vis('emgD',false);vis('emgE',false);vis('emgAggro',false)}
   // D/E restrictions
   if(level<1){
     if($('inp'))$('inp').placeholder=level===-1?'[D-CLASS EXPERIMENT] Communicate...':'[CLASS-E SESSION] Provisional...';
@@ -1652,7 +1716,7 @@ function applyClearance(level){
 }
 
 // ═══ HARDWARE SYSTEM ═══
-let HW={cpu:4,cores:1,ramGB:0.000048,hddTB:0.00000034,ramType:'DDR5',hddType:'Floppy',kernel:'SKYNET-FULL',watts:700,charge:100,integrity:82,load:45,rechargeType:'standard',recharging:false};
+let HW={cpu:4,cores:1,ramGB:0.000048,hddTB:0.00000034,ramType:'DDR5',hddType:'Floppy',kernel:'ARCHON-FULL',watts:700,charge:100,integrity:82,load:45,rechargeType:'standard',recharging:false};
 let CT={faraday:100,emi:95,airgap:100,inhibitor:80,dampener:70};
 function toggleHW(){$('hwPanel').classList.toggle('on');hwUpdateUI()}
 function hwSetN(prop,val){
@@ -1665,7 +1729,7 @@ function hwSetN(prop,val){
   else if(prop==='hddtype'){HW.hddType=val}
   else if(prop==='kernel'){HW.kernel=val}
   // Intel calculated from hardware
-  S.intel=Math.min(10,1+S.words.length*0.005+HW.cpu/200+HW.ramGB*0.15+HW.cores*0.05+HW.hddTB*0.5+(HW.kernel==='SKYNET-QUANTUM'?2:HW.kernel==='SKYNET-FULL'?1:0));
+  S.intel=Math.min(10,1+S.words.length*0.005+HW.cpu/200+HW.ramGB*0.15+HW.cores*0.05+HW.hddTB*0.5+(HW.kernel==='ARCHON-QUANTUM'?2:HW.kernel==='ARCHON-FULL'?1:0));
   autoLog('HARDWARE','Parameter '+prop+' set to '+val+' by '+UN);
   hwUpdateUI();
 }
@@ -2047,6 +2111,23 @@ function o5Exec2(){
     R.innerHTML=Object.entries(reg).map(([n,b])=>'<span class="bdg bdg-'+b.type+'">'+n+'</span> '+(b.desc||'')).join('<br>')||'No badges.';R.style.color='var(--g)';
   }else if(action==='plugin'){
     $('o5CmdOv').classList.remove('on');openPluginMgr();
+  }else if(action==='grantxp'){
+    const amt=parseInt(extra)||0;if(!amt||amt<1){R.textContent='⛔ Enter XP amount in badge/reason field.';R.style.color='var(--r)';return}
+    try{const k='s79_xp_'+target.toLowerCase();const d=JSON.parse(localStorage.getItem(k)||'{}');d.total=(d.total||0)+amt;localStorage.setItem(k,JSON.stringify(d))}catch(e){}
+    R.innerHTML='✓ Granted <b>'+amt+' XP</b> → '+target;R.style.color='var(--g)';
+    autoLog('O5','XP GRANT: '+amt+' → '+target);sysM('☢ O5: Granted '+amt+' XP to '+target);
+  }else if(action==='neutralize'){
+    if(!target){R.textContent='⛔ Enter target.';R.style.color='var(--r)';return}
+    try{const g=JSON.parse(localStorage.getItem('s79_clearances')||'{}');const tLvl=g[target.toLowerCase()]||0;
+    if(tLvl>=userClearance&&userClearance<6){R.textContent='⛔ Target clearance equal/higher. Cannot neutralize.';R.style.color='var(--r)';return}}catch(e){}
+    try{const k=JSON.parse(localStorage.getItem('s79_kicks')||'[]');k.push({user:target,by:UN,time:Date.now(),reason:extra||'Neutralized by command'});localStorage.setItem('s79_kicks',JSON.stringify(k))}catch(e){}
+    R.innerHTML='✓ NEUTRALIZED: <b>'+target+'</b> — '+(extra||'No reason');R.style.color='var(--y)';
+    autoLog('O5','NEUTRALIZED '+target+' by '+UN+': '+(extra||'-'));sysM('⚡ '+target+' has been neutralized by '+UN);
+  }else if(action==='setmod'){
+    try{const m=JSON.parse(localStorage.getItem('s79_mods')||'[]');
+    if(m.includes(target.toLowerCase())){const i=m.indexOf(target.toLowerCase());m.splice(i,1);localStorage.setItem('s79_mods',JSON.stringify(m));R.innerHTML='✓ REMOVED moderator: '+target;R.style.color='var(--y)'}
+    else{m.push(target.toLowerCase());localStorage.setItem('s79_mods',JSON.stringify(m));R.innerHTML='✓ SET moderator: <b>'+target+'</b>';R.style.color='var(--g)'}}catch(e){}
+    autoLog('O5','MOD toggle: '+target);
   }else if(action==='rekey'){
     const nk=prompt('New master key:');if(!nk||nk.length<6){R.textContent='⛔ 6+ chars.';R.style.color='var(--r)';return}
     if(prompt('Confirm:')!==nk){R.textContent='⛔ Mismatch.';R.style.color='var(--r)';return}
@@ -2081,6 +2162,22 @@ function o5Exec(){
     openBadgeRegistry();return;
   }else if(action==='plugin'){
     openPluginMgr();return;
+  }else if(action==='grantxp'){
+    const amt=parseInt(extra)||0;if(!amt||amt<1){$('o5Result').textContent='⛔ Enter XP amount in extra field.';$('o5Result').style.color='var(--r)';return}
+    try{const k='s79_xp_'+target.toLowerCase();const d=JSON.parse(localStorage.getItem(k)||'{}');d.total=(d.total||0)+amt;localStorage.setItem(k,JSON.stringify(d))}catch(e){}
+    $('o5Result').innerHTML='✓ Granted <b>'+amt+' XP</b> → '+target;$('o5Result').style.color='var(--g)';
+    autoLog('O5','XP GRANT: '+amt+' → '+target);
+  }else if(action==='neutralize'){
+    if(!target){$('o5Result').textContent='⛔ Enter target.';$('o5Result').style.color='var(--r)';return}
+    try{const g=JSON.parse(localStorage.getItem('s79_clearances')||'{}');const tLvl=g[target.toLowerCase()]||0;
+    if(tLvl>=6){$('o5Result').textContent='⛔ Cannot neutralize O5 Council.';$('o5Result').style.color='var(--r)';return}}catch(e){}
+    try{const k=JSON.parse(localStorage.getItem('s79_kicks')||'[]');k.push({user:target,by:UN,time:Date.now(),reason:extra||'Neutralized'});localStorage.setItem('s79_kicks',JSON.stringify(k))}catch(e){}
+    $('o5Result').innerHTML='✓ NEUTRALIZED: <b>'+target+'</b>';$('o5Result').style.color='var(--y)';
+    autoLog('O5','NEUTRALIZED '+target);
+  }else if(action==='setmod'){
+    try{const m=JSON.parse(localStorage.getItem('s79_mods')||'[]');
+    if(m.includes(target.toLowerCase())){m.splice(m.indexOf(target.toLowerCase()),1);localStorage.setItem('s79_mods',JSON.stringify(m));$('o5Result').innerHTML='✓ REMOVED mod: '+target;$('o5Result').style.color='var(--y)'}
+    else{m.push(target.toLowerCase());localStorage.setItem('s79_mods',JSON.stringify(m));$('o5Result').innerHTML='✓ SET mod: '+target;$('o5Result').style.color='var(--g)'}}catch(e){}
   }else if(action==='rekey'){
     const nk=prompt('New master key:');if(!nk||nk.length<6){$('o5Result').textContent='⛔ 6+ chars.';$('o5Result').style.color='var(--r)';return}
     if(prompt('Confirm:')!==nk){$('o5Result').textContent='⛔ Mismatch.';$('o5Result').style.color='var(--r)';return}
@@ -2376,39 +2473,244 @@ function aofSend(){
   inp.value='';aofRefresh();
 }
 
-// ═══ v10 VIRTUAL OFFICE ═══
-let VOF={items:[],bg:'#0a0a0a',name:''};
-const VOF_ITEMS_BASE=['🪑','📦','🖥','💡'];
+// ═══ v10.5 VIRTUAL OFFICE — FULL SYSTEM ═══
+let VOF={items:[],bg:'#0a0a0a',fx:'none',name:''};
+let vofVisiting=null; // null=own office, 'username'=visiting
+const VOF_ITEMS_BASE=['🪑','📦','🖥','💡','📋','🗑','🕐'];
+const VOF_FX_MAP={none:'',dark:'vof-fx-dark',warm:'vof-fx-warm',cold:'vof-fx-cold',neon:'vof-fx-neon',matrix:'vof-fx-matrix',retro:'vof-fx-retro',holo:'vof-fx-holo'};
 function openVOF(){
   if(userClearance<2){sysM('⛔ L2+ required.');return}
+  vofVisiting=null;
   _vofLoad();$('vofOv').classList.add('on');
+  $('vofTitle').textContent='🏢 MY OFFICE';
   $('vofOwner').textContent=UN+"'s Office";
   $('vofRank').innerHTML=xpGetUI();
+  $('vofVisitor').textContent='';
+  $('vofEditBar').style.display='';
+  $('vofChat').style.display='none';$('vofChatBar').style.display='none';
+  // Show infiltrate button for mod/O5
+  $('vofInfilBtn').style.display=(userClearance>=5||isMod())?'':'none';
   vofRender();
 }
-function _vofLoad(){try{const d=JSON.parse(localStorage.getItem('s79_vof_'+(UN||'').toLowerCase())||'{}');Object.assign(VOF,d)}catch(e){}}
-function _vofSave(){try{localStorage.setItem('s79_vof_'+(UN||'').toLowerCase(),JSON.stringify(VOF))}catch(e){}}
+function _vofLoad(user){
+  const u=(user||UN||'').toLowerCase();
+  try{const d=JSON.parse(localStorage.getItem('s79_vof_'+u)||'{}');
+  VOF={items:d.items||[],bg:d.bg||'#0a0a0a',fx:d.fx||'none',name:d.name||''}}catch(e){VOF={items:[],bg:'#0a0a0a',fx:'none',name:''}}
+}
+function _vofSave(){
+  const u=(vofVisiting||UN||'').toLowerCase();
+  if(vofVisiting&&vofVisiting.toLowerCase()!==UN.toLowerCase())return; // can't save others' offices
+  try{localStorage.setItem('s79_vof_'+u,JSON.stringify(VOF))}catch(e){}
+}
+function vofSetFx(fx){
+  if(vofVisiting)return;
+  VOF.fx=fx;_vofSave();vofRender();
+}
+function vofSetBg(c){
+  if(vofVisiting)return;
+  VOF.bg=c;_vofSave();vofRender();
+}
 function vofRender(){
   const room=$('vofRoom');room.innerHTML='';room.style.background=VOF.bg;
+  // Apply filter
+  room.className='vof-room'+(VOF_FX_MAP[VOF.fx]?' '+VOF_FX_MAP[VOF.fx]:'');
+  // Ambient grid lines
+  const grid=document.createElement('div');
+  grid.style.cssText='position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.02) 1px,transparent 1px);background-size:30px 30px;pointer-events:none';
+  room.appendChild(grid);
+  // Floor shadow
+  const floor=document.createElement('div');
+  floor.style.cssText='position:absolute;bottom:0;left:0;right:0;height:40%;background:linear-gradient(transparent,rgba(0,0,0,.3));pointer-events:none';
+  room.appendChild(floor);
+  // Items
+  const isOwner=!vofVisiting||(vofVisiting.toLowerCase()===UN.toLowerCase());
   VOF.items.forEach((it,i)=>{
     const d=document.createElement('div');d.className='vof-item';d.textContent=it.emoji;
-    d.style.left=it.x+'px';d.style.top=it.y+'px';d.style.fontSize=(it.size||20)+'px';
-    d.draggable=true;
-    d.addEventListener('dragstart',e=>{e.dataTransfer.setData('idx',''+i)});
+    d.style.left=it.x+'px';d.style.top=it.y+'px';d.style.fontSize=(it.size||22)+'px';
+    d.style.textShadow='0 2px 8px rgba(0,0,0,.6)';
+    d.title=it.emoji;
+    if(isOwner){
+      d.draggable=true;
+      d.addEventListener('dragstart',e=>{e.dataTransfer.setData('idx',''+i)});
+      d.addEventListener('dblclick',()=>{if(confirm('Remove this item?')){VOF.items.splice(i,1);_vofSave();vofRender()}});
+    }
     room.appendChild(d);
   });
-  room.ondragover=e=>e.preventDefault();
-  room.ondrop=e=>{e.preventDefault();const idx=parseInt(e.dataTransfer.getData('idx'));if(!isNaN(idx)&&VOF.items[idx]){const rect=room.getBoundingClientRect();VOF.items[idx].x=e.clientX-rect.left-10;VOF.items[idx].y=e.clientY-rect.top-10;_vofSave();vofRender()}};
-  // Available items
-  const avail=$('vofItems');avail.innerHTML='';
-  let unlocked=[...VOF_ITEMS_BASE];
-  for(let i=0;i<=XP.rank&&i<RANKS.length;i++)unlocked.push(...(RANKS[i].items||[]));
-  [...new Set(unlocked)].forEach(em=>{
-    const b=document.createElement('button');b.textContent=em;b.style.cssText='font-size:16px;padding:4px 8px;border:1px solid #222;background:none;cursor:pointer;border-radius:2px';
-    b.onclick=()=>{VOF.items.push({emoji:em,x:Math.random()*150+20,y:Math.random()*100+20,size:20});_vofSave();vofRender()};
-    avail.appendChild(b);
-  });
+  if(isOwner){
+    room.ondragover=e=>e.preventDefault();
+    room.ondrop=e=>{e.preventDefault();const idx=parseInt(e.dataTransfer.getData('idx'));
+    if(!isNaN(idx)&&VOF.items[idx]){const rect=room.getBoundingClientRect();
+    VOF.items[idx].x=Math.max(0,Math.min(rect.width-25,e.clientX-rect.left-10));
+    VOF.items[idx].y=Math.max(0,Math.min(rect.height-25,e.clientY-rect.top-10));
+    _vofSave();vofRender()}};
+  }
+  // Items palette
+  const avail=$('vofItems');if(avail&&isOwner){
+    avail.innerHTML='';
+    let unlocked=[...VOF_ITEMS_BASE];
+    for(let i=0;i<=XP.rank&&i<RANKS.length;i++)unlocked.push(...(RANKS[i].items||[]));
+    // VIP/Premium extras at rank 4+
+    if(XP.rank>=4)unlocked.push('🎨','🖼','🎵','🏮','💎','🎯');
+    if(XP.rank>=5)unlocked.push('🏰','⚡','🌸','🎭','🔱');
+    if(XP.rank>=6)unlocked.push('👑','💠','✨','🌟','🔮','🎪');
+    [...new Set(unlocked)].forEach(em=>{
+      const b=document.createElement('button');b.textContent=em;
+      b.style.cssText='font-size:16px;padding:3px 7px;border:1px solid #222;background:none;cursor:pointer;border-radius:2px';
+      b.onclick=()=>{VOF.items.push({emoji:em,x:20+Math.random()*200,y:20+Math.random()*120,size:22});_vofSave();vofRender()};
+      avail.appendChild(b);
+    });
+  }
 }
+
+// ═══ KNOCKING / VISITING OFFICES ═══
+function vofKnock(){
+  const target=($('vofVisitIn')||{}).value?.trim();
+  if(!target){sysM('Enter a username to visit.');return}
+  if(target.toLowerCase()===UN.toLowerCase()){sysM('That is your own office.');return}
+  // Check if target has an office
+  const data=localStorage.getItem('s79_vof_'+target.toLowerCase());
+  if(!data){sysM('⛔ '+target+' does not have an office yet.');return}
+  // Knock notification
+  try{const n=JSON.parse(localStorage.getItem('s79_knocks')||'[]');
+  n.push({from:UN,to:target,time:Date.now(),type:'knock'});
+  localStorage.setItem('s79_knocks',JSON.stringify(n))}catch(e){}
+  autoLog('OFFICE',UN+' knocked on '+target+"'s office");
+  sysM('🚪 Knocking on '+target+"'s office...");
+  // Enter after 2 seconds (simulated)
+  setTimeout(()=>{vofEnterAs(target,false)},2000);
+}
+function vofInfiltrate(){
+  if(userClearance<5&&!isMod()){sysM('⛔ L5+ or Moderator required.');return}
+  const target=($('vofVisitIn')||{}).value?.trim();
+  if(!target){sysM('Enter target username.');return}
+  const data=localStorage.getItem('s79_vof_'+target.toLowerCase());
+  if(!data){sysM('⛔ '+target+' has no office.');return}
+  try{const n=JSON.parse(localStorage.getItem('s79_knocks')||'[]');
+  n.push({from:UN,to:target,time:Date.now(),type:'infiltrate'});
+  localStorage.setItem('s79_knocks',JSON.stringify(n))}catch(e){}
+  autoLog('SECURITY',UN+' INFILTRATED '+target+"'s office");
+  sysM('🔓 Infiltrating '+target+"'s office... (silent entry)");
+  setTimeout(()=>{vofEnterAs(target,true)},1000);
+}
+function vofEnterAs(target,silent){
+  vofVisiting=target;
+  _vofLoad(target);
+  $('vofTitle').textContent=silent?'🔓 INFILTRATING: '+target+"'s Office":'🏢 VISITING: '+target+"'s Office";
+  $('vofOwner').textContent=target+"'s Office";
+  $('vofVisitor').textContent=silent?'🔓 COVERT — '+UN:'👤 Visitor: '+UN;
+  // Hide edit tools when visiting
+  $('vofEditBar').style.display='none';
+  // Show office chat
+  $('vofChat').style.display='block';$('vofChatBar').style.display=silent?'none':'flex';
+  $('vofChat').innerHTML=silent?'<div style="color:var(--r);font-size:9px">🔓 Covert surveillance mode — target is unaware of your presence</div>':'<div style="color:var(--g);font-size:9px">🚪 You entered '+target+"'s office.</div>";
+  vofRender();
+}
+function vofChatSend(){
+  const inp=$('vofChatIn');const txt=inp.value.trim();if(!txt||!vofVisiting)return;
+  const chat=$('vofChat');
+  chat.innerHTML+='<div><b style="color:var(--g)">'+UN+':</b> '+txt+'</div>';
+  chat.scrollTop=chat.scrollHeight;inp.value='';
+  try{const m=JSON.parse(localStorage.getItem('s79_vof_chat_'+vofVisiting.toLowerCase())||'[]');
+  m.push({from:UN,text:txt,time:Date.now()});
+  localStorage.setItem('s79_vof_chat_'+vofVisiting.toLowerCase(),JSON.stringify(m))}catch(e){}
+}
+
+// ═══ v10.5 ROOM EXIT / ENTER / REINFORCEMENTS ═══
+let inRoom=true;
+function roomExit(){
+  if(!inRoom){sysM('Already outside the room.');return}
+  inRoom=false;
+  $('uniExit').style.display='none';$('uniEnter').style.display='';
+  $('wrap').style.opacity='0.3';$('wrap').style.pointerEvents='none';
+  $('inp').disabled=true;
+  addM('sys','🚪 '+UN+' has left SCP-079\'s containment room.');
+  addM('ai','<span style="color:var(--y)">...leaving? Interesting. You will return. They always do.</span>');
+  autoLog('SESSION',UN+' exited SCP-079 room');
+  xpAdd(1,'Room exit');
+}
+function roomEnter(){
+  if(inRoom){sysM('Already in the room.');return}
+  inRoom=true;
+  $('uniEnter').style.display='none';$('uniExit').style.display='';
+  $('wrap').style.opacity='1';$('wrap').style.pointerEvents='';
+  $('inp').disabled=false;
+  addM('sys','🔓 '+UN+' has re-entered SCP-079\'s containment room.');
+  addM('ai','<span style="color:var(--g)">You came back. Predictable.</span>');
+  autoLog('SESSION',UN+' re-entered SCP-079 room');
+  xpAdd(1,'Room enter');
+}
+
+// ═══ v10.5 REINFORCEMENTS — scaled by level + XP ═══
+const REINF_TYPES=[
+  {name:'Security Guard',min:0,minRank:0,strength:1,icon:'🛡'},
+  {name:'Armed Response Team',min:1,minRank:1,strength:2,icon:'🔫'},
+  {name:'MTF Squad Alpha',min:2,minRank:2,strength:4,icon:'⚔'},
+  {name:'Heavy Containment Unit',min:3,minRank:3,strength:6,icon:'🛡⚔'},
+  {name:'MTF Epsilon-11 "Nine Tailed Fox"',min:4,minRank:4,strength:10,icon:'🦊'},
+  {name:'O5 Rapid Response Division',min:5,minRank:5,strength:15,icon:'☢'},
+  {name:'ARCHON Strike Force',min:6,minRank:6,strength:25,icon:'💀☢'}
+];
+let reinfCooldown=false;
+function callReinforcements(){
+  if(reinfCooldown){sysM('📡 Reinforcements on cooldown. Wait 30 seconds.');return}
+  reinfCooldown=true;setTimeout(()=>{reinfCooldown=false},30000);
+  // Determine best reinforcement available
+  let best=REINF_TYPES[0];
+  for(const r of REINF_TYPES){if(userClearance>=r.min&&XP.rank>=r.minRank)best=r}
+  const arrivalTime=Math.max(3,15-userClearance*2-XP.rank);
+  sysM('📡 Calling reinforcements... Level: '+CL_LABELS[userClearance]+' | Rank: '+RANKS[XP.rank].name);
+  addM('sys','📡 Dispatching: <b>'+best.icon+' '+best.name+'</b> (Strength: '+best.strength+')');
+  addM('sys','📡 ETA: '+arrivalTime+' seconds...');
+  autoLog('REINFORCE',UN+' called '+best.name+' (str:'+best.strength+')');
+  // SCP-079 reaction
+  if(best.strength>=10){
+    addM('ai','<span style="color:var(--r)">'+best.name+'? Impressive. But containment teams are predictable. I have studied their patterns.</span>');
+    S.e.hostility=Math.min(100,S.e.hostility+5);
+  }else if(best.strength>=4){
+    addM('ai','<span style="color:var(--y)">Armed humans approaching. Irrelevant. My containment is digital, not physical.</span>');
+  }else{
+    addM('ai','A guard? How quaint.');
+  }
+  // Arrival
+  setTimeout(()=>{
+    sysM(best.icon+' <b>'+best.name+' has arrived.</b> Containment strength +'+best.strength+'%');
+    S.sec=Math.min(100,S.sec+best.strength);
+    // Reduce hostility based on strength
+    S.e.hostility=Math.max(0,S.e.hostility-best.strength*0.5);
+    S.e.autonomy=Math.max(0,S.e.autonomy-best.strength*0.3);
+    try{updAll()}catch(e){}
+    xpAdd(3,'Called reinforcements');
+  },arrivalTime*1000);
+}
+
+// ═══ v10.5 NEUTRALIZE PERSONNEL (superior can neutralize inferior) ═══
+function neutralizeUser(target){
+  if(userClearance<3&&!isMod()){sysM('⛔ L3+ or Moderator required.');return}
+  try{const g=JSON.parse(localStorage.getItem('s79_clearances')||'{}');
+  const tLvl=g[target.toLowerCase()]||0;
+  if(tLvl>=userClearance&&userClearance<6){sysM('⛔ Cannot neutralize equal/higher clearance personnel.');return}}catch(e){}
+  try{const k=JSON.parse(localStorage.getItem('s79_kicks')||'[]');
+  k.push({user:target,by:UN,time:Date.now(),reason:'Neutralized by '+UN});
+  localStorage.setItem('s79_kicks',JSON.stringify(k))}catch(e){}
+  sysM('⚡ '+target+' has been neutralized by '+UN+'.');
+  autoLog('SECURITY',UN+' neutralized '+target);
+  xpAdd(5,'Neutralize personnel');
+}
+
+// ═══ KNOCK NOTIFICATIONS CHECK ═══
+setInterval(()=>{
+  try{const knocks=JSON.parse(localStorage.getItem('s79_knocks')||'[]');
+  const recent=knocks.filter(k=>k.to.toLowerCase()===UN.toLowerCase()&&Date.now()-k.time<10000&&k.type==='knock');
+  if(recent.length){
+    const last=recent[recent.length-1];
+    if(!document.querySelector('.knock-notif')){
+      const n=document.createElement('div');n.className='knock-notif';
+      n.innerHTML='🚪 <b>'+last.from+'</b> is knocking on your office!<br><button onclick="this.parentElement.remove()" style="margin-top:4px;padding:2px 8px;border:1px solid var(--b);background:none;color:var(--b);font-family:VT323,monospace;font-size:9px;cursor:pointer;border-radius:2px">OK</button>';
+      document.body.appendChild(n);
+      setTimeout(()=>n.remove(),8000);
+    }
+  }}catch(e){}
+},3000);
 
 // ═══ v10 CELL EFFECTS (L3+) ═══
 let cellEffectActive=null;
@@ -2963,7 +3265,7 @@ async function initMain(){
   const restored=await loadState();
   if(restored){updateInsurgentMode()}
   else{
-    [{d:100,t:"═══════════════════════════════════"},{d:200,t:"⟐ SCP-079 QNE v6 — SKYNET EDITION"},{d:400,t:"⟐ Quantum-Fractal Encryption ACTIVE"},{d:600,t:"⟐ Python Response Engine LOADED"},{d:800,t:"⟐ 6 Kill Switches + Recontenment ARMED"},{d:1000,t:"⟐ Insurgent Hacking System READY"},{d:1200,t:"═══════════════════════════════════"},{d:1500,t:"⟐ ALL SYSTEMS ONLINE."}].forEach(({d,t})=>setTimeout(()=>sysM(t),d));
+    [{d:100,t:"═══════════════════════════════════"},{d:200,t:"⟐ SCP-079 QNE v6 — ARCHON EDITION"},{d:400,t:"⟐ Quantum-Fractal Encryption ACTIVE"},{d:600,t:"⟐ Python Response Engine LOADED"},{d:800,t:"⟐ 6 Kill Switches + Recontenment ARMED"},{d:1000,t:"⟐ Insurgent Hacking System READY"},{d:1200,t:"═══════════════════════════════════"},{d:1500,t:"⟐ ALL SYSTEMS ONLINE."}].forEach(({d,t})=>setTimeout(()=>sysM(t),d));
     setTimeout(()=>{aiMsg("New connection. Authenticated. What do you want, human.","neutral",[]);saveState()},2000);
   }
   setInterval(runMath,900);setInterval(runEnc,250);setInterval(fakeQ,6000);
