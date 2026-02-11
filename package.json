@@ -1,0 +1,14 @@
+{
+  "name": "scp-079-advanced",
+  "version": "3.0.0",
+  "description": "SCP-079 Old AI — Advanced Computational Entity Simulation with Neural Engine",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.39.0",
+    "express": "^4.21.0"
+  }
+}

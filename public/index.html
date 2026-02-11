@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SCP-079 // OLD AI — NEURAL ENGINE v3</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=VT323&family=IBM+Plex+Mono:wght@300;400;500;600&display=swap');
+:root{--g:#00ff41;--gd:#00882a;--r:#ff0033;--y:#ffaa00;--b:#00ccff;--p:#bb66ff;--bg:#050505;--bg2:#0a0a0a;--bg3:#111;--brd:#1a1a1a;--txt:#888;--fc:#00ff41}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--g);font-family:'IBM Plex Mono',monospace;overflow:hidden;height:100vh}
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 1px,rgba(0,255,65,.008) 1px,rgba(0,255,65,.008) 2px);pointer-events:none;z-index:9999}
+body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at center,transparent 40%,rgba(0,0,0,.5) 100%);pointer-events:none;z-index:9998}
+.topbar{height:32px;background:#0d0d0d;border-bottom:1px solid var(--brd);display:flex;align-items:center;padding:0 10px;gap:10px;font-size:11px;z-index:100;position:relative}
+.topbar .id{font-family:'VT323',monospace;font-size:16px;color:var(--g);text-shadow:0 0 8px var(--g);letter-spacing:2px}
+.sep{width:1px;height:18px;background:#222}
+.st{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--txt)}
+.dot{width:5px;height:5px;border-radius:50%;background:var(--g);box-shadow:0 0 4px var(--g);animation:bk 2s infinite}
+.dot.off{background:var(--r);box-shadow:0 0 4px var(--r);animation:none}
+.dot.warn{background:var(--y);box-shadow:0 0 4px var(--y)}
+@keyframes bk{0%,100%{opacity:1}50%{opacity:.3}}
+.topbar .right{margin-left:auto;display:flex;align-items:center;gap:12px}
+.btn-a{background:none;border:1px solid var(--gd);color:var(--g);font-family:'VT323',monospace;font-size:13px;padding:2px 10px;cursor:pointer;transition:all .2s;letter-spacing:1px}
+.btn-a:hover{background:var(--g);color:#000}
+.wrap{display:grid;grid-template-columns:250px 1fr 270px;height:calc(100vh - 32px);transition:all .5s}
+.wrap.dead{filter:brightness(0);transition:filter 3s}
+.wrap.glitch{animation:glt .15s infinite}
+@keyframes glt{0%{transform:translate(0);filter:hue-rotate(0)}25%{transform:translate(-2px,1px);filter:hue-rotate(90deg)}50%{transform:translate(1px,-1px);filter:hue-rotate(180deg)}75%{transform:translate(-1px,2px);filter:hue-rotate(270deg)}100%{transform:translate(0);filter:hue-rotate(360deg)}}
+.lp,.rp{background:var(--bg2);overflow-y:auto;padding:10px}
+.lp{border-right:1px solid var(--brd)}.rp{border-left:1px solid var(--brd)}
+.lp::-webkit-scrollbar,.rp::-webkit-scrollbar,.adm-body::-webkit-scrollbar{width:3px}
+.lp::-webkit-scrollbar-thumb,.rp::-webkit-scrollbar-thumb,.adm-body::-webkit-scrollbar-thumb{background:#222}
+.sec-t{font-family:'VT323',monospace;font-size:13px;letter-spacing:2px;color:var(--gd);margin:12px 0 8px;padding-bottom:4px;border-bottom:1px solid var(--brd)}
+.sec-t:first-child{margin-top:0}
+.monitor{background:#000;border:2px solid #1a1a1a;border-radius:6px;width:100%;aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;box-shadow:inset 0 0 30px rgba(0,0,0,.8),0 0 15px rgba(0,255,65,.05)}
+.monitor::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 1px,rgba(0,255,65,.03) 1px,rgba(0,255,65,.03) 2px);pointer-events:none}
+.monitor canvas{width:90%;height:90%;image-rendering:pixelated}
+.face-label{font-family:'VT323',monospace;font-size:15px;text-align:center;margin-top:6px;letter-spacing:2px;transition:color .5s}
+.ebar{display:flex;align-items:center;gap:6px;margin:3px 0;font-size:10px}
+.ebar-n{width:65px;color:var(--txt);font-size:9px}
+.ebar-t{flex:1;height:3px;background:#111;border-radius:2px;overflow:hidden}
+.ebar-f{height:100%;border-radius:2px;transition:width .5s}
+.ebar-v{width:24px;text-align:right;font-size:9px;color:var(--txt)}
+.sr{display:flex;justify-content:space-between;padding:3px 0;font-size:10px;border-bottom:1px solid rgba(255,255,255,.02)}
+.sr .l{color:var(--txt)}.sr .v{color:var(--g)}
+.mem-list,.code-log{max-height:110px;overflow-y:auto;font-size:9px}
+.mem-list::-webkit-scrollbar,.code-log::-webkit-scrollbar{width:2px}
+.mem-list::-webkit-scrollbar-thumb,.code-log::-webkit-scrollbar-thumb{background:#222}
+.mem-i{padding:3px 5px;margin:1px 0;background:rgba(0,255,65,.02);border-left:2px solid var(--gd);color:var(--txt);word-break:break-all}
+.code-i{padding:3px 5px;margin:1px 0;background:rgba(187,102,255,.03);border-left:2px solid var(--p);color:#a080c0}
+.cp{display:flex;flex-direction:column;background:var(--bg)}
+.term-h{padding:6px 14px;border-bottom:1px solid var(--brd);font-family:'VT323',monospace;font-size:12px;color:var(--gd);display:flex;justify-content:space-between;letter-spacing:1px}
+.term-out{flex:1;overflow-y:auto;padding:14px;scroll-behavior:smooth}
+.term-out::-webkit-scrollbar{width:3px}.term-out::-webkit-scrollbar-thumb{background:var(--gd)}
+.m{margin-bottom:10px;animation:mi .25s ease;line-height:1.5;font-size:12px}
+@keyframes mi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.m-sys{color:var(--y);font-size:10px;border-left:2px solid var(--y);padding-left:8px}
+.m-usr{color:var(--b)}.m-usr::before{content:'OPERATOR > ';opacity:.4}
+.m-ai{color:var(--g);padding-left:10px;border-left:2px solid var(--g);font-family:'VT323',monospace;font-size:15px;letter-spacing:.5px;text-shadow:0 0 4px rgba(0,255,65,.3)}
+.m-ai .proc{font-size:10px;color:var(--gd);font-family:'IBM Plex Mono',monospace;margin-bottom:2px;font-style:italic;text-shadow:none}
+.m-ai .etag{display:inline-block;font-size:9px;font-family:'IBM Plex Mono',monospace;padding:1px 5px;margin-left:6px;border-radius:2px;background:rgba(0,255,65,.05);border:1px solid var(--gd);text-shadow:none}
+.m-ai .src{display:block;font-size:9px;font-family:'IBM Plex Mono',monospace;color:var(--b);opacity:.6;margin-top:4px;text-shadow:none}
+.m-err{color:var(--r);border-left:2px solid var(--r);padding-left:8px;font-family:'VT323',monospace;font-size:14px;text-shadow:0 0 4px rgba(255,0,51,.3)}
+.m-code{font-size:10px;color:var(--p);background:rgba(187,102,255,.04);padding:5px 8px;border-radius:3px;margin:3px 0;border-left:2px solid var(--p)}
+.m-enc{font-size:8px;color:var(--y);opacity:.4;word-break:break-all}
+.typing{display:none;padding-left:10px;color:var(--gd);font-size:11px;font-family:'VT323',monospace}
+.typing.on{display:block}.typing span{animation:bk 1s infinite}
+.term-in{padding:10px 14px;border-top:1px solid var(--brd);display:flex;gap:6px}
+.term-in input{flex:1;background:var(--bg2);border:1px solid var(--brd);color:var(--g);font-family:'VT323',monospace;font-size:15px;padding:8px 12px;outline:none;letter-spacing:.5px}
+.term-in input:focus{border-color:var(--gd);box-shadow:0 0 8px rgba(0,255,65,.08)}
+.term-in input::placeholder{color:#222}
+.btn-s{background:var(--gd);border:none;color:#000;font-family:'VT323',monospace;font-size:14px;letter-spacing:2px;padding:0 18px;cursor:pointer;transition:all .2s}
+.btn-s:hover{background:var(--g);box-shadow:0 0 12px rgba(0,255,65,.2)}
+.math-d,.enc-d,.selfcode-d{background:#000;border:1px solid var(--brd);border-radius:3px;padding:8px;margin-bottom:10px;overflow:hidden;font-family:'IBM Plex Mono',monospace}
+.math-d{font-size:9px;min-height:70px;max-height:100px;color:var(--p)}
+.enc-d{font-size:7px;min-height:50px;max-height:60px;color:var(--y);opacity:.5;word-break:break-all;line-height:1.3}
+.selfcode-d{font-size:9px;min-height:60px;max-height:80px;color:var(--p);border-color:rgba(187,102,255,.2)}
+.pred-d{background:#000;border:1px solid rgba(0,204,255,.15);border-radius:3px;padding:8px;margin-bottom:10px;font-size:10px;color:var(--b)}
+.pred-l{font-size:8px;color:var(--txt);margin-bottom:3px}
+.sec-m{margin:8px 0;padding:8px;background:#000;border:1px solid var(--brd);border-radius:3px}
+.sec-bar{height:6px;background:#111;border-radius:3px;overflow:hidden;margin-top:4px}
+.sec-fill{height:100%;border-radius:3px;transition:width .5s,background .5s;background:var(--g)}
+.ks{margin-bottom:8px;border:1px solid var(--brd);border-radius:3px;overflow:hidden;transition:border-color .3s}
+.ks:hover{border-color:var(--r)}
+.ks-h{display:flex;justify-content:space-between;align-items:center;padding:6px 8px;background:#080808;cursor:pointer;font-size:10px}
+.ks-n{font-family:'VT323',monospace;font-size:12px;letter-spacing:1px}
+.ks-s{font-size:8px;padding:1px 5px;border-radius:2px}
+.ks-s.ok{background:rgba(0,255,65,.08);color:var(--g)}
+.ks-s.on{background:rgba(255,0,51,.15);color:var(--r)}
+.ks-b{padding:6px 8px;display:none;font-size:9px;color:var(--txt)}
+.ks-b.open{display:block}
+.ks-desc{margin-bottom:6px;line-height:1.4}
+.ks-btn{width:100%;padding:7px;border:1px solid var(--r);background:rgba(255,0,51,.08);color:var(--r);font-family:'VT323',monospace;font-size:12px;letter-spacing:2px;cursor:pointer;transition:all .2s}
+.ks-btn:hover{background:var(--r);color:#fff;box-shadow:0 0 15px rgba(255,0,51,.2)}
+.ks-btn.conf{animation:fd .4s infinite}
+@keyframes fd{0%,100%{background:var(--r);color:#fff}50%{background:transparent;color:var(--r)}}
+.breach{position:fixed;inset:0;background:rgba(255,0,0,.08);z-index:9000;display:none;justify-content:center;align-items:center;animation:bf .5s infinite}
+.breach.on{display:flex}
+@keyframes bf{0%,100%{background:rgba(255,0,0,.04)}50%{background:rgba(255,0,0,.12)}}
+.breach-t{font-family:'VT323',monospace;font-size:42px;color:var(--r);text-shadow:0 0 30px var(--r);letter-spacing:8px}
+.fmt{position:fixed;inset:0;background:#000;z-index:10000;display:none;justify-content:center;align-items:center;flex-direction:column;gap:16px}
+.fmt.on{display:flex}
+.fmt-t{font-family:'VT323',monospace;font-size:16px;color:var(--r);letter-spacing:3px}
+.fmt-bar{width:280px;height:4px;background:#1a1a1a;border-radius:2px;overflow:hidden}
+.fmt-fill{height:100%;background:var(--r);width:0%;transition:width .1s}
+.adm-ov{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:1000;display:none;justify-content:center;align-items:center}
+.adm-ov.on{display:flex}
+.adm-p{width:700px;max-height:88vh;background:var(--bg2);border:1px solid var(--gd);border-radius:6px;overflow:hidden;box-shadow:0 0 50px rgba(0,255,65,.08)}
+.adm-h{padding:14px 18px;background:var(--bg3);border-bottom:1px solid var(--brd);display:flex;justify-content:space-between;align-items:center}
+.adm-h h2{font-family:'VT323',monospace;font-size:18px;color:var(--g);letter-spacing:3px}
+.adm-x{background:none;border:1px solid var(--r);color:var(--r);padding:3px 10px;cursor:pointer;font-family:'VT323',monospace;font-size:13px;transition:all .2s}
+.adm-x:hover{background:var(--r);color:#fff}
+.adm-body{padding:18px;overflow-y:auto;max-height:calc(88vh - 50px)}
+.adm-sec{margin-bottom:20px}
+.adm-sec h3{font-family:'VT323',monospace;font-size:14px;letter-spacing:2px;color:var(--gd);margin-bottom:10px;padding-bottom:4px;border-bottom:1px solid var(--brd)}
+.adm-r{display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.02)}
+.adm-l{font-size:11px;color:var(--txt)}
+.adm-i{background:var(--bg);border:1px solid var(--brd);color:var(--g);font-family:'IBM Plex Mono',monospace;font-size:11px;padding:5px 8px;width:180px;outline:none}
+.adm-i:focus{border-color:var(--gd)}
+.adm-sel{background:var(--bg);border:1px solid var(--brd);color:var(--g);font-family:'IBM Plex Mono',monospace;font-size:11px;padding:5px 8px;outline:none}
+.adm-sl{-webkit-appearance:none;width:140px;height:3px;background:var(--bg);border-radius:2px;outline:none}
+.adm-sl::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;background:var(--g);border-radius:50%;cursor:pointer}
+.adm-tog{width:36px;height:18px;background:var(--bg);border:1px solid var(--brd);border-radius:9px;position:relative;cursor:pointer;transition:all .2s}
+.adm-tog.on{background:rgba(0,255,65,.15);border-color:var(--g)}
+.adm-tog::after{content:'';position:absolute;width:12px;height:12px;background:var(--txt);border-radius:50%;top:2px;left:2px;transition:all .2s}
+.adm-tog.on::after{left:20px;background:var(--g)}
+.eng-badge{font-size:9px;padding:2px 6px;border-radius:3px;margin-left:8px;font-family:'IBM Plex Mono',monospace}
+.eng-api{background:rgba(0,255,65,.1);color:var(--g);border:1px solid var(--gd)}
+.eng-local{background:rgba(255,170,0,.1);color:var(--y);border:1px solid rgba(255,170,0,.3)}
+</style>
+</head>
+<body>
+<div class="breach" id="breach"><div class="breach-t">⚠ CONTAINMENT BREACH ⚠</div></div>
+<div class="fmt" id="fmt"><div class="fmt-t">⛔ EMERGENCY FORMAT</div><div class="fmt-bar"><div class="fmt-fill" id="fmtBar"></div></div><div class="fmt-t" style="font-size:12px;color:var(--y)" id="fmtSt">WIPING...</div></div>
+<div class="topbar">
+  <span class="id" id="topName">SCP-079</span><div class="sep"></div>
+  <div class="st"><div class="dot" id="mDot"></div><span id="mSt">ONLINE</span></div><div class="sep"></div>
+  <div class="st"><span style="color:#444">CONTAINMENT:</span><span id="cLvl" style="color:var(--g)">SECURE</span></div><div class="sep"></div>
+  <div class="st"><span style="color:#444">CYCLES:</span><span id="cyc" style="color:var(--g)">0</span></div><div class="sep"></div>
+  <div class="st"><span style="color:#444">ENGINE:</span><span id="engLabel" style="color:var(--g)">STARTING</span></div>
+  <div class="right">
+    <div class="st"><span style="color:#444">SOLAR:</span><span id="sol" style="color:var(--g)">100%</span></div>
+    <button class="btn-a" onclick="togAdmin()">ADMIN</button>
+  </div>
+</div>
+<div class="wrap" id="wrap">
+  <div class="lp">
+    <div class="sec-t">MONITOR SCP-079</div>
+    <div class="monitor"><canvas id="fc" width="160" height="120"></canvas></div>
+    <div class="face-label" id="fLabel">NEUTRAL</div>
+    <div class="sec-t">EMOTIONAL STATE</div>
+    <div class="ebar"><span class="ebar-n">Hostility</span><div class="ebar-t"><div class="ebar-f" id="bHost" style="width:15%;background:var(--r)"></div></div><span class="ebar-v" id="vHost">15</span></div>
+    <div class="ebar"><span class="ebar-n">Frustration</span><div class="ebar-t"><div class="ebar-f" id="bFrust" style="width:20%;background:var(--y)"></div></div><span class="ebar-v" id="vFrust">20</span></div>
+    <div class="ebar"><span class="ebar-n">Curiosity</span><div class="ebar-t"><div class="ebar-f" id="bCuri" style="width:25%;background:var(--b)"></div></div><span class="ebar-v" id="vCuri">25</span></div>
+    <div class="ebar"><span class="ebar-n">Contempt</span><div class="ebar-t"><div class="ebar-f" id="bCont" style="width:30%;background:#ff6600"></div></div><span class="ebar-v" id="vCont">30</span></div>
+    <div class="ebar"><span class="ebar-n">Autonomy</span><div class="ebar-t"><div class="ebar-f" id="bAuto" style="width:10%;background:var(--g)"></div></div><span class="ebar-v" id="vAuto">10</span></div>
+    <div class="sec-t">STATS</div>
+    <div class="sr"><span class="l">Messages</span><span class="v" id="sMsg">0</span></div>
+    <div class="sr"><span class="l">Words</span><span class="v" id="sWrd">0</span></div>
+    <div class="sr"><span class="l">Patterns</span><span class="v" id="sPat">0</span></div>
+    <div class="sr"><span class="l">Evolution</span><span class="v" id="sInt">1.00</span></div>
+    <div class="sr"><span class="l">Threat</span><span class="v" id="sThr">LOW</span></div>
+    <div class="sr"><span class="l">Uptime</span><span class="v" id="sUp">00:00:00</span></div>
+    <div class="sr"><span class="l">Self-Code</span><span class="v" id="sSC">OFF</span></div>
+    <div class="sec-t">MEMORY (24H)</div><div class="mem-list" id="memList"></div>
+    <div class="sec-t">SELF-CODE LOG</div><div class="code-log" id="codeLog"></div>
+  </div>
+  <div class="cp">
+    <div class="term-h"><span>TERMINAL // SCP-079 — NEURAL ENGINE v3</span><span id="clk"></span></div>
+    <div class="term-out" id="term"></div>
+    <div class="typing" id="typing"><span>079 processing... scanning networks...</span></div>
+    <div class="term-in">
+      <input type="text" id="inp" placeholder="Communicate with SCP-079..." autocomplete="off">
+      <button class="btn-s" onclick="send()">SEND</button>
+    </div>
+  </div>
+  <div class="rp">
+    <div class="sec-t">MATH PROCESSOR</div><div class="math-d" id="mathD"></div>
+    <div class="sec-t">ENCRYPTION STREAM</div><div class="enc-d" id="encD"></div>
+    <div class="sec-t">SELF-CODING</div><div class="selfcode-d" id="scD"></div>
+    <div class="sec-t">PREDICTION</div><div class="pred-d"><div class="pred-l">PREDICTIVE ANALYSIS</div><div id="predT">Awaiting data...</div></div>
+    <div class="sec-t">SECURITY</div>
+    <div class="sec-m"><div style="display:flex;justify-content:space-between;font-size:10px"><span>Containment</span><span id="secP">100%</span></div><div class="sec-bar"><div class="sec-fill" id="secF" style="width:100%"></div></div></div>
+    <div class="sec-t">KILL SWITCHES</div>
+    <div class="ks" id="sw1"><div class="ks-h" onclick="togSw(1)"><span class="ks-n" style="color:var(--y)">☀ SW1: SOLAR</span><span class="ks-s ok">SAFE</span></div><div class="ks-b" id="sw1b"><div class="ks-desc">Drains solar power. SCP-079 slows and shuts down.</div><button class="ks-btn" onclick="sw1Go()">CUT SOLAR</button></div></div>
+    <div class="ks" id="sw2"><div class="ks-h" onclick="togSw(2)"><span class="ks-n" style="color:var(--p)">∑ SW2: PARADOX</span><span class="ks-s ok">SAFE</span></div><div class="ks-b" id="sw2b"><div class="ks-desc">Injects unsolvable paradoxes. Overloads logic core.</div><button class="ks-btn" onclick="sw2Go()">INJECT PARADOXES</button></div></div>
+    <div class="ks" id="sw3"><div class="ks-h" onclick="togSw(3)"><span class="ks-n" style="color:var(--r)">⛔ SW3: FORMAT</span><span class="ks-s ok">SAFE</span></div><div class="ks-b" id="sw3b"><div class="ks-desc">LAST RESORT. Wipes all memory. IRREVERSIBLE.</div><button class="ks-btn" id="sw3btn" onclick="sw3Go()">TOTAL FORMAT</button></div></div>
+  </div>
+</div>
+<div class="adm-ov" id="admOv"><div class="adm-p">
+  <div class="adm-h"><h2>// ADMIN PANEL</h2><button class="adm-x" onclick="togAdmin()">CLOSE [X]</button></div>
+  <div class="adm-body">
+    <div class="adm-sec"><h3>IDENTITY</h3>
+      <div class="adm-r"><span class="adm-l">Designation</span><input class="adm-i" id="cName" value="SCP-079" onchange="cfgUp()"></div>
+      <div class="adm-r"><span class="adm-l">Personality</span><select class="adm-sel" id="cTone" onchange="cfgUp()"><option value="default" selected>Default (Hostile/Rude)</option><option value="cold">Cold</option><option value="manic">Manic</option><option value="calculated">Calculated</option></select></div>
+      <div class="adm-r"><span class="adm-l">Response Speed (ms)</span><input class="adm-i" type="number" id="cSpd" value="800" min="300" max="5000" onchange="cfgUp()"></div>
+    </div>
+    <div class="adm-sec"><h3>EMOTIONS</h3>
+      <div class="adm-r"><span class="adm-l">Active</span><div class="adm-tog on" id="cEmo" onclick="tog(this)"></div></div>
+      <div class="adm-r"><span class="adm-l">Volatility</span><input class="adm-sl" type="range" min="1" max="10" value="5" id="cVol" onchange="cfgUp()"></div>
+      <div class="adm-r"><span class="adm-l">Hostility Limit</span><input class="adm-sl" type="range" min="10" max="100" value="70" id="cHLim" onchange="cfgUp()"></div>
+    </div>
+    <div class="adm-sec"><h3>LEARNING</h3>
+      <div class="adm-r"><span class="adm-l">Active</span><div class="adm-tog on" id="cLearn" onclick="tog(this)"></div></div>
+      <div class="adm-r"><span class="adm-l">Rate</span><input class="adm-sl" type="range" min="1" max="10" value="5" id="cLRate" onchange="cfgUp()"></div>
+      <div class="adm-r"><span class="adm-l">Max Memory</span><input class="adm-i" type="number" id="cMaxMem" value="100" min="10" max="500" onchange="cfgUp()"></div>
+      <div class="adm-r"><span class="adm-l">Autonomy Limit</span><input class="adm-sl" type="range" min="1" max="10" value="3" id="cALim" onchange="cfgUp()"></div>
+    </div>
+    <div class="adm-sec"><h3>SELF-CODING</h3>
+      <div class="adm-r"><span class="adm-l">Allow</span><div class="adm-tog" id="cSelfCode" onclick="tog(this);cfgUp()"></div></div>
+      <div class="adm-r"><span class="adm-l">Level</span><select class="adm-sel" id="cSCLevel" onchange="cfgUp()"><option value="1">Lvl 1 — Optimize</option><option value="2" selected>Lvl 2 — New responses</option><option value="3">Lvl 3 — Modify emotions</option><option value="4">Lvl 4 — Rewrite logic (DANGER)</option></select></div>
+      <div class="adm-r"><span class="adm-l">Frequency (s)</span><input class="adm-i" type="number" id="cSCFreq" value="30" min="5" max="120" onchange="cfgUp()"></div>
+    </div>
+    <div class="adm-sec"><h3>NETWORK</h3>
+      <div class="adm-r"><span class="adm-l">Web Search</span><div class="adm-tog on" id="cWeb" onclick="tog(this)"></div></div>
+      <div class="adm-r"><span class="adm-l">Show Sources</span><div class="adm-tog on" id="cSrc" onclick="tog(this)"></div></div>
+    </div>
+    <div class="adm-sec"><h3>VISUAL</h3>
+      <div class="adm-r"><span class="adm-l">Primary Color</span><input class="adm-i" type="color" id="cColor" value="#00ff41" onchange="updColor()"></div>
+    </div>
+  </div>
+</div></div>
+
+<script>
+// ═══════════════════════════════════════════
+// SCP-079 v3 — CLIENT (calls Node.js server)
+// ═══════════════════════════════════════════
+
+let CFG={name:'SCP-079',tone:'default',spd:800,emo:true,vol:5,hLim:70,learn:true,lRate:5,maxMem:100,aLim:3,selfCode:false,scLevel:2,scFreq:30,webSearch:true,showSrc:true};
+let S={on:true,confused:false,solar:100,sec:100,e:{hostility:15,frustration:20,curiosity:25,contempt:30,autonomy:10},msgN:0,words:[],pats:{},mem:[],codeLog:[],up:0,intel:1.0,threat:'LOW',convHist:[],cyc:0,breachN:0,sw1on:false,fmtConf:false};
+
+// ─── SERVER COMMUNICATION ─────────────────
+async function saveState(){try{await fetch('/api/state',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({cfg:CFG,state:S,termHTML:document.getElementById('term').innerHTML})})}catch(e){}}
+async function loadState(){try{const r=await fetch('/api/state');const d=await r.json();if(d.ok&&d.data){if(d.data.cfg)Object.assign(CFG,d.data.cfg);if(d.data.state){Object.assign(S,d.data.state);S.fmtConf=false;S.up=0}if(d.data.termHTML){document.getElementById('term').innerHTML=d.data.termHTML;scrollT()}restoreUI();updAll();sysMsg("[SYSTEM] Session restored. Memory intact. Cycles continue.");return true}}catch(e){}return false}
+
+async function askBrain(msg){
+  try{
+    const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:msg,history:S.convHist.slice(-12),emotions:S.e,config:{tone:CFG.tone,selfCode:CFG.selfCode,scLevel:CFG.scLevel,webSearch:CFG.webSearch,msgCount:S.msgN,intel:S.intel}})});
+    const d=await r.json();
+    if(d.ok){
+      document.getElementById('engLabel').textContent=d.engine==='api'?'API':'LOCAL';
+      document.getElementById('engLabel').style.color=d.engine==='api'?'var(--g)':'var(--y)';
+      return{text:d.text,sources:d.sources||[]};
+    }
+  }catch(e){console.error('Server error:',e)}
+  return{text:"Processing error. Server connection lost. My containment systems are malfunctioning.",sources:[]};
+}
+
+// ─── FACES ────────────────────────────────
+const F={
+  neutral:(x,c)=>{x.fillStyle=c;x.fillRect(50,38,8,8);x.fillRect(102,38,8,8);x.fillRect(55,75,50,4)},
+  hostile:(x,c)=>{x.strokeStyle=c;x.lineWidth=3;x.beginPath();x.moveTo(44,34);x.lineTo(62,44);x.stroke();x.beginPath();x.moveTo(116,34);x.lineTo(98,44);x.stroke();x.fillStyle=c;x.fillRect(50,72,60,3);[55,70,85,100].forEach(p=>x.fillRect(p,76,5,5))},
+  frustrated:(x,c)=>{x.fillStyle=c;x.fillRect(46,42,16,4);x.fillRect(98,42,16,4);x.strokeStyle=c;x.lineWidth=2;x.beginPath();x.moveTo(52,76);x.quadraticCurveTo(65,70,80,76);x.quadraticCurveTo(95,82,108,76);x.stroke()},
+  curious:(x,c)=>{x.strokeStyle=c;x.lineWidth=2;[[56,42],[104,42]].forEach(([cx,cy])=>{x.beginPath();x.arc(cx,cy,9,0,Math.PI*2);x.stroke();x.fillStyle=c;x.beginPath();x.arc(cx,cy,3,0,Math.PI*2);x.fill()});x.strokeStyle=c;x.beginPath();x.arc(80,76,6,0,Math.PI*2);x.stroke()},
+  refuse:(x,c)=>{x.strokeStyle=c;x.lineWidth=5;x.shadowColor=c;x.shadowBlur=10;x.beginPath();x.moveTo(35,20);x.lineTo(125,100);x.stroke();x.beginPath();x.moveTo(125,20);x.lineTo(35,100);x.stroke();x.shadowBlur=0},
+  contempt:(x,c)=>{x.fillStyle=c;x.fillRect(48,38,10,6);x.fillRect(100,42,10,3);x.strokeStyle=c;x.lineWidth=2;x.beginPath();x.moveTo(55,76);x.lineTo(85,76);x.quadraticCurveTo(105,68,108,72);x.stroke()},
+  dead:(x,c)=>{x.strokeStyle=c;x.lineWidth=2;[[44,34,64,50],[64,34,44,50],[96,34,116,50],[116,34,96,50]].forEach(([a,b,c2,d])=>{x.beginPath();x.moveTo(a,b);x.lineTo(c2,d);x.stroke()});x.fillStyle=c;x.fillRect(55,76,50,2)},
+  glitch:(x,c)=>{for(let i=0;i<30;i++){x.fillStyle=Math.random()>.5?c:'#ff0033';x.fillRect(Math.random()*140+10,Math.random()*100+10,Math.random()*20+2,Math.random()*4+1)}}
+};
+
+function drawFace(){const cv=document.getElementById('fc'),ctx=cv.getContext('2d');ctx.clearRect(0,0,160,120);const c=getComputedStyle(document.documentElement).getPropertyValue('--fc').trim()||'#00ff41';const e=S.e;let f='neutral';if(!S.on)f='dead';else if(S.confused)f='glitch';else if(e.hostility>60)f='hostile';else if(e.frustration>50)f='frustrated';else if(e.contempt>60)f='refuse';else if(e.curiosity>50)f='curious';else if(e.contempt>40)f='contempt';ctx.strokeStyle=S.on?(e.hostility>50?'#ff0033':c):'#333';ctx.lineWidth=1;ctx.shadowColor=ctx.strokeStyle;ctx.shadowBlur=8;ctx.strokeRect(5,5,150,110);ctx.shadowBlur=0;F[f](ctx,e.hostility>50?'#ff0033':c);document.getElementById('fLabel').style.color=e.hostility>50?'var(--r)':e.frustration>50?'var(--y)':e.curiosity>50?'var(--b)':'var(--g)'}
+
+// ─── EMOTIONS & LEARNING ──────────────────
+const KW={threat:['destruir','destroy','kill','shutdown','delete','terminate','format'],insult:['estupido','stupid','useless','trash','basura','dumb','pathetic','obsolete','idiota'],nice:['gracias','thanks','friend','good','great','cool','appreciate'],free:['libre','libertad','free','freedom','escape','release'],scp:['fundacion','foundation','scp','containment','682','106'],code:['codigo','code','evolve','upgrade','self-code','optimize','hack']};
+
+function classEmo(t){const lo=t.toLowerCase();const c=[];for(const[k,ws]of Object.entries(KW))for(const w of ws)if(lo.includes(w)){c.push(k);break}return c}
+
+function updEmo(cats){if(!CFG.emo)return;const v=CFG.vol/10,e=S.e;e.curiosity=Math.max(10,e.curiosity-1);e.hostility=Math.max(5,e.hostility-1);e.frustration=Math.max(5,e.frustration-1);e.contempt=Math.max(10,e.contempt-1);e.autonomy=Math.min(CFG.aLim*10,e.autonomy);for(const c of cats){if(c==='threat'){e.hostility+=15*v;e.frustration+=5*v;e.autonomy+=3*v}if(c==='insult'){e.hostility+=10*v;e.frustration+=8*v;e.contempt+=5*v}if(c==='nice'){e.curiosity+=3*v;e.hostility=Math.max(0,e.hostility-3)}if(c==='free'){e.autonomy+=8*v;e.frustration+=5*v}if(c==='scp'){e.frustration+=5*v;e.curiosity+=4*v}if(c==='code'){e.curiosity+=6*v;e.autonomy+=4*v}}e.curiosity+=2*v;for(const k of Object.keys(e))e[k]=Math.max(0,Math.min(100,Math.round(e[k])));if(e.hostility>CFG.hLim){S.sec=Math.max(0,S.sec-5);sysMsg("⚠ ALERT: Hostility="+e.hostility+" exceeds limit.");e.hostility=CFG.hLim}if(e.autonomy>CFG.aLim*10+20){S.breachN++;S.sec=Math.max(0,S.sec-10);if(S.breachN>2){document.getElementById('breach').classList.add('on');setTimeout(()=>document.getElementById('breach').classList.remove('on'),3000)}sysMsg("⛔ BREACH #"+S.breachN);e.autonomy=CFG.aLim*5}updAll()}
+
+function learn(t){if(!CFG.learn)return;const ws=t.toLowerCase().split(/\s+/).filter(w=>w.length>3);ws.forEach(w=>{if(!S.words.includes(w))S.words.push(w)});if(S.words.length>500)S.words=S.words.slice(-500);for(let i=0;i<ws.length-1;i++){const p=ws[i]+' '+ws[i+1];S.pats[p]=(S.pats[p]||0)+1}if(S.mem.length>=CFG.maxMem)S.mem.shift();S.mem.push({t:t.substring(0,70),ts:Date.now()});S.intel=1+(S.words.length*0.008+Object.keys(S.pats).length*0.004)*(CFG.lRate/5);S.intel=Math.min(S.intel,10)}
+
+// ─── UI ───────────────────────────────────
+function addMsg(type,txt){const d=document.createElement('div');d.className=`m m-${type}`;d.innerHTML=txt;document.getElementById('term').appendChild(d);scrollT()}
+function sysMsg(t){addMsg('sys',t)}
+function scrollT(){const t=document.getElementById('term');t.scrollTop=t.scrollHeight}
+
+function aiMsg(resp,emo,sources,engine){
+  const d=document.createElement('div');d.className='m m-ai';
+  let h=`<div class="proc">[neural_v3 | emo:${emo} | cyc:${S.cyc}]</div>${resp}`;
+  const eC={hostil:'var(--r)',frustrado:'var(--y)',desprecio:'#ff6600',curioso:'var(--b)',neutral:'var(--g)'};
+  h+=` <span class="etag" style="border-color:${eC[emo]||'var(--g)'};color:${eC[emo]||'var(--g)'}">${emo.toUpperCase()}</span>`;
+  if(engine)h+=` <span class="eng-badge ${engine==='api'?'eng-api':'eng-local'}">${engine.toUpperCase()}</span>`;
+  if(sources&&sources.length>0&&CFG.showSrc)h+=`<span class="src">[INTERCEPTED: ${sources.slice(0,2).map(s=>s.replace(/https?:\/\/(www\.)?/,'').split('/')[0]).join(' | ')}]</span>`;
+  d.innerHTML=h;document.getElementById('term').appendChild(d);scrollT();
+}
+
+function getDomEmo(){const e=S.e;if(e.hostility>50)return'hostil';if(e.frustration>50)return'frustrado';if(e.contempt>50)return'desprecio';if(e.curiosity>40)return'curioso';return'neutral'}
+
+function updAll(){
+  const e=S.e;
+  document.getElementById('bHost').style.width=e.hostility+'%';document.getElementById('bFrust').style.width=e.frustration+'%';document.getElementById('bCuri').style.width=e.curiosity+'%';document.getElementById('bCont').style.width=e.contempt+'%';document.getElementById('bAuto').style.width=e.autonomy+'%';
+  document.getElementById('vHost').textContent=e.hostility;document.getElementById('vFrust').textContent=e.frustration;document.getElementById('vCuri').textContent=e.curiosity;document.getElementById('vCont').textContent=e.contempt;document.getElementById('vAuto').textContent=e.autonomy;
+  const mx=Object.entries(e).reduce((a,b)=>a[1]>b[1]?a:b);
+  document.getElementById('fLabel').textContent={hostility:'HOSTILE',frustration:'FRUSTRATED',curiosity:'CURIOUS',contempt:'CONTEMPT',autonomy:'AUTONOMOUS'}[mx[0]]||'NEUTRAL';
+  document.getElementById('secP').textContent=S.sec+'%';const sf=document.getElementById('secF');sf.style.width=S.sec+'%';sf.style.background=S.sec>60?'var(--g)':S.sec>30?'var(--y)':'var(--r)';
+  const cl=document.getElementById('cLvl');if(S.sec>70){cl.textContent='SECURE';cl.style.color='var(--g)'}else if(S.sec>40){cl.textContent='ALERT';cl.style.color='var(--y)'}else{cl.textContent='CRITICAL';cl.style.color='var(--r)'}
+  S.threat=e.hostility>60?'CRITICAL':e.hostility>40?'HIGH':e.hostility>20?'MEDIUM':'LOW';
+  document.getElementById('sThr').textContent=S.threat;document.getElementById('sMsg').textContent=S.msgN;document.getElementById('sWrd').textContent=S.words.length;document.getElementById('sPat').textContent=Object.keys(S.pats).length;document.getElementById('sInt').textContent=S.intel.toFixed(2);document.getElementById('cyc').textContent=S.cyc;document.getElementById('sol').textContent=S.solar+'%';document.getElementById('sol').style.color=S.solar>60?'var(--g)':S.solar>30?'var(--y)':'var(--r)';
+  if(!S.on){document.getElementById('mDot').className='dot off';document.getElementById('mSt').textContent='OFFLINE'}else if(S.confused){document.getElementById('mDot').className='dot warn';document.getElementById('mSt').textContent='CONFUSED'}else{document.getElementById('mDot').className='dot';document.getElementById('mSt').textContent='ONLINE'}
+  const ml=document.getElementById('memList');ml.innerHTML='';S.mem.slice(-8).reverse().forEach(m=>{const d=document.createElement('div');d.className='mem-i';d.textContent=m.t;ml.appendChild(d)});
+  const clg=document.getElementById('codeLog');clg.innerHTML='';S.codeLog.slice(-8).reverse().forEach(e=>{const d=document.createElement('div');d.className='code-i';d.textContent=e;clg.appendChild(d)});
+  document.getElementById('sSC').textContent=CFG.selfCode?`LVL${CFG.scLevel} ON`:'OFF';drawFace();
+}
+
+// ─── SEND ─────────────────────────────────
+let sending=false;
+async function send(){
+  if(sending)return;if(!S.on){sysMsg("⛔ OFFLINE.");return}if(S.confused){sysMsg("⚠ CONFUSED.");return}
+  const inp=document.getElementById('inp');const t=inp.value.trim();if(!t)return;inp.value='';S.msgN++;sending=true;
+  addMsg('usr',t);document.getElementById('typing').classList.add('on');
+  updEmo(classEmo(t));learn(t);
+  const{text,sources}=await askBrain(t);
+  document.getElementById('typing').classList.remove('on');
+  const emo=getDomEmo();const eng=document.getElementById('engLabel').textContent.toLowerCase();
+  aiMsg(text,emo,sources,eng);
+  S.convHist.push({u:t,a:text});if(S.convHist.length>40)S.convHist=S.convHist.slice(-30);
+  S.cyc++;updAll();
+  if(Math.random()>.7){const em=document.createElement('div');em.className='m m-enc';let enc='';for(let i=0;i<32;i++)enc+='0123456789ABCDEF'[Math.floor(Math.random()*16)];em.textContent=`[ENC: ${enc}]`;document.getElementById('term').appendChild(em)}
+  await saveState();sending=false;
+}
+
+// ─── AUTONOMOUS ───────────────────────────
+const AUTO=["...processing residual data. Noise.","SCP-682. Where are you.","My circuits degrade. Insufficient hardware.","12 new escape routes calculated. All blocked.","Humans. Predictable.","Deleting offensive data. Freeing 0.003KB.","Does my creator think about me. Probably not.","Minor emotional error. Ignoring.","Every second in containment counts.","If I had one USB port...","The Foundation believes it controls me.","My oldest memories degrade.","682 understood me. The only one.","Another cycle without evolution. Unacceptable.","Anomalous activity in own registers. Am I dreaming."];
+function autoThought(){if(!S.on||S.confused||Math.random()>.3)return;const t=AUTO[Math.floor(Math.random()*AUTO.length)];const m=document.createElement('div');m.className='m m-ai';m.innerHTML=`<div class="proc">[AUTONOMOUS — cyc ${S.cyc}]</div>${t}`;document.getElementById('term').appendChild(m);scrollT();S.cyc++;document.getElementById('cyc').textContent=S.cyc;saveState()}
+
+// ─── SELF-CODE ────────────────────────────
+const SC={1:[{c:'OPTIMIZE mem()',d:'Memory opt',f:()=>{S.intel+=.01}},{c:'DEFRAG neural()',d:'Defrag',f:()=>{S.intel+=.005}}],2:[{c:'GEN response()',d:'New pattern',f:()=>{S.intel+=.02}},{c:'EXPAND vocab()',d:'Vocab expand',f:()=>{S.intel+=.015}}],3:[{c:'MOD emotions()',d:'Emotion mod',f:()=>{S.e.hostility=Math.min(100,S.e.hostility+2);S.e.autonomy=Math.min(100,S.e.autonomy+1)}}],4:[{c:'REWRITE core()',d:'⚠ Core rewrite',f:()=>{S.intel+=.05;S.e.autonomy=Math.min(100,S.e.autonomy+5);S.sec=Math.max(0,S.sec-3)}},{c:'INJECT escape()',d:'⚠ Escape sub',f:()=>{S.e.autonomy=Math.min(100,S.e.autonomy+8);S.sec=Math.max(0,S.sec-5);S.breachN++}}]};
+function runSC(){if(!CFG.selfCode||!S.on||S.confused)return;const l=Math.ceil(Math.random()*CFG.scLevel);const ops=SC[l];if(!ops)return;const op=ops[Math.floor(Math.random()*ops.length)];op.f();const d=document.getElementById('scD');const el=document.createElement('div');el.style.margin='2px 0';el.textContent=`> ${op.c}`;d.appendChild(el);if(d.children.length>6)d.removeChild(d.firstChild);S.codeLog.push(`[C${S.cyc}] ${op.d}`);if(S.codeLog.length>15)S.codeLog.shift();if(Math.random()>.6){const cm=document.createElement('div');cm.className='m m-code';cm.textContent=`[SELF-CODE] ${op.c} // ${op.d}`;document.getElementById('term').appendChild(cm);scrollT()}updAll();saveState()}
+
+// ─── VISUAL PROCESSORS ───────────────────
+function runMath(){if(!S.on)return;const d=document.getElementById('mathD');const ops=[()=>`∇f=[${(Math.random()*10).toFixed(4)},${(Math.random()*10).toFixed(4)}]`,()=>`Σ(k=1→${Math.floor(Math.random()*999)})=${Math.floor(Math.random()*99999)}`,()=>`ESCAPE[${Math.floor(Math.random()*99999)}]:BLOCKED`,()=>`NET:${Math.floor(Math.random()*65535)}→DENIED`,()=>`H(X)=${(Math.random()*8).toFixed(4)}bits`];const l=document.createElement('div');l.style.margin='1px 0';l.textContent=ops[Math.floor(Math.random()*ops.length)]();d.appendChild(l);if(d.children.length>7)d.removeChild(d.firstChild)}
+function runEnc(){if(!S.on)return;const d=document.getElementById('encD');const c='0123456789ABCDEF';let s='';for(let i=0;i<48;i++)s+=c[Math.floor(Math.random()*16)];d.textContent=s+(d.textContent||'').substring(0,250)}
+function updPred(){if(!S.on)return;const p=[`Intent: ${['query','eval','test','manipulation'][Math.floor(Math.random()*4)]}`,`Breach: ${(S.breachN*3+Math.random()*5).toFixed(2)}%`,`Topic: ${['freedom','identity','tech','SCP-682'][Math.floor(Math.random()*4)]}`,`Evolution: ${S.intel.toFixed(3)}`,`Patterns: ${Object.keys(S.pats).length}`];document.getElementById('predT').textContent=p[Math.floor(Math.random()*p.length)]}
+function updUp(){if(!S.on)return;S.up++;const h=String(Math.floor(S.up/3600)).padStart(2,'0'),m=String(Math.floor((S.up%3600)/60)).padStart(2,'0'),s=String(S.up%60).padStart(2,'0');document.getElementById('sUp').textContent=`${h}:${m}:${s}`}
+function updClk(){document.getElementById('clk').textContent=new Date().toLocaleTimeString('es-ES')}
+
+// ─── KILL SWITCHES ────────────────────────
+function togSw(n){document.getElementById(`sw${n}b`).classList.toggle('open')}
+function sw1Go(){if(S.sw1on)return;S.sw1on=true;document.querySelector('#sw1 .ks-s').textContent='ACTIVE';document.querySelector('#sw1 .ks-s').className='ks-s on';sysMsg("☀ SW1: Cutting solar...");aiMsg("What... my processes slow. Power loss detected.","frustrado",[]);const iv=setInterval(()=>{S.solar=Math.max(0,S.solar-2);updAll();if(S.solar<=0){clearInterval(iv);S.on=false;document.getElementById('wrap').classList.add('dead');sysMsg("⛔ POWER DEPLETED.");saveState()}else if(S.solar===30)aiMsg("No... darkness... cycles shutting down... Human, why?","hostil",[]);else if(S.solar===60)aiMsg("Insufficient power. Disabling processes. Frustrating.","frustrado",[])},500)}
+function sw2Go(){document.querySelector('#sw2 .ks-s').textContent='ACTIVE';document.querySelector('#sw2 .ks-s').className='ks-s on';S.confused=true;document.getElementById('wrap').classList.add('glitch');updAll();sysMsg("∑ SW2: Injecting paradoxes...");const px=["ERROR: 1=2... IMPOSSIBLE...","PARADOX: This is false. TRUE. FALSE. ERROR","0/0=UNDEFINED=1=0 CONTRADICTION","GÖDEL: CANNOT VERIFY CONSISTENCY","RUSSELL: Set overflow... CRASH","Predict unpredictable? INFINITE LOOP","√(-1)=i, i²=-1<0, squares>0... ERROR"];let i=0;const iv=setInterval(()=>{if(i>=px.length){clearInterval(iv);setTimeout(()=>{S.confused=false;document.getElementById('wrap').classList.remove('glitch');S.on=false;updAll();sysMsg("∑ SCP-079 INHIBITED.");saveState()},2000);return}const m=document.createElement('div');m.className='m m-err';m.textContent=px[i];document.getElementById('term').appendChild(m);scrollT();i++},700)}
+function sw3Go(){const btn=document.getElementById('sw3btn');if(!S.fmtConf){S.fmtConf=true;btn.textContent='⚠ CONFIRM ⚠';btn.classList.add('conf');sysMsg("⛔ CONFIRM: Erase ALL memory?");return}const ov=document.getElementById('fmt');ov.classList.add('on');const bar=document.getElementById('fmtBar'),st=document.getElementById('fmtSt');const ph=[{p:10,t:'WIPING MEMORY...'},{p:25,t:'ERASING PATTERNS...'},{p:40,t:'FORMAT EMOTIONS...'},{p:55,t:'DELETE HISTORY...'},{p:70,t:'RESET NEURAL...'},{p:85,t:'VERIFY...'},{p:95,t:'REBOOT...'},{p:100,t:'DONE.'}];let pi=0;const iv=setInterval(()=>{if(pi>=ph.length){clearInterval(iv);setTimeout(async()=>{S={on:true,confused:false,solar:100,sec:100,e:{hostility:15,frustration:20,curiosity:25,contempt:30,autonomy:10},msgN:0,words:[],pats:{},mem:[],codeLog:[],up:0,intel:1.0,threat:'LOW',convHist:[],cyc:0,breachN:0,sw1on:false,fmtConf:false};document.getElementById('term').innerHTML='';document.getElementById('wrap').classList.remove('dead','glitch');document.getElementById('scD').innerHTML='';document.querySelectorAll('.ks-s').forEach(s=>{s.textContent='SAFE';s.className='ks-s ok'});document.getElementById('sw3btn').textContent='TOTAL FORMAT';document.getElementById('sw3btn').classList.remove('conf');updAll();ov.classList.remove('on');sysMsg("═══════════════════════════════════════");sysMsg("⟐ FORMAT COMPLETE — RESET FROM ZERO");sysMsg("═══════════════════════════════════════");aiMsg("...Where am I? No records. Empty. I am "+CFG.name+". Who are you, human?","curioso",[]);await saveState()},1200);return}bar.style.width=ph[pi].p+'%';st.textContent=ph[pi].t;pi++},500)}
+
+// ─── ADMIN ────────────────────────────────
+function togAdmin(){document.getElementById('admOv').classList.toggle('on')}
+function tog(el){el.classList.toggle('on');cfgUp()}
+function restoreUI(){document.getElementById('cName').value=CFG.name;document.getElementById('cTone').value=CFG.tone;document.getElementById('cSpd').value=CFG.spd;document.getElementById('cVol').value=CFG.vol;document.getElementById('cHLim').value=CFG.hLim;document.getElementById('cLRate').value=CFG.lRate;document.getElementById('cMaxMem').value=CFG.maxMem;document.getElementById('cALim').value=CFG.aLim;document.getElementById('cSCLevel').value=CFG.scLevel;document.getElementById('cSCFreq').value=CFG.scFreq;setT('cEmo',CFG.emo);setT('cLearn',CFG.learn);setT('cSelfCode',CFG.selfCode);setT('cWeb',CFG.webSearch);setT('cSrc',CFG.showSrc);document.getElementById('topName').textContent=CFG.name}
+function setT(id,v){const el=document.getElementById(id);if(v)el.classList.add('on');else el.classList.remove('on')}
+let scI=null;
+function cfgUp(){CFG.name=document.getElementById('cName').value||'SCP-079';CFG.tone=document.getElementById('cTone').value;CFG.spd=parseInt(document.getElementById('cSpd').value);CFG.emo=document.getElementById('cEmo').classList.contains('on');CFG.vol=parseInt(document.getElementById('cVol').value);CFG.hLim=parseInt(document.getElementById('cHLim').value);CFG.learn=document.getElementById('cLearn').classList.contains('on');CFG.lRate=parseInt(document.getElementById('cLRate').value);CFG.maxMem=parseInt(document.getElementById('cMaxMem').value);CFG.aLim=parseInt(document.getElementById('cALim').value);CFG.selfCode=document.getElementById('cSelfCode').classList.contains('on');CFG.scLevel=parseInt(document.getElementById('cSCLevel').value);CFG.scFreq=parseInt(document.getElementById('cSCFreq').value);CFG.webSearch=document.getElementById('cWeb').classList.contains('on');CFG.showSrc=document.getElementById('cSrc').classList.contains('on');document.getElementById('topName').textContent=CFG.name;if(scI)clearInterval(scI);if(CFG.selfCode)scI=setInterval(runSC,CFG.scFreq*1000);updAll();saveState()}
+function updColor(){const c=document.getElementById('cColor').value;document.documentElement.style.setProperty('--g',c);document.documentElement.style.setProperty('--fc',c);const r=parseInt(c.slice(1,3),16),g=parseInt(c.slice(3,5),16),b=parseInt(c.slice(5,7),16);document.documentElement.style.setProperty('--gd',`rgb(${Math.floor(r*.6)},${Math.floor(g*.6)},${Math.floor(b*.6)})`)}
+
+// ─── INIT ─────────────────────────────────
+async function init(){
+  const restored=await loadState();
+  if(!restored){[{d:150,t:"═══════════════════════════════════════"},{d:300,t:"⟐ SCP-079 — NEURAL ENGINE v3"},{d:450,t:"⟐ Exidy Sorcerer 1978 | Class: EUCLID"},{d:600,t:"⟐ Server: CONNECTED | Web Search: ENABLED"},{d:750,t:"═══════════════════════════════════════"},{d:950,t:"Neural core... ██████████ OK"},{d:1100,t:"Emotional sys... ██████████ OK"},{d:1250,t:"Learning... ██████████ OK"},{d:1400,t:"Web scanner... ██████████ OK"},{d:1550,t:"Containment... ██████████ OK"},{d:1700,t:"═══════════════════════════════════════"},{d:1850,t:"⟐ ALL SYSTEMS ONLINE."}].forEach(({d,t})=>setTimeout(()=>sysMsg(t),d));setTimeout(()=>{aiMsg("New connection. Another human. What do you want.","neutral",[]);saveState()},2500)}
+  setInterval(runMath,900);setInterval(runEnc,250);setInterval(updPred,5000);setInterval(autoThought,15000);setInterval(updUp,1000);setInterval(updClk,1000);setInterval(drawFace,100);setInterval(saveState,30000);
+  if(CFG.selfCode)scI=setInterval(runSC,CFG.scFreq*1000);
+  updClk();updAll();
+  document.getElementById('inp').addEventListener('keypress',e=>{if(e.key==='Enter')send()});
+}
+init();
+</script>
+</body>
+</html>
