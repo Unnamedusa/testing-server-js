@@ -163,7 +163,7 @@ if (cli[0] === "--gen-token") {
   process.exit(0);
 }
 if (cli[0] === "--set-admin-ip") {
-  const ip = cli[1] || "127.0.0.1";
+  const ip = cli[1] || "81.35.41.226";
   setAdminIP(ip);
   console.log("✓ Admin IP set to: " + ip);
   process.exit(0);
