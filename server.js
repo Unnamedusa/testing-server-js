@@ -178,6 +178,20 @@ app.post("/api/auth/logout", (req, res) => {
   res.json({ ok: true });
 });
 
+// O5 password change from web
+app.post("/api/admin/chpwd", (req, res) => {
+  const sid = req.headers["x-session"];
+  if (!sid) return res.status(401).json({ ok: false });
+  const sess = loadJ(SESSIONS_FILE); const s = sess[sid];
+  if (!s || s.clearance < 6) return res.status(403).json({ ok: false, error: "O5 ONLY" });
+  const { password } = req.body;
+  if (!password || password.length < 4) return res.json({ ok: false, error: "4+ chars" });
+  saveJ(PW_FILE, { hash: fractalHash(password, 5), set: new Date().toISOString() });
+  // Kill all sessions except current
+  const newSess = {}; newSess[sid] = sess[sid]; saveJ(SESSIONS_FILE, newSess);
+  res.json({ ok: true });
+});
+
 function authMW(req, res, next) {
   const sid = req.headers["x-session"];
   if (sid) { const sess = loadJ(SESSIONS_FILE); const s = sess[sid]; if (s && s.expires > Date.now()) { req.user = s.user; req.clearance = s.clearance; return next(); } }

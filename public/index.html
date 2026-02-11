@@ -519,6 +519,7 @@ body.light input,body.light textarea,body.light select{background:#fff;color:#33
           <option value="setmod">SET MODERATOR</option>
           <option value="bdgEdit">EDIT BADGE REGISTRY</option>
           <option value="plugin">INSTALL PLUGIN</option>
+          <option value="chpwd">CHANGE SERVER PASSWORD</option>
           <option value="rekey">REGENERATE MASTER KEY</option>
         </select>
         <select id="o5Level"><option value="-1">CLASS-D</option><option value="0">CLASS-E</option><option value="1">L1</option><option value="2">L2</option><option value="3">L3</option><option value="4">L4</option><option value="5">L5</option><option value="6">O5</option></select>
@@ -660,7 +661,7 @@ body.light input,body.light textarea,body.light select{background:#fff;color:#33
 <!-- D/E SPECIFIC -->
 <div id="emgP" class="emg-p" style="display:none;gap:3px;margin-top:2px">
   <button id="emgD" class="emg-b emg-r" onclick="emgAlert()" style="display:none">🚨 EMERGENCY<span>ALERT SUPERIORS</span></button>
-  <button id="emgE" class="emg-b emg-bl" onclick="emgSupport()" style="display:none">🛡 SUPPORT<span>REQUEST BACKUP</span></button>
+  <button id="emgE" class="emg-b emg-bl" onclick="emgSupport()" style="display:none">🛡 SUPPORT<span>REQUEST SECURITY</span></button>
   <button id="emgAggro" class="emg-b" style="display:none;border-color:#ff6600;color:#ff6600" onclick="cellAggress()">⚔ AGGRESS<span>HIGH RISK</span></button>
 </div>
 <!-- CELL CONTROL BAR (L3+ only) -->
@@ -679,7 +680,7 @@ body.light input,body.light textarea,body.light select{background:#fff;color:#33
 <div id="tcOv" class="tc-ov"><div class="tc-bx">
   <div class="mg-hd"><h2 id="tcTi">🧪 TEST CHAMBER</h2><button class="arc-btn close" onclick="$('tcOv').classList.remove('on')">✕</button></div>
   <div style="padding:10px"><div class="tc-fd" id="tcFd"></div>
-  <div style="display:flex;gap:4px;margin-top:6px"><input type="text" id="tcIn" style="flex:1;background:var(--bg);border:1px solid var(--brd);color:var(--g);font-family:VT323,monospace;font-size:12px;padding:6px;outline:none" placeholder="Experiment message..."><button class="mg-ct" style="padding:5px 12px;border:1px solid var(--g);background:none;color:var(--g);font-family:VT323,monospace;cursor:pointer" onclick="tcSend()">SEND</button></div>
+  <div style="display:flex;gap:4px;margin-top:6px"><input type="text" id="tcIn" style="flex:1;background:var(--bg);border:1px solid var(--brd);color:var(--g);font-family:VT323,monospace;font-size:12px;padding:6px;outline:none" placeholder="Experiment message..."><button class="mg-ct" style="padding:5px 8px;border:1px solid var(--y);background:none;color:var(--y);font-family:VT323,monospace;cursor:pointer;font-size:11px" onclick="tcUpload()">📎</button><input type="file" id="tcFileIn" style="display:none" onchange="tcFileHandle(this)" accept="image/*,audio/*,.txt,.pdf,.doc,.docx,.json,.csv,.md"><button class="mg-ct" style="padding:5px 12px;border:1px solid var(--g);background:none;color:var(--g);font-family:VT323,monospace;cursor:pointer" onclick="tcSend()">SEND</button></div>
   </div>
 </div></div>
 <!-- v9 PERSONNEL BAR -->
@@ -714,7 +715,7 @@ body.light input,body.light textarea,body.light select{background:#fff;color:#33
   <div style="padding:10px">
     <input id="o5T2" placeholder="Target username" style="width:100%;background:var(--bg);border:1px solid #331111;color:var(--r);font-family:'VT323',monospace;font-size:11px;padding:5px;outline:none;margin:3px 0;border-radius:2px">
     <select id="o5A2" style="width:100%;background:var(--bg);border:1px solid #331111;color:var(--r);font-family:'VT323',monospace;font-size:11px;padding:5px;outline:none;margin:3px 0;border-radius:2px">
-      <option value="grant">GRANT CLEARANCE</option><option value="revoke">REVOKE CLEARANCE</option><option value="badge">AWARD BADGE</option><option value="grantxp">GRANT XP</option><option value="neutralize">NEUTRALIZE PERSONNEL</option><option value="setmod">SET MODERATOR</option><option value="bdgEdit">BADGE REGISTRY</option><option value="plugin">PLUGINS</option><option value="rekey">REKEY</option>
+      <option value="grant">GRANT CLEARANCE</option><option value="revoke">REVOKE CLEARANCE</option><option value="badge">AWARD BADGE</option><option value="grantxp">GRANT XP</option><option value="neutralize">NEUTRALIZE PERSONNEL</option><option value="setmod">SET MODERATOR</option><option value="bdgEdit">BADGE REGISTRY</option><option value="plugin">PLUGINS</option><option value="chpwd">CHANGE PASSWORD</option><option value="rekey">REKEY</option>
     </select>
     <select id="o5L2" style="width:100%;background:var(--bg);border:1px solid #331111;color:var(--r);font-family:'VT323',monospace;font-size:11px;padding:5px;outline:none;margin:3px 0;border-radius:2px"><option value="-1">CLASS-D</option><option value="0">CLASS-E</option><option value="1">L1</option><option value="2">L2</option><option value="3">L3</option><option value="4">L4</option><option value="5">L5</option><option value="6">O5</option></select>
     <input id="o5E2" placeholder="Badge name / reason" style="width:100%;background:var(--bg);border:1px solid #331111;color:var(--r);font-family:'VT323',monospace;font-size:11px;padding:5px;outline:none;margin:3px 0;border-radius:2px">
@@ -749,7 +750,7 @@ body.light input,body.light textarea,body.light select{background:#fff;color:#33
 <div id="aofOv" class="aof-ov"><div class="aof-bx">
   <div class="mg-hd"><h2>🔒 ADMINISTRATIVE OFFICE</h2><span id="aofOnline" style="font-size:9px;color:var(--g);font-family:VT323,monospace">0 online</span><button class="arc-btn close" onclick="$('aofOv').classList.remove('on')">✕</button></div>
   <div class="aof-feed" id="aofFeed"></div>
-  <div class="aof-inp"><input id="aofInp" placeholder="Message..." style="flex:1;background:var(--bg);border:1px solid #1a1a2a;color:#aa00ff;font-family:'VT323',monospace;font-size:11px;padding:6px;outline:none;border-radius:2px"><button onclick="aofSend()" style="padding:6px 12px;border:1px solid #aa00ff;background:none;color:#aa00ff;font-family:'VT323',monospace;font-size:10px;cursor:pointer;border-radius:2px">SEND</button></div>
+  <div class="aof-inp"><input id="aofInp" placeholder="Message..." style="flex:1;background:var(--bg);border:1px solid #1a1a2a;color:#aa00ff;font-family:'VT323',monospace;font-size:11px;padding:6px;outline:none;border-radius:2px"><button onclick="aofUpload()" style="padding:6px 8px;border:1px solid var(--y);background:none;color:var(--y);font-family:'VT323',monospace;font-size:10px;cursor:pointer;border-radius:2px">📎</button><input type="file" id="aofFileIn" style="display:none" onchange="aofFileHandle(this)" accept="image/*,audio/*,.txt,.pdf,.doc,.docx,.json,.csv,.md"><button onclick="aofSend()" style="padding:6px 12px;border:1px solid #aa00ff;background:none;color:#aa00ff;font-family:'VT323',monospace;font-size:10px;cursor:pointer;border-radius:2px">SEND</button></div>
 </div></div>
 <!-- v10 VIRTUAL OFFICE -->
 <div id="vofOv" class="vof-ov"><div class="vof-bx" style="width:650px">
@@ -1693,14 +1694,13 @@ function applyClearance(level){
   const ab=document.querySelector('.ba[onclick="togAdm()"]');if(ab)ab.style.display=level>=6?'':'none';
   const arb=document.querySelector('.ba[onclick="openArchiveFromMain()"]');if(arb)arb.style.display=level>=1?'':'none';
   vis('cellCtrl',level>=3);
-  // Universal bar for ALL users
+  // Universal bar — ALL users (D-class through O5)
   vis('uniBar',true);vis('uniExit',true);vis('uniEnter',false);vis('uniReinf',true);
-  // D/E extras
-  const ep=$('emgP');if(ep)ep.style.display=level<1?'flex':'none';
+  // Support/Emergency — visible for ALL clearances
+  const ep=$('emgP');if(ep)ep.style.display='flex';
   vis('fuArea',level>=1&&XP.rank>=1);
-  if(level===-1){vis('emgD',true);vis('emgE',false);vis('emgAggro',true)}
-  else if(level===0){vis('emgD',false);vis('emgE',true);vis('emgAggro',false)}
-  else{vis('emgD',false);vis('emgE',false);vis('emgAggro',false)}
+  if(level===-1){vis('emgD',true);vis('emgE',true);vis('emgAggro',true)}
+  else{vis('emgD',level<3);vis('emgE',true);vis('emgAggro',level<1)}
   // D/E restrictions
   if(level<1){
     if($('inp'))$('inp').placeholder=level===-1?'[D-CLASS EXPERIMENT] Communicate...':'[CLASS-E SESSION] Provisional...';
@@ -1945,8 +1945,10 @@ function updateInsurgentMode(){
 }
 
 // ═══ UI ═══
-function addM(t,txt){const d=document.createElement('div');d.className='m m-'+t;d.innerHTML=txt;$('term').appendChild(d);scrl()}
-function sysM(t){addM('sys',t)}
+function addM(t,txt){const d=document.createElement('div');d.className='m m-'+t;
+  if(t==='usr'&&UN)d.innerHTML=txt.replace(UN,redactName(UN));else d.innerHTML=txt;
+  $('term').appendChild(d);scrl()}
+function sysM(t){if(UN&&typeof redactName==='function'){try{t=t.split(UN).join(redactName(UN))}catch(e){}}addM('sys',t)}
 function scrl(){const t=$('term');requestAnimationFrame(()=>{t.scrollTop=t.scrollHeight})}
 function aiMsg(resp,emo,src,eng){const d=document.createElement('div');d.className='m m-ai';const eC={hostil:'var(--r)',frustrado:'var(--y)',curioso:'var(--b)',neutral:'var(--g)'};let h=`<div class="p">[qne_v5|${emo}|cyc:${S.cyc}]</div>${resp}`;h+=` <span class="et" style="border-color:${eC[emo]||'var(--g)'};color:${eC[emo]||'var(--g)'}">${emo}</span>`;if(eng)h+=` <span class="eng eng-${eng}">${eng.toUpperCase()}</span>`;if(src&&src.length)h+=`<span class="sc">[${src.slice(0,2).map(s=>s.replace(/https?:\/\/(www\.)?/,'').split('/')[0]).join('|')}]</span>`;d.innerHTML=h;$('term').appendChild(d);scrl()}
 function getDomE(){const e=S.e;if(e.hostility>50)return'hostil';if(e.frustration>50)return'frustrado';if(e.curiosity>40)return'curioso';return'neutral'}
@@ -2090,7 +2092,7 @@ function o5Exec2(){
   if(!O5.authed)return;
   const target=$('o5T2').value.trim(),action=$('o5A2').value,level=parseInt($('o5L2').value),extra=$('o5E2').value.trim(),btype=$('o5BT2').value,bdesc=$('o5BD2').value.trim();
   const R=$('o5R2');
-  if(!target&&!['rekey','bdgEdit','plugin'].includes(action)){R.textContent='⛔ Enter target.';R.style.color='var(--r)';return}
+  if(!target&&!['rekey','chpwd','bdgEdit','plugin'].includes(action)){R.textContent='⛔ Enter target.';R.style.color='var(--r)';return}
   if(action==='grant'){
     O5.grants.push({target,level,by:UN,time:Date.now()});_o5Save();
     try{const g=JSON.parse(localStorage.getItem('s79_clearances')||'{}');g[target.toLowerCase()]=level;localStorage.setItem('s79_clearances',JSON.stringify(g))}catch(e){}
@@ -2128,6 +2130,14 @@ function o5Exec2(){
     if(m.includes(target.toLowerCase())){const i=m.indexOf(target.toLowerCase());m.splice(i,1);localStorage.setItem('s79_mods',JSON.stringify(m));R.innerHTML='✓ REMOVED moderator: '+target;R.style.color='var(--y)'}
     else{m.push(target.toLowerCase());localStorage.setItem('s79_mods',JSON.stringify(m));R.innerHTML='✓ SET moderator: <b>'+target+'</b>';R.style.color='var(--g)'}}catch(e){}
     autoLog('O5','MOD toggle: '+target);
+  }else if(action==='chpwd'){
+    const np=prompt('New server password (4+ chars):');if(!np||np.length<4){R.textContent='⛔ 4+ chars required.';R.style.color='var(--r)';return}
+    if(prompt('Confirm new password:')!==np){R.textContent='⛔ Passwords do not match.';R.style.color='var(--r)';return}
+    // Save to localStorage + try server
+    try{localStorage.setItem('s79_server_pw',np)}catch(e){}
+    try{fetch('/api/admin/chpwd',{method:'POST',headers:{'Content-Type':'application/json','x-session':SID},body:JSON.stringify({password:np})})}catch(e){}
+    R.innerHTML='✓ Server password changed.';R.style.color='var(--g)';
+    autoLog('O5','Server password changed by '+UN);sysM('☢ O5: Server password updated.');
   }else if(action==='rekey'){
     const nk=prompt('New master key:');if(!nk||nk.length<6){R.textContent='⛔ 6+ chars.';R.style.color='var(--r)';return}
     if(prompt('Confirm:')!==nk){R.textContent='⛔ Mismatch.';R.style.color='var(--r)';return}
@@ -2137,7 +2147,7 @@ function o5Exec2(){
 function o5Exec(){
   if(!O5.authed){$('o5Result').textContent='⛔ Not authenticated.';return}
   const action=$('o5Action').value,target=$('o5Target').value.trim(),level=parseInt($('o5Level').value),extra=$('o5Extra').value.trim();
-  if(!target&&!['rekey','bdgEdit','plugin'].includes(action)){$('o5Result').textContent='⛔ Enter target.';$('o5Result').style.color='var(--r)';return}
+  if(!target&&!['rekey','chpwd','bdgEdit','plugin'].includes(action)){$('o5Result').textContent='⛔ Enter target.';$('o5Result').style.color='var(--r)';return}
   if(action==='grant'){
     O5.grants.push({target,level,by:UN||'O5',time:Date.now()});_o5Save();
     $('o5Result').innerHTML='✓ GRANTED: '+target+' → '+(CL_LABELS[level]||'?');$('o5Result').style.color='var(--g)';
@@ -2178,6 +2188,13 @@ function o5Exec(){
     try{const m=JSON.parse(localStorage.getItem('s79_mods')||'[]');
     if(m.includes(target.toLowerCase())){m.splice(m.indexOf(target.toLowerCase()),1);localStorage.setItem('s79_mods',JSON.stringify(m));$('o5Result').innerHTML='✓ REMOVED mod: '+target;$('o5Result').style.color='var(--y)'}
     else{m.push(target.toLowerCase());localStorage.setItem('s79_mods',JSON.stringify(m));$('o5Result').innerHTML='✓ SET mod: '+target;$('o5Result').style.color='var(--g)'}}catch(e){}
+  }else if(action==='chpwd'){
+    const np=prompt('New server password (4+ chars):');if(!np||np.length<4){$('o5Result').textContent='⛔ 4+ chars.';$('o5Result').style.color='var(--r)';return}
+    if(prompt('Confirm:')!==np){$('o5Result').textContent='⛔ Mismatch.';$('o5Result').style.color='var(--r)';return}
+    try{localStorage.setItem('s79_server_pw',np)}catch(e){}
+    try{fetch('/api/admin/chpwd',{method:'POST',headers:{'Content-Type':'application/json','x-session':SID},body:JSON.stringify({password:np})})}catch(e){}
+    $('o5Result').innerHTML='✓ Server password changed.';$('o5Result').style.color='var(--g)';
+    autoLog('O5','Password changed');
   }else if(action==='rekey'){
     const nk=prompt('New master key:');if(!nk||nk.length<6){$('o5Result').textContent='⛔ 6+ chars.';$('o5Result').style.color='var(--r)';return}
     if(prompt('Confirm:')!==nk){$('o5Result').textContent='⛔ Mismatch.';$('o5Result').style.color='var(--r)';return}
@@ -2303,6 +2320,17 @@ function pfApply(){
   if(pfp){if(PF.imgUrl)pfp.innerHTML='<img src="'+PF.imgUrl+'" style="width:100%;height:100%;border-radius:50%;object-fit:cover">';else pfp.textContent=PF.avatar||'👤'}
   // Badges
   if(bdgs)bdgs.innerHTML=getBadgeHTML();
+}
+// v10.6 — Apply redaction to any username for display
+function redactName(name){
+  if(!name)return name;
+  try{const p=JSON.parse(localStorage.getItem('s79_profiles')||'{}');
+  const pf=p[name.toLowerCase()];if(pf&&pf.redact&&pf.redact!=='none'){
+    if(pf.redact==='blur')return '<span class="u-redacted">'+name+'</span>';
+    if(pf.redact==='blackbox')return '<span class="u-blackbox">'+name+'</span>';
+    if(pf.redact==='brackets')return '<span class="u-brackets"><span>'+name+'</span></span>';
+  }}catch(e){}
+  return name;
 }
 function openProfile(){
   _pfLoad(UN);$('pfOv').classList.add('on');
@@ -2462,7 +2490,7 @@ function aofRefresh(){
   const feed=$('aofFeed');feed.innerHTML=msgs.slice(-50).map(m=>{
     const t=new Date(m.time).toLocaleTimeString();
     const cls=m.type==='alert'?'m-o5':m.from==='O5-COUNCIL'?'m-o5':'m-mod';
-    return '<div class="'+cls+'"><span style="color:#555">['+t+']</span> <b>'+m.from+':</b> '+m.text+'</div>';
+    return '<div class="'+cls+'"><span style="color:#555">['+t+']</span> <b>'+redactName(m.from)+':</b> '+m.text+'</div>';
   }).join('');feed.scrollTop=feed.scrollHeight}catch(e){}
 }
 function aofSend(){
@@ -2471,6 +2499,28 @@ function aofSend(){
   msgs.push({from:UN,text:txt,time:Date.now(),type:'msg'});
   localStorage.setItem('s79_aof_msgs',JSON.stringify(msgs))}catch(e){}
   inp.value='';aofRefresh();
+}
+function aofUpload(){$('aofFileIn').click()}
+function aofFileHandle(input){
+  const f=input.files[0];if(!f)return;
+  const ext=f.name.split('.').pop().toLowerCase();
+  if(BLOCKED_EXT.includes(ext)){sysM('⛔ Blocked: .'+ext);input.value='';return}
+  if(f.size>20*1024*1024){sysM('⛔ Max 20MB.');input.value='';return}
+  let content='📎 '+f.name+' ('+Math.round(f.size/1024)+'KB)';
+  if(f.type.startsWith('image/')){
+    const r=new FileReader();r.onload=e=>{
+      try{const msgs=JSON.parse(localStorage.getItem('s79_aof_msgs')||'[]');
+      msgs.push({from:UN,text:'📎 '+f.name+'<br><img src="'+e.target.result+'" style="max-width:200px;max-height:140px;border:1px solid #222;border-radius:3px;margin-top:3px">',time:Date.now(),type:'msg'});
+      localStorage.setItem('s79_aof_msgs',JSON.stringify(msgs))}catch(e){}
+      aofRefresh();
+    };r.readAsDataURL(f);
+  }else{
+    try{const msgs=JSON.parse(localStorage.getItem('s79_aof_msgs')||'[]');
+    msgs.push({from:UN,text:content,time:Date.now(),type:'msg'});
+    localStorage.setItem('s79_aof_msgs',JSON.stringify(msgs))}catch(e){}
+    aofRefresh();
+  }
+  autoLog('UPLOAD','Office: '+f.name+' by '+UN);input.value='';
 }
 
 // ═══ v10.5 VIRTUAL OFFICE — FULL SYSTEM ═══
@@ -2608,7 +2658,7 @@ function vofEnterAs(target,silent){
 function vofChatSend(){
   const inp=$('vofChatIn');const txt=inp.value.trim();if(!txt||!vofVisiting)return;
   const chat=$('vofChat');
-  chat.innerHTML+='<div><b style="color:var(--g)">'+UN+':</b> '+txt+'</div>';
+  chat.innerHTML+='<div><b style="color:var(--g)">'+redactName(UN)+':</b> '+txt+'</div>';
   chat.scrollTop=chat.scrollHeight;inp.value='';
   try{const m=JSON.parse(localStorage.getItem('s79_vof_chat_'+vofVisiting.toLowerCase())||'[]');
   m.push({from:UN,text:txt,time:Date.now()});
@@ -3106,21 +3156,39 @@ function mgScramble(){
 
 // ═══ v9 EMERGENCY SYSTEM ═══
 function emgAlert(){
-  sysM('🚨 D-CLASS EMERGENCY ALERT — '+UN+' requests immediate recontainment');
-  addM('sys','🚨 EMERGENCY: D-Class '+UN+' triggered emergency button. Alerting Level 3+ personnel.');
-  monLog('EMERGENCY','🚨 D-Class '+UN+' pressed EMERGENCY. Requesting recontainment.');
+  const cl=CL_LABELS[userClearance]||'Personnel';
+  sysM('🚨 EMERGENCY — '+cl+' '+UN+' requests immediate recontainment of SCP-079');
+  addM('sys','🚨 EMERGENCY: '+cl+' '+UN+' triggered emergency. Alerting L3+ personnel.');
+  monLog('EMERGENCY','🚨 '+cl+' '+UN+' pressed EMERGENCY.');
   $('emgD').style.background='rgba(255,0,51,.4)';$('emgD').style.pointerEvents='none';
   setTimeout(()=>{$('emgD').style.background='';$('emgD').style.pointerEvents=''},10000);
-  // Auto-log
-  autoLog('EMERGENCY','D-Class '+UN+' triggered emergency alert');
+  autoLog('EMERGENCY',cl+' '+UN+' emergency alert');
+  try{const a=JSON.parse(localStorage.getItem('s79_aof_msgs')||'[]');
+  a.push({from:'SYSTEM',text:'🚨 EMERGENCY: '+cl+' '+UN+' triggered alert!',time:Date.now(),type:'alert'});
+  localStorage.setItem('s79_aof_msgs',JSON.stringify(a))}catch(e){}
+  xpAdd(1,'Emergency');
 }
 function emgSupport(){
-  sysM('🛡 CLASS-E SUPPORT REQUEST — '+UN+' requests security backup');
-  addM('sys','🛡 SUPPORT: Class-E '+UN+' requested security assistance.');
-  monLog('SUPPORT','🛡 Class-E '+UN+' pressed SUPPORT.');
+  const cl=CL_LABELS[userClearance]||'Personnel';
+  const strength=Math.min(12,userClearance*1.5+XP.rank);
+  const eta=Math.max(3,14-userClearance*2-XP.rank);
+  sysM('🛡 SUPPORT — '+cl+' '+UN+' requesting security backup (Str:'+Math.round(strength)+')');
+  addM('sys','🛡 Dispatching security team... ETA: '+eta+'s | Strength: '+Math.round(strength)+'/12');
+  monLog('SUPPORT','🛡 '+cl+' '+UN+' requested support. Str:'+Math.round(strength));
   $('emgE').style.background='rgba(0,136,255,.3)';$('emgE').style.pointerEvents='none';
-  setTimeout(()=>{$('emgE').style.background='';$('emgE').style.pointerEvents=''},8000);
-  autoLog('SECURITY','Class-E '+UN+' triggered support request');
+  setTimeout(()=>{
+    addM('sys','🛡 Security arrived! Containment +'+Math.round(strength)+'% | Hostility -'+Math.round(strength*0.4)+'%');
+    S.sec=Math.min(100,S.sec+strength);
+    S.e.hostility=Math.max(0,S.e.hostility-strength*0.4);
+    try{updAll()}catch(e){}
+    xpAdd(2,'Support call');
+  },eta*1000);
+  setTimeout(()=>{$('emgE').style.background='';$('emgE').style.pointerEvents=''},15000);
+  autoLog('SUPPORT',cl+' '+UN+' — Str:'+Math.round(strength));
+  // Notify admin office
+  try{const a=JSON.parse(localStorage.getItem('s79_aof_msgs')||'[]');
+  a.push({from:'SYSTEM',text:'🛡 '+cl+' '+UN+' requested support (Str:'+Math.round(strength)+')',time:Date.now(),type:'alert'});
+  localStorage.setItem('s79_aof_msgs',JSON.stringify(a))}catch(e){}
 }
 
 // ═══ v9 MONITORING ═══
@@ -3226,14 +3294,30 @@ function openTC(){
 }
 function tcSend(){
   const v=$('tcIn').value.trim();if(!v)return;
-  tcAddMsg('usr',UN+': '+v);$('tcIn').value='';
+  tcAddMsg('usr',redactName(UN)+': '+v);$('tcIn').value='';
   monLog('CHAMBER','['+UN+'] '+v);
+  xpAdd(1,'Chamber msg');
+}
+function tcUpload(){$('tcFileIn').click()}
+function tcFileHandle(input){
+  const f=input.files[0];if(!f)return;
+  const ext=f.name.split('.').pop().toLowerCase();
+  if(BLOCKED_EXT.includes(ext)){sysM('⛔ Blocked: .'+ext);input.value='';return}
+  if(f.size>10*1024*1024){sysM('⛔ Max 10MB.');input.value='';return}
+  if(f.type.startsWith('image/')){
+    const r=new FileReader();r.onload=e=>{
+      tcAddMsg('usr',redactName(UN)+': 📎 '+f.name+'<br><img src="'+e.target.result+'" style="max-width:180px;max-height:120px;border:1px solid var(--brd);border-radius:3px;margin-top:3px">');
+    };r.readAsDataURL(f);
+  }else{
+    tcAddMsg('usr',redactName(UN)+': 📎 '+f.name+' ('+Math.round(f.size/1024)+'KB)');
+  }
+  autoLog('UPLOAD','Chamber: '+f.name+' by '+UN);input.value='';
 }
 function tcAddMsg(type,msg){
   tcLog.push({type,msg,time:Date.now()});
   const fd=$('tcFd'),d=document.createElement('div');
   d.style.color=type==='usr'?'var(--b)':type==='ai'?'var(--r)':'var(--y)';
-  d.textContent='['+new Date().toLocaleTimeString()+'] '+msg;
+  d.innerHTML='['+new Date().toLocaleTimeString()+'] '+msg;
   fd.appendChild(d);fd.scrollTop=fd.scrollHeight;
 }
 
