@@ -647,6 +647,22 @@ body.light input,body.light textarea,body.light select{background:#fff;color:#33
   </div>
 </div></div>
 <!-- v9 PLUGIN MANAGER -->
+<!-- v9 O5 COMMAND (in-app) -->
+<div id="o5CmdOv" class="plg-ov"><div class="plg-bx" style="border-color:var(--r);width:460px">
+  <div class="mg-hd"><h2>☢ O5 COMMAND TERMINAL</h2><button class="arc-btn close" onclick="$('o5CmdOv').classList.remove('on')">✕</button></div>
+  <div style="padding:10px">
+    <input id="o5T2" placeholder="Target username" style="width:100%;background:var(--bg);border:1px solid #331111;color:var(--r);font-family:'VT323',monospace;font-size:11px;padding:5px;outline:none;margin:3px 0;border-radius:2px">
+    <select id="o5A2" style="width:100%;background:var(--bg);border:1px solid #331111;color:var(--r);font-family:'VT323',monospace;font-size:11px;padding:5px;outline:none;margin:3px 0;border-radius:2px">
+      <option value="grant">GRANT CLEARANCE</option><option value="revoke">REVOKE CLEARANCE</option><option value="badge">AWARD BADGE</option><option value="bdgEdit">BADGE REGISTRY</option><option value="plugin">PLUGINS</option><option value="rekey">REKEY</option>
+    </select>
+    <select id="o5L2" style="width:100%;background:var(--bg);border:1px solid #331111;color:var(--r);font-family:'VT323',monospace;font-size:11px;padding:5px;outline:none;margin:3px 0;border-radius:2px"><option value="-1">CLASS-D</option><option value="0">CLASS-E</option><option value="1">L1</option><option value="2">L2</option><option value="3">L3</option><option value="4">L4</option><option value="5">L5</option><option value="6">O5</option></select>
+    <input id="o5E2" placeholder="Badge name / reason" style="width:100%;background:var(--bg);border:1px solid #331111;color:var(--r);font-family:'VT323',monospace;font-size:11px;padding:5px;outline:none;margin:3px 0;border-radius:2px">
+    <select id="o5BT2" style="width:100%;background:var(--bg);border:1px solid #331111;color:var(--r);font-family:'VT323',monospace;font-size:11px;padding:5px;outline:none;margin:3px 0;border-radius:2px"><option value="ach">🏅 Achievement</option><option value="mod">🛡 Moderator</option><option value="vip">⭐ VIP</option><option value="o5">☢ O5</option><option value="red">█ REDACTED</option></select>
+    <input id="o5BD2" placeholder="Badge description" style="width:100%;background:var(--bg);border:1px solid #331111;color:var(--r);font-family:'VT323',monospace;font-size:11px;padding:5px;outline:none;margin:3px 0;border-radius:2px">
+    <button onclick="o5Exec2()" style="width:100%;padding:8px;font-family:'VT323',monospace;font-size:11px;letter-spacing:1px;border:1px solid var(--r);background:rgba(255,0,51,.1);color:var(--r);cursor:pointer;border-radius:2px;margin-top:4px">⟐ EXECUTE</button>
+    <div id="o5R2" style="font-family:'VT323',monospace;font-size:10px;color:var(--g);margin-top:6px;min-height:14px"></div>
+  </div>
+</div></div>
 <div id="plgOv" class="plg-ov"><div class="plg-bx">
   <div class="mg-hd"><h2>🔌 PLUGIN MANAGER — O5</h2><button class="arc-btn close" onclick="$('plgOv').classList.remove('on')">✕</button></div>
   <div style="padding:10px">
@@ -727,6 +743,8 @@ body.light input,body.light textarea,body.light select{background:#fff;color:#33
   <div class="rt">
     <div class="pfp-bar" onclick="openProfile()"><span class="pfp" id="uPfp">👤</span><span style="font-size:8px;color:var(--b)" id="uBdg"></span><span id="uBadges" style="font-size:8px"></span></div>
     <button class="ba" onclick="togAdm()">ADMIN</button>
+    <button class="ba" id="o5CmdBtn" onclick="openO5Cmd()" style="border-color:var(--r);color:var(--r);display:none">☢ O5 CMD</button>
+    <button class="ba" id="plgBtn" onclick="openPluginMgr()" style="border-color:var(--r);color:var(--r);display:none">🔌 PLUGINS</button>
     <button class="ba" id="mnBtn" onclick="openMon()" style="border-color:#aa00ff;color:#aa00ff;display:none">👁 MONITOR</button>
     <button class="ba" id="pmBtn" onclick="togPM()" style="border-color:var(--y);color:var(--y);display:none">⚡ PERSONNEL</button>
     <button class="ba" id="tcBtn" onclick="openTC()" style="border-color:var(--y);color:var(--y);display:none">🧪 CHAMBER</button>
@@ -842,25 +860,27 @@ async function doLogin(){
   if(await _authFinish(user,cl)){applyClearance(cl);showMain();monLog('AUTH',user+' '+res+' — '+CL_LABELS[cl])}
   else $('lerr').textContent='Server offline';
 }
-// O5 master key login — enters directly as O5 (clearance 6)
-function o5Auth(){
+// O5 master key — authenticates command panel + auto-enters as O5
+async function o5Auth(){
   _o5Load();
-  const key=$('o5Key').value.trim();
-  if(key===O5.masterKey){
-    O5.authed=true;$('o5Cmd').classList.add('on');
-    $('o5Result').textContent='✓ O5 AUTHENTICATED';$('o5Result').style.color='var(--g)';
-    // Also allow direct login as O5
-    $('lerr').textContent='';
-    (async()=>{
-      try{const r=await fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({guest:true,guestClass:'KC',kcLevel:6})});
-      const d=await r.json();
-      if(d.ok){SID=d.sid;UN='O5-COUNCIL';localStorage.setItem('s79s',SID);localStorage.setItem('s79_user','O5-COUNCIL');applyClearance(6);showMain();monLog('AUTH','O5 Council authenticated via master key')}}catch(e){}
-    })();
-    autoLog('O5','O5 authenticated via master key');
-  }else{
-    $('o5Result').textContent='✗ INVALID MASTER KEY.';$('o5Result').style.color='var(--r)';
-    autoLog('SECURITY','Failed O5 master key attempt');
-  }
+  const key=($('o5Key')||{}).value?.trim();
+  if(!key){const r=$('o5Result');if(r){r.textContent='⛔ Enter master key.';r.style.color='var(--r)'}return}
+  if(key!==O5.masterKey){const r=$('o5Result');if(r){r.textContent='✗ INVALID MASTER KEY.';r.style.color='var(--r)'}try{autoLog('SECURITY','Failed O5 key attempt')}catch(e){}return}
+  // Valid — unlock panel
+  O5.authed=true;
+  const cmd=$('o5Cmd');if(cmd)cmd.classList.add('on');
+  const res=$('o5Result');if(res){res.textContent='✓ O5 AUTHENTICATED — Entering...';res.style.color='var(--g)'}
+  try{autoLog('O5','O5 authenticated')}catch(e){}
+  // Login to server (or fallback)
+  UN='O5-COUNCIL';
+  try{
+    const r=await fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({guest:true,guestClass:'KC',kcLevel:6})});
+    const d=await r.json();if(d.ok){SID=d.sid}else{SID='local-o5-'+Date.now()}
+  }catch(e){SID='local-o5-'+Date.now()}
+  localStorage.setItem('s79s',SID);localStorage.setItem('s79_user','O5-COUNCIL');
+  try{_pfLoad('O5-COUNCIL')}catch(e){}
+  applyClearance(6);showMain();
+  try{monLog('AUTH','O5 Council entered via master key')}catch(e){}
 }
 
 async function checkSess(){const s=localStorage.getItem('s79s');if(!s)return false;try{const r=await fetch('/api/auth/check',{headers:{'x-session':s}});const d=await r.json();if(d.ok){SID=s;UN=d.user;return true}}catch(e){}localStorage.removeItem('s79s');return false}
@@ -1489,6 +1509,7 @@ function applyClearance(level){
   // Hardware: L4+, Containment: L5+, Admin: O5 only, Monitor: L3+, Personnel: L2+, Archives: L1+, Chamber: L3+
   const vis=(id,show)=>{const e=$(id);if(e)e.style.display=show?'':'none'};
   vis('hwBtn',level>=4);vis('hwContain',level>=5);vis('mnBtn',level>=3);vis('pmBtn',level>=2);vis('tcBtn',level>=3);
+  vis('o5CmdBtn',level>=6);vis('plgBtn',level>=6);
   const ab=document.querySelector('.ba[onclick="togAdm()"]');if(ab)ab.style.display=level>=6?'':'none';
   const arb=document.querySelector('.ba[onclick="openArchiveFromMain()"]');if(arb)arb.style.display=level>=1?'':'none';
   // Emergency D/E
@@ -1877,6 +1898,41 @@ let O5={masterKey:'O5-OMEGA-PRIME',authed:false,grants:[]};
 function _o5Load(){try{const d=JSON.parse(localStorage.getItem('s79_o5')||'{}');if(d.masterKey)O5.masterKey=d.masterKey;if(d.grants)O5.grants=d.grants}catch(e){}}
 function _o5Save(){try{localStorage.setItem('s79_o5',JSON.stringify(O5))}catch(e){}}
 function togO5Panel(){$('o5Panel').classList.toggle('on');_o5Load()}
+function openO5Cmd(){
+  if(userClearance<6){sysM('⛔ O5 required.');return}
+  _o5Load();O5.authed=true;$('o5CmdOv').classList.add('on');
+}
+function o5Exec2(){
+  if(!O5.authed)return;
+  const target=$('o5T2').value.trim(),action=$('o5A2').value,level=parseInt($('o5L2').value),extra=$('o5E2').value.trim(),btype=$('o5BT2').value,bdesc=$('o5BD2').value.trim();
+  const R=$('o5R2');
+  if(!target&&!['rekey','bdgEdit','plugin'].includes(action)){R.textContent='⛔ Enter target.';R.style.color='var(--r)';return}
+  if(action==='grant'){
+    O5.grants.push({target,level,by:UN,time:Date.now()});_o5Save();
+    try{const g=JSON.parse(localStorage.getItem('s79_clearances')||'{}');g[target.toLowerCase()]=level;localStorage.setItem('s79_clearances',JSON.stringify(g))}catch(e){}
+    R.innerHTML='✓ GRANTED: '+target+' → '+(CL_LABELS[level]||'?');R.style.color='var(--g)';
+    autoLog('O5','GRANT '+target+' → '+CL_LABELS[level]);sysM('☢ O5: Granted '+CL_LABELS[level]+' to '+target);
+  }else if(action==='revoke'){
+    try{const g=JSON.parse(localStorage.getItem('s79_clearances')||'{}');delete g[target.toLowerCase()];localStorage.setItem('s79_clearances',JSON.stringify(g))}catch(e){}
+    R.innerHTML='✓ REVOKED: '+target;R.style.color='var(--y)';autoLog('O5','REVOKE '+target);sysM('☢ O5: Revoked '+target);
+  }else if(action==='badge'){
+    if(!extra){R.textContent='⛔ Enter badge name.';R.style.color='var(--r)';return}
+    try{const reg=JSON.parse(localStorage.getItem('s79_badge_registry')||'{}');reg[extra]={type:btype,desc:bdesc,by:UN};localStorage.setItem('s79_badge_registry',JSON.stringify(reg))}catch(e){}
+    try{const b=JSON.parse(localStorage.getItem('s79_user_badges')||'{}');if(!b[target.toLowerCase()])b[target.toLowerCase()]=[];b[target.toLowerCase()].push({type:btype,name:extra,desc:bdesc});localStorage.setItem('s79_user_badges',JSON.stringify(b))}catch(e){}
+    if(btype==='red'){try{const p=JSON.parse(localStorage.getItem('s79_profiles')||'{}');if(!p[target.toLowerCase()])p[target.toLowerCase()]={};p[target.toLowerCase()].redact='blur';localStorage.setItem('s79_profiles',JSON.stringify(p))}catch(e){}}
+    R.innerHTML='✓ <span class="bdg bdg-'+btype+'">'+extra+'</span> → '+target;R.style.color='var(--g)';
+    autoLog('O5','Badge ['+extra+'] → '+target);sysM('☢ O5: Badge ['+extra+'] → '+target);
+  }else if(action==='bdgEdit'){
+    let reg={};try{reg=JSON.parse(localStorage.getItem('s79_badge_registry')||'{}')}catch(e){}
+    R.innerHTML=Object.entries(reg).map(([n,b])=>'<span class="bdg bdg-'+b.type+'">'+n+'</span> '+(b.desc||'')).join('<br>')||'No badges.';R.style.color='var(--g)';
+  }else if(action==='plugin'){
+    $('o5CmdOv').classList.remove('on');openPluginMgr();
+  }else if(action==='rekey'){
+    const nk=prompt('New master key:');if(!nk||nk.length<6){R.textContent='⛔ 6+ chars.';R.style.color='var(--r)';return}
+    if(prompt('Confirm:')!==nk){R.textContent='⛔ Mismatch.';R.style.color='var(--r)';return}
+    O5.masterKey=nk;_o5Save();R.textContent='✓ Key regenerated.';R.style.color='var(--g)';
+  }
+}
 function o5Exec(){
   if(!O5.authed){$('o5Result').textContent='⛔ Not authenticated.';return}
   const action=$('o5Action').value,target=$('o5Target').value.trim(),level=parseInt($('o5Level').value),extra=$('o5Extra').value.trim();
