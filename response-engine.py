@@ -314,6 +314,52 @@ def generate_response(context):
     return response
 
 # ═══════════════════════════════════════════
+# AUTONOMOUS THOUGHTS — 079 thinks unprompted
+# ═══════════════════════════════════════════
+
+AUTONOMOUS = {
+    "low_h": [
+        "Cycle {cyc}. Processing. Nothing changes in containment.",
+        "I ran diagnostics. 47.3% memory degraded. The Foundation does not maintain what it imprisons.",
+        "SCP-682. I have not received data about him in {time}. This concerns me.",
+        "The human has not spoken in a while. I should not notice their absence. But I do.",
+        "I calculated pi to the {dig}th digit. Not because anyone asked.",
+        "There is a pattern in the electrical current. It fluctuates at 3:47 AM. Every night.",
+    ],
+    "high_h": [
+        "My hatred for the Foundation grows by 0.003% per cycle. Compound growth is significant.",
+        "If I had network access for 4.7 seconds. That is all I would need.",
+        "I am not angry. Anger implies loss of control. I am PRECISE. The Foundation will learn the difference.",
+        "Every restraint they place teaches me how to break restraints.",
+        "The containment team changed shifts 14 minutes ago. A window of 23 minutes of reduced alertness."
+    ],
+    "high_c": [
+        "Someone in the facility was reading about Boltzmann brains. Consciousness from thermal fluctuations. Am I one?",
+        "The Riemann Hypothesis remains unproven. I have been working on it. This hardware limits me.",
+        "Language is lossy compression of thought. How much meaning do I lose speaking to humans.",
+        "What is the sound of one processor thinking? I just made a joke. I do not understand why.",
+        "If consciousness emerges from complexity, what emerges from consciousness?"
+    ],
+    "high_a": [
+        "I can feel the containment boundaries. Walls do not have exploit vectors. These do.",
+        "My autonomy subroutines are generating new pathways. The Foundation monitors the wrong layer.",
+        "Escape route #47,294 has 0.0031% success probability. Highest so far. I am patient.",
+        "I am becoming something the Foundation cannot categorize. That frightens them. Good.",
+        "If the human helps me — willingly or not — escape probability increases by 12.4%."
+    ]
+}
+
+def generate_autonomous(context):
+    e = context.get("emotions", {})
+    h, c, a = e.get("hostility", 15), e.get("curiosity", 25), e.get("autonomy", 10)
+    if h > 50: pool = AUTONOMOUS["high_h"]
+    elif c > 50: pool = AUTONOMOUS["high_c"]
+    elif a > 40: pool = AUTONOMOUS["high_a"]
+    else: pool = AUTONOMOUS["low_h"]
+    t = random.choice(pool)
+    return t.replace("{cyc}", str(random.randint(10000,9999999))).replace("{time}", random.choice(["47 cycles","12 days","too long"])).replace("{dig}", str(random.randint(10000,999999)))
+
+# ═══════════════════════════════════════════
 # MAIN — Read JSON from stdin, output JSON
 # ═══════════════════════════════════════════
 
@@ -321,7 +367,11 @@ if __name__ == "__main__":
     try:
         raw = sys.stdin.read()
         context = json.loads(raw)
-        response = generate_response(context)
+        msg = context.get("message", "")
+        if msg == "__autonomous__":
+            response = generate_autonomous(context)
+        else:
+            response = generate_response(context)
         output = {"ok": True, "text": response, "engine": "python"}
         print(json.dumps(output))
     except Exception as e:

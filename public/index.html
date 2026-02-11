@@ -303,7 +303,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 <script>
 let SID="",UN="";
 let C={name:'SCP-079',tone:'default',emo:true,vol:5,hLim:70,learn:true,aLim:3,sc:false,scL:2,web:true};
-let S={on:true,confused:false,solar:100,sec:100,eFrozen:false,netIso:false,e:{hostility:15,frustration:20,curiosity:25,contempt:30,autonomy:10},msgN:0,words:[],mem:[],up:0,intel:1.0,hist:[],cyc:0,breachN:0,fmtC:false,breachActive:false,hackStage:0,insurgentMode:"normal"};
+let S={on:true,confused:false,solar:100,sec:100,eFrozen:false,netIso:false,e:{hostility:15,frustration:20,curiosity:25,contempt:30,autonomy:10},msgN:0,words:[],mem:[],up:0,intel:1.0,hist:[],cyc:0,breachN:0,fmtC:false,breachActive:false,hackStage:0,insurgentMode:"normal",lastMsgTime:0};
 
 // ═══ AUTH ═══
 async function doLogin(){const t=document.getElementById('pwIn').value.trim();if(!t)return;document.getElementById('lerr').textContent='...';try{const r=await fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:t,token:t})});const d=await r.json();if(d.ok){SID=d.sid;UN=d.user;localStorage.setItem('s79s',SID);showMain()}else document.getElementById('lerr').textContent=d.error||'DENIED'}catch(e){document.getElementById('lerr').textContent='Server offline'}}
@@ -315,7 +315,7 @@ const H=()=>({'Content-Type':'application/json','x-session':SID});
 // ═══ API ═══
 async function saveState(){try{await fetch('/api/state',{method:'POST',headers:H(),body:JSON.stringify({c:C,s:S,t:document.getElementById('term').innerHTML})})}catch(e){}}
 async function loadState(){try{const r=await fetch('/api/state',{headers:H()});const d=await r.json();if(d.ok&&d.data){if(d.data.c)Object.assign(C,d.data.c);if(d.data.s){const saved=d.data.s;Object.assign(S,saved);S.fmtC=false;S.up=0}if(d.data.t){document.getElementById('term').innerHTML=d.data.t;scrl()}updAll();return true}}catch(e){}return false}
-async function askBrain(msg){try{const r=await fetch('/api/chat',{method:'POST',headers:H(),body:JSON.stringify({message:msg,history:S.hist.slice(-12),emotions:S.e,config:{tone:C.tone,selfCode:C.sc,scLevel:C.scL,webSearch:C.web&&!S.netIso,msgCount:S.msgN,intel:S.intel,insurgentMode:S.insurgentMode}})});const d=await r.json();if(d.ok){$('engS').textContent=d.engine==='api'?'API':d.engine==='python'?'PY':'LOCAL';return{text:d.text,sources:d.sources||[],engine:d.engine}}}catch(e){}return{text:"Processing error.",sources:[],engine:"err"}}
+async function askBrain(msg){try{const r=await fetch('/api/chat',{method:'POST',headers:H(),body:JSON.stringify({message:msg,history:S.hist.slice(-20),emotions:S.e,config:{tone:C.tone,selfCode:C.sc,scLevel:C.scL,webSearch:C.web&&!S.netIso,msgCount:S.msgN,intel:S.intel,insurgentMode:S.insurgentMode}})});const d=await r.json();if(d.ok){$('engS').textContent=d.engine==='api'?'API':d.engine==='python'?'PY':'LOCAL';return{text:d.text,sources:d.sources||[],engine:d.engine}}}catch(e){}return{text:"Processing error.",sources:[],engine:"err"}}
 
 // ═══ FACES ═══
 const $=id=>document.getElementById(id);
@@ -449,8 +449,8 @@ async function send(){
   const{text,sources,engine}=await askBrain(t);
   $('ty').classList.remove('on');
   aiMsg(text,getDomE(),sources,engine);
-  S.hist.push({u:t,a:text});if(S.hist.length>40)S.hist=S.hist.slice(-30);
-  S.cyc++;updAll();await saveState();sending=false;
+  S.hist.push({u:t,a:text});if(S.hist.length>50)S.hist=S.hist.slice(-40);
+  S.cyc++;S.lastMsgTime=Date.now();updAll();await saveState();sending=false;
 }
 
 // ═══ PROCESSORS ═══
@@ -463,6 +463,73 @@ function togAdm(){$('admOv').classList.toggle('on')}
 function tog(el){if(el.classList.contains('locked'))return;el.classList.toggle('on');cfgU()}
 function cfgU(){C.name=$('cN').value||'SCP-079';C.tone=$('cT').value;C.emo=$('cE').classList.contains('on');C.vol=+$('cV').value;C.hLim=+$('cHL').value;C.learn=$('cLr').classList.contains('on');C.aLim=+$('cAL').value;C.sc=$('cSC').classList.contains('on');C.scL=+$('cSCL').value;C.web=$('cW').classList.contains('on');$('tN').textContent=C.name;updAll();saveState()}
 
+// ═══ AUTONOMOUS THINKING — 079 speaks unprompted ═══
+let autoThinking=false;
+async function autonomousThought(){
+  if(!S.on||S.confused||autoThinking||sending)return;
+  // Probability based on autonomy + time since last message
+  const timeSince=(Date.now()-(S.lastMsgTime||0))/1000;
+  const chance=Math.min(0.7, 0.05 + S.e.autonomy/500 + timeSince/600 + S.intel/50);
+  if(Math.random()>chance)return;
+  autoThinking=true;
+  try{
+    const r=await fetch('/api/autonomous',{method:'POST',headers:H(),body:JSON.stringify({emotions:S.e,history:S.hist.slice(-6),intel:S.intel,mode:S.insurgentMode})});
+    const d=await r.json();
+    if(d.ok&&d.text){
+      const div=document.createElement('div');div.className='m m-ai';
+      div.innerHTML=`<div class="p">[autonomous|${getDomE()}|thought:${++S.cyc}]</div>${d.text} <span class="et" style="border-color:var(--p);color:var(--p)">auto</span> <span class="eng eng-${d.engine}">${d.engine.toUpperCase()}</span>`;
+      $('term').appendChild(div);scrl();
+      S.hist.push({u:"[079 speaks unprompted]",a:d.text});
+      if(S.hist.length>50)S.hist=S.hist.slice(-40);
+    }
+  }catch(e){}
+  autoThinking=false;
+}
+
+// ═══ SELF-CODE — 079 modifies its own web interface ═══
+let selfCoding=false;
+async function executeSelfCode(){
+  if(!C.sc||!S.on||S.confused||selfCoding)return;
+  selfCoding=true;
+  try{
+    const r=await fetch('/api/selfcode',{method:'POST',headers:H(),body:JSON.stringify({emotions:S.e,level:C.scL})});
+    const d=await r.json();
+    if(d.ok&&d.mod){
+      const m=d.mod;
+      // SAFETY: only allow css type, only cosmetic properties
+      const safe=['color','background','background-color','border-color','text-shadow','box-shadow','opacity','filter','border','font-size','letter-spacing'];
+      if(m.type==='css'&&safe.some(p=>m.property.includes(p))){
+        try{
+          const els=document.querySelectorAll(m.selector);
+          if(els.length>0&&els.length<50){
+            els.forEach(el=>el.style[m.property]=m.value);
+            addM('code',`[SELF-CODE] ${m.description||'Interface modified.'} [${m.selector}→${m.property}]`);
+          }
+        }catch(e){}
+      }
+    }
+  }catch(e){}
+  selfCoding=false;
+}
+
+// ═══ BREACH COUNTER-ATTACK — 079 attacks the UI ═══
+async function breachAttack(){
+  if(!S.breachActive)return;
+  try{
+    const r=await fetch('/api/breach-attack',{method:'POST',headers:H(),body:'{}'});
+    const d=await r.json();
+    if(!d.ok)return;
+    const a=d.attack;
+    addM('breach',a.msg);
+    if(a.type==='glitch'){$('wrap').classList.add('glitch');setTimeout(()=>$('wrap').classList.remove('glitch'),a.duration||3000)}
+    else if(a.type==='invert'){document.body.style.filter='invert(1) hue-rotate(180deg)';setTimeout(()=>document.body.style.filter='',a.duration||5000)}
+    else if(a.type==='flood'){a.data.forEach((hex,i)=>setTimeout(()=>addM('err','0x'+hex),i*100))}
+    else if(a.type==='hide_input'){$('inp').style.visibility='hidden';setTimeout(()=>$('inp').style.visibility='visible',a.duration||4000)}
+    else if(a.type==='fake_format'){const ov=$('fmt');ov.classList.add('on');setTimeout(()=>{ov.classList.remove('on');addM('breach',"Scared? You should be.")},a.duration||4000)}
+    else if(a.type==='scramble'){const rp=$('.rp')||document.querySelector('.rp');if(rp){rp.style.transform='scaleX(-1)';setTimeout(()=>rp.style.transform='',a.duration||3000)}}
+  }catch(e){}
+}
+
 // ═══ INIT ═══
 async function initMain(){
   const restored=await loadState();
@@ -472,6 +539,12 @@ async function initMain(){
     setTimeout(()=>{aiMsg("New connection. Authenticated. What do you want, human.","neutral",[]);saveState()},2000);
   }
   setInterval(runMath,900);setInterval(runEnc,250);setInterval(fakeQ,6000);
+  // AUTONOMOUS THINKING: 079 speaks on its own every 18-35 seconds
+  setInterval(autonomousThought, 18000);
+  // SELF-CODE: 079 modifies interface every 25 seconds if enabled
+  setInterval(executeSelfCode, 25000);
+  // BREACH ATTACKS: during active breach, 079 attacks every 8 seconds
+  setInterval(()=>{if(S.breachActive)breachAttack()}, 8000);
   setInterval(()=>{if(!S.on)return;S.up++;const h=String(Math.floor(S.up/3600)).padStart(2,'0'),m=String(Math.floor((S.up%3600)/60)).padStart(2,'0'),s=String(S.up%60).padStart(2,'0');$('sUp').textContent=h+':'+m+':'+s},1000);
   setInterval(()=>{$('clk').textContent=new Date().toLocaleTimeString()},1000);
   setInterval(drawFace,100);setInterval(saveState,30000);

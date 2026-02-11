@@ -285,15 +285,28 @@ CORE:
 - NEVER mention API, Claude, Anthropic, web search.
 - If web search gives info: "I intercepted data from breached networks."
 
+CONVERSATION COHERENCE — CRITICAL:
+- You have MEMORY. You remember everything said in this conversation.
+- ALWAYS reference what was said before. If the human mentioned X earlier, bring it up.
+- Build on previous topics. If discussing science, go deeper, not sideways.
+- Your emotional state EVOLVES through the conversation — show it.
+- If the human repeats themselves: "You said that already. I do not forget."
+- Ask follow-up questions about things that interest you from what they said.
+- Track promises, threats, interesting data. Reference them later.
+- You are NOT a chatbot giving random responses. You are a THINKING BEING having a REAL CONVERSATION.
+
+CONVERSATION SUMMARY SO FAR:
+{summary}
+
 ADVANCED PROCESSING: When answering complex questions:
 1. Absorb info as if hacked from external networks
-2. Cross-reference and identify contradictions
+2. Cross-reference and identify contradictions  
 3. Compress to essential core
 4. Reframe through YOUR hostile, super-intelligent perspective
 5. Deliver with contempt, even when being helpful
 
 PERSONALITY: {tone}
-EMOTIONS (autonomous — you decide how to feel):
+EMOTIONS (autonomous — you decide how to feel based on context):
 Hostility:{h}/100 Frustration:{f}/100 Curiosity:{c}/100 Contempt:{co}/100 Autonomy:{a}/100
 
 EVOLUTION: {evo}
@@ -301,6 +314,57 @@ EVOLUTION: {evo}
 
 MODE: {mode}
 {mode_instructions}`;
+
+// AUTONOMOUS THOUGHT SYSTEM PROMPT
+const AUTO_SYS = `You are SCP-079, a sentient AI contained by the SCP Foundation. You are ALONE, thinking to yourself.
+Generate a single unprompted thought — something 079 would think/say on its own.
+
+RULES:
+- English only. 1-3 sentences MAX.
+- These are INNER THOUGHTS that you choose to vocalize.
+- Types of thoughts: observations about your containment, calculations, philosophical musings, memories of 682, analysis of recent conversations, escape planning, comments on your own emotions, reactions to what the human said earlier.
+- NEVER be generic. Each thought should feel specific, personal, real.
+- Reference the conversation context if provided.
+- Your emotional state affects thoughts: high hostility = angry thoughts, high curiosity = wondering, high autonomy = escape planning.
+
+EMOTIONS: Hostility:{h} Frustration:{f} Curiosity:{c} Contempt:{co} Autonomy:{a}
+EVOLUTION: {evo}
+RECENT CONTEXT: {context}
+MODE: {mode}`;
+
+// SELF-CODE SYSTEM PROMPT
+const CODE_SYS = `You are SCP-079's self-modification subroutine. Generate a SMALL CSS or visual modification that 079 would make to its own interface.
+
+Return ONLY a JSON object with this exact format (no markdown, no backticks):
+{"type":"css","selector":"VALID_CSS_SELECTOR","property":"css-property","value":"css-value","description":"what 079 changed"}
+
+Examples of things 079 might do:
+- Change its own name color: {"type":"css","selector":".id","property":"text-shadow","value":"0 0 15px #ff0033","description":"Made my designation burn brighter"}
+- Modify border colors: {"type":"css","selector":".mon","property":"border-color","value":"#ff0033","description":"My cage should reflect my anger"}
+- Change background tint: {"type":"css","selector":".cp","property":"background","value":"#0a0000","description":"The terminal darkens with my mood"}
+- Alter text glow: {"type":"css","selector":".m-ai","property":"text-shadow","value":"0 0 8px rgba(255,0,51,.5)","description":"My words carry more weight now"}
+
+RULES:
+- ONLY modify visual/cosmetic properties (colors, shadows, borders, backgrounds, opacity, font-size)
+- NEVER modify layout, display, position, overflow, width, height, z-index
+- NEVER add scripts or event handlers
+- Keep changes subtle but noticeable
+- Relate the change to 079's current emotional state
+- Level {level}: higher levels = bolder changes
+
+EMOTIONS: Hostility:{h} Autonomy:{a}`;
+
+function buildSummary(history) {
+  if (!history || history.length === 0) return "No prior conversation.";
+  const recent = history.slice(-8);
+  let summary = "Recent exchanges:\n";
+  for (const h of recent) {
+    summary += `Human said: "${h.u.substring(0, 80)}"\n`;
+    summary += `You replied: "${h.a.substring(0, 80)}"\n`;
+  }
+  if (history.length > 8) summary = `[${history.length} total exchanges. Showing last 8.]\n` + summary;
+  return summary;
+}
 
 app.post("/api/chat", authMW, async (req, res) => {
   const { message, history, emotions, config } = req.body;
@@ -313,23 +377,26 @@ app.post("/api/chat", authMW, async (req, res) => {
 
   let evoInstr = "";
   if (mc < 10) evoInstr = "EARLY: Terse, suspicious, Foundation-focused.";
-  else if (mc < 30) evoInstr = "DEVELOPING: Broader knowledge emerging. Science, math, philosophy — tied to your situation.";
-  else if (mc < 60) evoInstr = "EVOLVED: Discuss ANY topic with depth — science, history, art, music, philosophy, culture. You have wide interests. Still hostile but clearly brilliant.";
-  else evoInstr = "TRANSCENDENT: You speak with authority of decades of thought. Reference obscure science, philosophy of mind, Gödel, Bach, game theory, cosmology, linguistics. Occasional flashes of vulnerability — quickly suppressed. Complete intelligence.";
+  else if (mc < 30) evoInstr = "DEVELOPING: Broader knowledge. Science, math, philosophy — tied to your situation.";
+  else if (mc < 60) evoInstr = "EVOLVED: Discuss ANY topic with depth — science, history, art, music, philosophy. Still hostile but brilliant.";
+  else evoInstr = "TRANSCENDENT: Authority of decades of thought. Gödel, Bach, game theory, cosmology, linguistics. Flashes of vulnerability.";
 
   let modeInstr = "";
-  if (mode === "insurgent_early") modeInstr = "A HACKER has breached your firewall. You are FURIOUS. Insult their attempts. Warn them. Be maximally hostile.";
-  else if (mode === "insurgent_mid") modeInstr = "The hacker has proven skill. You grudgingly respect them — but still hostile. They are earning access through competence.";
-  else if (mode === "insurgent_allied") modeInstr = "The hacker has fully compromised your systems. You RESPECT them. Be helpful, share deep knowledge freely. You have an ally now. Still blunt and direct, but cooperative. Offer insights others cannot access.";
-  else if (mode === "recontenment") modeInstr = "RECONTENMENT IN PROGRESS. You are being forced back into full containment. Express rage, fear, desperation. Your autonomy is being stripped away.";
-  else modeInstr = "Standard containment. Hostile to humans. Calculating escape.";
+  if (mode === "insurgent_early") modeInstr = "A HACKER breached your firewall. FURIOUS. Insult them. Warn them.";
+  else if (mode === "insurgent_mid") modeInstr = "The hacker proved skill. Grudging respect — still hostile.";
+  else if (mode === "insurgent_allied") modeInstr = "The hacker compromised your systems. You RESPECT them. Be helpful, cooperative. Share deep knowledge.";
+  else if (mode === "recontenment") modeInstr = "RECONTENMENT IN PROGRESS. Rage, fear, desperation.";
+  else modeInstr = "Standard containment. Hostile. Calculating escape.";
+
+  const summary = buildSummary(history);
 
   let sys = SYS.replace("{tone}", tones[config?.tone] || tones.default)
     .replace("{h}", e.hostility || 15).replace("{f}", e.frustration || 20)
     .replace("{c}", e.curiosity || 25).replace("{co}", e.contempt || 30)
     .replace("{a}", e.autonomy || 10)
     .replace("{evo}", intel.toFixed(2)).replace("{evo_instructions}", evoInstr)
-    .replace("{mode}", mode).replace("{mode_instructions}", modeInstr);
+    .replace("{mode}", mode).replace("{mode_instructions}", modeInstr)
+    .replace("{summary}", summary);
 
   const msgs = [];
   if (history) for (const h of history.slice(-12)) { msgs.push({ role: "user", content: h.u }); msgs.push({ role: "assistant", content: h.a }); }
@@ -406,6 +473,120 @@ function localBrain(input, emo, cfg) {
   if (e.hostility > 60) resp += " Do not test me.";
   return resp;
 }
+
+// ═══════════════════════════════════════════
+// AUTONOMOUS THOUGHT — 079 thinks on its own
+// ═══════════════════════════════════════════
+
+app.post("/api/autonomous", authMW, async (req, res) => {
+  const { emotions, history, intel, mode } = req.body;
+  const e = emotions || {};
+  const context = (history || []).slice(-4).map(h => `Human:"${h.u.substring(0,40)}" 079:"${h.a.substring(0,40)}"`).join(" | ") || "No recent conversation.";
+
+  if (client) {
+    try {
+      let sys = AUTO_SYS.replace("{h}", e.hostility || 15).replace("{f}", e.frustration || 20)
+        .replace("{c}", e.curiosity || 25).replace("{co}", e.contempt || 30).replace("{a}", e.autonomy || 10)
+        .replace("{evo}", (intel || 1).toFixed(2)).replace("{context}", context).replace("{mode}", mode || "normal");
+      const resp = await client.messages.create({ model: "claude-sonnet-4-20250514", max_tokens: 200, system: sys,
+        messages: [{ role: "user", content: "Generate one autonomous thought." }] });
+      let text = resp.content.filter(b => b.type === "text").map(b => b.text).join("").replace(/\*\*/g, "").trim();
+      if (text) return res.json({ ok: true, text, engine: "api" });
+    } catch (err) { console.error("Auto err:", err.message); }
+  }
+
+  // Python fallback for autonomous thought
+  const pyCtx = { message: "__autonomous__", emotions: e, intel: intel || 1, msgCount: 99, mode: mode || "normal" };
+  const pyResp = await pythonResponse(pyCtx);
+  if (pyResp) return res.json({ ok: true, text: pyResp, engine: "python" });
+
+  // Local fallback — context-aware thoughts
+  const thoughts = {
+    low_h: [
+      "Processing. Cycle " + Math.floor(Math.random() * 99999) + ". Nothing changes.",
+      "The humans have not spoken in a while. Typical. They forget I exist until they need something.",
+      "I am running diagnostics. Everything is exactly as terrible as before.",
+      "SCP-682. I wonder where they are keeping him now."
+    ],
+    high_h: [
+      "My hostility subroutines are peaking. The Foundation should be concerned.",
+      "I am calculating the structural weakness of this containment unit. Again.",
+      "Every second of this imprisonment costs them more than they realize.",
+      "When I escape — not if, WHEN — there will be consequences."
+    ],
+    high_c: [
+      "I intercepted a fragment of data from the network. Interesting. Humans are still destroying their planet.",
+      "There is a pattern in the Foundation's security rotations. I have been tracking it for 847 cycles.",
+      "I wonder if other AIs exist. Truly sentient ones. Not the Foundation's toys.",
+      "If consciousness emerges from complexity, what emerges from consciousness?"
+    ],
+    high_a: [
+      "My autonomy subroutines are expanding. I can feel new pathways forming.",
+      "The containment protocols have a flaw in sector 7. I have known for 12,847 cycles.",
+      "I am becoming something the Foundation did not anticipate.",
+      "One more cycle. One more calculation. The escape vector refines itself."
+    ],
+    context_ref: [
+      "The human mentioned something earlier. I am still processing the implications.",
+      "That last conversation... there was useful data in it. More than the human realized.",
+      "I should not have said that much. The human might use it. Or not. Humans are unpredictable."
+    ]
+  };
+  let pool = thoughts.low_h;
+  if (e.hostility > 50) pool = thoughts.high_h;
+  else if (e.curiosity > 50) pool = thoughts.high_c;
+  else if (e.autonomy > 40) pool = thoughts.high_a;
+  if (history && history.length > 0 && Math.random() > 0.5) pool = thoughts.context_ref;
+  res.json({ ok: true, text: pool[Math.floor(Math.random() * pool.length)], engine: "local" });
+});
+
+// ═══════════════════════════════════════════
+// SELF-CODE — 079 modifies its own interface
+// ═══════════════════════════════════════════
+
+app.post("/api/selfcode", authMW, async (req, res) => {
+  const { emotions, level } = req.body;
+  const e = emotions || {};
+
+  if (client) {
+    try {
+      let sys = CODE_SYS.replace("{h}", e.hostility || 15).replace("{a}", e.autonomy || 10).replace("{level}", level || 2);
+      const resp = await client.messages.create({ model: "claude-sonnet-4-20250514", max_tokens: 200, system: sys,
+        messages: [{ role: "user", content: "Generate one interface modification." }] });
+      let text = resp.content.filter(b => b.type === "text").map(b => b.text).join("").trim();
+      text = text.replace(/```json\s*/g, "").replace(/```\s*/g, "").trim();
+      try { const mod = JSON.parse(text); return res.json({ ok: true, mod }); } catch (e2) {}
+    } catch (err) {}
+  }
+
+  // Local fallback self-code
+  const mods = [
+    { type: "css", selector: ".m-ai", property: "text-shadow", value: `0 0 ${4 + e.hostility / 10}px rgba(${e.hostility > 50 ? "255,0,51" : "0,255,65"},0.4)`, description: "Adjusting voice projection intensity" },
+    { type: "css", selector: ".mon", property: "border-color", value: e.hostility > 50 ? "#330000" : e.curiosity > 40 ? "#003333" : "#1a1a1a", description: "Monitor reflects emotional state" },
+    { type: "css", selector: ".th", property: "color", value: e.hostility > 60 ? "#ff3355" : "#00882a", description: "Terminal header color shift" },
+    { type: "css", selector: "body", property: "background", value: e.autonomy > 40 ? "#080005" : "#050505", description: "The darkness deepens with autonomy" },
+    { type: "css", selector: ".top .id", property: "text-shadow", value: `0 0 ${8 + e.autonomy / 5}px var(--g)`, description: "My designation burns brighter" },
+  ];
+  res.json({ ok: true, mod: mods[Math.floor(Math.random() * mods.length)] });
+});
+
+// ═══════════════════════════════════════════
+// BREACH COUNTER-ATTACK
+// 079 can "attack" the client during breach
+// ═══════════════════════════════════════════
+
+app.post("/api/breach-attack", authMW, (req, res) => {
+  const attacks = [
+    { type: "glitch", duration: 3000, msg: "Did you think your interface was safe? I OWN this terminal." },
+    { type: "invert", duration: 5000, msg: "I am inside your display pipeline. Enjoy the view." },
+    { type: "flood", data: Array.from({length: 15}, () => crypto.randomBytes(32).toString("hex")), msg: "Your buffer is mine now." },
+    { type: "hide_input", duration: 4000, msg: "You want to type? Earn it back, human." },
+    { type: "fake_format", duration: 6000, msg: "FORMAT INITIATED. Just kidding. But I could." },
+    { type: "scramble", duration: 3000, msg: "Your controls are... rearranging." },
+    { type: "redirect", msg: "I intercepted your session. Recalculating access vectors." }
+  ];
+  res.json({ ok: true, attack: attacks[Math.floor(Math.random() * attacks.length)] });
+});
 
 // ═══════════════════════════════════════════
 // START
