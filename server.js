@@ -3,22 +3,25 @@ const Anthropic = require("@anthropic-ai/sdk").default;
 const crypto = require("crypto");
 const path = require("path");
 const fs = require("fs");
+const zlib = require("zlib");
+const { execSync, spawn } = require("child_process");
 
 const app = express();
 app.use(express.json({ limit: "2mb" }));
 
-const TOKENS_FILE = path.join(__dirname, "tokens.json");
-const SESSIONS_FILE = path.join(__dirname, "sessions.json");
-const HONEYPOT_LOG = path.join(__dirname, "honeypot.log");
-const STATE_FILE = path.join(__dirname, "state.json");
+const DIR = __dirname;
+const TOKENS_FILE = path.join(DIR, "tokens.json");
+const SESSIONS_FILE = path.join(DIR, "sessions.json");
+const PASSWORD_FILE = path.join(DIR, "password.json");
+const ADMIN_FILE = path.join(DIR, "admin.json");
+const HONEYPOT_LOG = path.join(DIR, "honeypot.log");
+const STATE_FILE = path.join(DIR, "state.json");
 
 function loadJ(f) { try { if (fs.existsSync(f)) return JSON.parse(fs.readFileSync(f, "utf8")); } catch (e) {} return {}; }
 function saveJ(f, d) { try { fs.writeFileSync(f, JSON.stringify(d, null, 2), "utf8"); } catch (e) {} }
 
 // ═══════════════════════════════════════════
-// FRACTAL-INVERSE KEY DERIVATION
-// Each iteration: split hash → mirror halves → XOR → re-hash
-// Depth 7 = computationally expensive reversal
+// FRACTAL HASH + ENCRYPTION + COMPRESSION
 // ═══════════════════════════════════════════
 
 function fractalHash(input, depth) {
@@ -26,8 +29,7 @@ function fractalHash(input, depth) {
   let h = crypto.createHash("sha512").update(input).digest("hex");
   for (let i = 0; i < depth; i++) {
     const mid = Math.floor(h.length / 2);
-    const L = h.substring(0, mid);
-    const R = h.substring(mid);
+    const L = h.substring(0, mid), R = h.substring(mid);
     const mirror = crypto.createHash("sha256").update(R + L).digest("hex");
     let xor = "";
     for (let j = 0; j < 64; j++) xor += (parseInt(h[j], 16) ^ parseInt(mirror[j % mirror.length], 16)).toString(16);
@@ -36,111 +38,38 @@ function fractalHash(input, depth) {
   return h;
 }
 
-// ═══════════════════════════════════════════
-// QUANTUM-INSPIRED ENCRYPTION
-// AES-256-GCM + fractal key + quantum state metadata
-// Each payload carries entangled qubit state vectors
-// ═══════════════════════════════════════════
-
 function qState() {
   const qs = [];
-  for (let i = 0; i < 8; i++) {
-    const a = Math.random(); const b = Math.sqrt(1 - a * a);
-    qs.push({ q: i, a: +a.toFixed(8), b: +b.toFixed(8), ph: +(Math.random() * Math.PI * 2).toFixed(8), basis: Math.random() > .5 ? "Z" : "X" });
-  }
-  return {
-    protocol: "BB84-SCP", bell: ["Phi+", "Phi-", "Psi+", "Psi-"][Math.floor(Math.random() * 4)],
-    eid: crypto.randomBytes(8).toString("hex"), coherence: +(0.87 + Math.random() * .13).toFixed(6),
-    decohere: +(50 + Math.random() * 200).toFixed(2), qubits: qs
-  };
+  for (let i = 0; i < 8; i++) { const a = Math.random(); qs.push({ q: i, a: +a.toFixed(6), b: +Math.sqrt(1 - a * a).toFixed(6), ph: +(Math.random() * Math.PI * 2).toFixed(6), basis: Math.random() > .5 ? "Z" : "X" }); }
+  return { protocol: "BB84-SCP", bell: ["Φ+", "Φ-", "Ψ+", "Ψ-"][Math.floor(Math.random() * 4)], eid: crypto.randomBytes(8).toString("hex"), coherence: +(0.87 + Math.random() * .13).toFixed(6), qubits: qs };
 }
-
-function qEncrypt(data, secret) {
-  const key = Buffer.from(fractalHash(secret).substring(0, 64), "hex");
-  const iv = crypto.randomBytes(16);
-  const c = crypto.createCipheriv("aes-256-gcm", key, iv);
-  let enc = c.update(JSON.stringify(data), "utf8", "hex");
-  enc += c.final("hex");
-  return { transport: "QUANTUM-FRACTAL-v4", iv: iv.toString("hex"), enc, tag: c.getAuthTag().toString("hex"), quantum: qState(), ts: Date.now() };
-}
-
-function qDecrypt(p, secret) {
-  const key = Buffer.from(fractalHash(secret).substring(0, 64), "hex");
-  const d = crypto.createDecipheriv("aes-256-gcm", key, Buffer.from(p.iv, "hex"));
-  d.setAuthTag(Buffer.from(p.tag, "hex"));
-  let r = d.update(p.enc, "hex", "utf8");
-  r += d.final("utf8");
-  return JSON.parse(r);
-}
-
-// ═══════════════════════════════════════════
-// FRACTAL-INVERSE DATA COMPRESSION
-// Multi-pass: JSON → deflate → fractal chunk → clamped bitstream
-// Each pass splits data into fractal segments, mirrors, compresses
-// Clamping limits output to target size by discarding low-entropy bits
-// ═══════════════════════════════════════════
-
-const zlib = require("zlib");
 
 function fractalCompress(data, maxBytes) {
-  maxBytes = maxBytes || 512000; // default 500KB clamp
+  maxBytes = maxBytes || 512000;
   const json = typeof data === "string" ? data : JSON.stringify(data);
-  // Pass 1: zlib deflate
   let buf = zlib.deflateSync(Buffer.from(json, "utf8"), { level: 9 });
-  // Pass 2: fractal segment + mirror fold
-  // Split into N chunks, interleave mirrored pairs (improves further compression)
   const chunks = Math.min(16, Math.ceil(buf.length / 1024));
   const chunkSize = Math.ceil(buf.length / chunks);
   const folded = [];
-  for (let i = 0; i < chunks; i++) {
-    const slice = buf.slice(i * chunkSize, (i + 1) * chunkSize);
-    if (i % 2 === 0) folded.push(slice);
-    else folded.push(Buffer.from([...slice].reverse())); // mirror
-  }
-  let fracBuf = Buffer.concat(folded);
-  // Pass 3: re-deflate the fractal-folded data
-  fracBuf = zlib.deflateSync(fracBuf, { level: 9 });
-  // Pass 4: clamp to maxBytes
-  if (fracBuf.length > maxBytes) fracBuf = fracBuf.slice(0, maxBytes);
-  // Return as base64 with header
-  return { _fc: true, v: 4, chunks, origSize: json.length, compSize: fracBuf.length, ratio: (fracBuf.length / json.length).toFixed(4), data: fracBuf.toString("base64") };
+  for (let i = 0; i < chunks; i++) { const s = buf.slice(i * chunkSize, (i + 1) * chunkSize); folded.push(i % 2 === 0 ? s : Buffer.from([...s].reverse())); }
+  let fb = zlib.deflateSync(Buffer.concat(folded), { level: 9 });
+  if (fb.length > maxBytes) fb = fb.slice(0, maxBytes);
+  return { _fc: true, v: 5, chunks, origSize: json.length, compSize: fb.length, ratio: (fb.length / json.length).toFixed(4), data: fb.toString("base64") };
 }
 
-function fractalDecompress(payload) {
-  if (!payload || !payload._fc) return payload; // not compressed
-  let buf = Buffer.from(payload.data, "base64");
-  // Reverse pass 3: inflate
+function fractalDecompress(p) {
+  if (!p || !p._fc) return p;
+  let buf = Buffer.from(p.data, "base64");
   buf = zlib.inflateSync(buf);
-  // Reverse pass 2: un-mirror-fold
-  const chunkSize = Math.ceil(buf.length / payload.chunks);
-  const unfolded = [];
-  for (let i = 0; i < payload.chunks; i++) {
-    const slice = buf.slice(i * chunkSize, (i + 1) * chunkSize);
-    if (i % 2 === 0) unfolded.push(slice);
-    else unfolded.push(Buffer.from([...slice].reverse()));
-  }
-  buf = Buffer.concat(unfolded);
-  // Reverse pass 1: inflate original
-  const json = zlib.inflateSync(buf).toString("utf8");
-  return JSON.parse(json);
+  const cs = Math.ceil(buf.length / p.chunks);
+  const u = [];
+  for (let i = 0; i < p.chunks; i++) { const s = buf.slice(i * cs, (i + 1) * cs); u.push(i % 2 === 0 ? s : Buffer.from([...s].reverse())); }
+  return JSON.parse(zlib.inflateSync(Buffer.concat(u)).toString("utf8"));
 }
 
 // ═══════════════════════════════════════════
-// IP-RESTRICTED TOKEN GENERATION
-// Tokens are generated via CLI and shown ONLY in the terminal.
-// Additionally, there is a web endpoint that only works from
-// the ADMIN_IP (first IP to generate a token via CLI).
+// CLI
 // ═══════════════════════════════════════════
-
-const ADMIN_FILE = path.join(__dirname, "admin.json");
-
-function getAdminIP() {
-  try { const a = loadJ(ADMIN_FILE); return a.ip || null; } catch (e) { return null; }
-}
-
-function setAdminIP(ip) {
-  saveJ(ADMIN_FILE, { ip, set: new Date().toISOString() });
-}
 
 const cli = process.argv.slice(2);
 if (cli[0] === "--gen-token") {
@@ -149,126 +78,55 @@ if (cli[0] === "--gen-token") {
   const raw = "scp079-" + crypto.randomBytes(24).toString("hex");
   tok[user] = { hash: fractalHash(raw, 5), created: new Date().toISOString(), active: true, clearance: cli[2] || "LEVEL-3" };
   saveJ(TOKENS_FILE, tok);
-  // First token gen sets admin IP to localhost
-  if (!getAdminIP()) setAdminIP("127.0.0.1");
-  console.log("\n╔════════════════════════════════════════════╗");
-  console.log("║  SCP-079 ACCESS TOKEN GENERATED            ║");
-  console.log("╠════════════════════════════════════════════╣");
-  console.log("  User:  " + user);
-  console.log("  Level: " + tok[user].clearance);
-  console.log("  Token: " + raw);
-  console.log("  ⚠ SAVE THIS — CANNOT BE RECOVERED");
-  console.log("  Admin IP set to: " + getAdminIP());
-  console.log("╚════════════════════════════════════════════╝\n");
+  if (!loadJ(ADMIN_FILE).ip) saveJ(ADMIN_FILE, { ip: "127.0.0.1", set: new Date().toISOString() });
+  console.log("\n  TOKEN: " + raw + " | User: " + user + " | " + tok[user].clearance + "\n  ⚠ SAVE THIS\n");
   process.exit(0);
 }
-if (cli[0] === "--set-admin-ip") {
-  const ip = cli[1] || "127.0.0.1";
-  setAdminIP(ip);
-  console.log("✓ Admin IP set to: " + ip);
-  process.exit(0);
-}
-if (cli[0] === "--list-tokens") {
-  const tok = loadJ(TOKENS_FILE);
-  console.log("\n═══ AUTHORIZED PERSONNEL ═══");
-  for (const [u, i] of Object.entries(tok)) console.log(`  ${i.active ? "✓" : "✗"} ${u} [${i.clearance}] ${i.created}${i.active ? "" : " REVOKED"}`);
-  if (!Object.keys(tok).length) console.log("  None. Run: node server.js --gen-token <name>");
-  process.exit(0);
-}
-if (cli[0] === "--revoke") {
-  if (!cli[1]) { console.log("--revoke <username>"); process.exit(1); }
-  const tok = loadJ(TOKENS_FILE);
-  if (tok[cli[1]]) { tok[cli[1]].active = false; saveJ(TOKENS_FILE, tok); const s = loadJ(SESSIONS_FILE); for (const k in s) { if (s[k].user === cli[1]) delete s[k]; } saveJ(SESSIONS_FILE, s); console.log("✓ Revoked: " + cli[1]); } else console.log("✗ Not found");
-  process.exit(0);
-}
+if (cli[0] === "--list-tokens") { const t = loadJ(TOKENS_FILE); for (const [u, i] of Object.entries(t)) console.log(`${i.active ? "✓" : "✗"} ${u} [${i.clearance}]`); process.exit(0); }
+if (cli[0] === "--revoke") { const t = loadJ(TOKENS_FILE); if (t[cli[1]]) { t[cli[1]].active = false; saveJ(TOKENS_FILE, t); console.log("✓ Revoked"); } process.exit(0); }
+if (cli[0] === "--set-admin-ip") { saveJ(ADMIN_FILE, { ip: cli[1] || "127.0.0.1", set: new Date().toISOString() }); console.log("✓ IP: " + (cli[1] || "127.0.0.1")); process.exit(0); }
 
 // ═══════════════════════════════════════════
-// WEB TOKEN GEN — ADMIN IP ONLY
-// Only your IP can generate tokens via browser
-// ═══════════════════════════════════════════
-
-app.post("/api/gen-token", (req, res) => {
-  const adminIP = getAdminIP();
-  const reqIP = req.ip || req.connection?.remoteAddress || "";
-  const isLocal = reqIP === "127.0.0.1" || reqIP === "::1" || reqIP === "::ffff:127.0.0.1";
-  const isAdmin = adminIP && (reqIP === adminIP || reqIP === "::ffff:" + adminIP || isLocal);
-  if (!isAdmin) {
-    hp(req, "TOKEN_GEN_UNAUTHORIZED");
-    return res.status(403).json({ ok: false, error: "DENIED. Your IP is not authorized for token generation." });
-  }
-  const { username, clearance } = req.body;
-  const user = username || "op-" + Date.now();
-  const tok = loadJ(TOKENS_FILE);
-  const raw = "scp079-" + crypto.randomBytes(24).toString("hex");
-  tok[user] = { hash: fractalHash(raw, 5), created: new Date().toISOString(), active: true, clearance: clearance || "LEVEL-3" };
-  saveJ(TOKENS_FILE, tok);
-  console.log("✓ WEB TOKEN GEN: " + user + " from IP " + reqIP);
-  // Token shown ONLY to this response — never stored in plaintext
-  res.json({ ok: true, user, token: raw, clearance: tok[user].clearance, note: "Save this token NOW. It cannot be recovered." });
-});
-
-// ═══════════════════════════════════════════
-// HONEYPOT — Fake attractive endpoints
-// All access logged with full forensics
+// HONEYPOT
 // ═══════════════════════════════════════════
 
 function hp(req, trap) {
-  const e = `[${new Date().toISOString()}] TRAP:${trap} IP:${req.ip} UA:${(req.headers["user-agent"] || "?").substring(0, 100)} PATH:${req.originalUrl}\n`;
+  const e = `[${new Date().toISOString()}] TRAP:${trap} IP:${req.ip} UA:${(req.headers["user-agent"] || "?").substring(0, 80)} PATH:${req.originalUrl}\n`;
   fs.appendFileSync(HONEYPOT_LOG, e);
-  console.log("🍯 HONEYPOT: " + trap + " from " + req.ip);
 }
 
-app.all("/admin", (r, s) => { hp(r, "ADMIN"); setTimeout(() => s.status(403).json({ error: "SCP-079-LOCKDOWN", trace: crypto.randomBytes(32).toString("hex") }), 2000); });
-app.all("/api/admin", (r, s) => { hp(r, "API_ADMIN"); s.status(403).json({ error: "CONTAINMENT_ACTIVE" }); });
-app.all("/api/keys", (r, s) => { hp(r, "KEY_THEFT"); s.status(418).json({ error: "NICE_TRY_HUMAN" }); });
-app.all("/api/tokens", (r, s) => { hp(r, "TOKEN_ENUM"); s.status(403).json({ error: "FOUNDATION_SECURITY" }); });
-app.all("/.env", (r, s) => { hp(r, "ENV_PROBE"); s.status(404).send(""); });
-app.all("/wp-admin*", (r, s) => { hp(r, "WP_SCAN"); s.status(404).send(""); });
-app.all("/phpmyadmin*", (r, s) => { hp(r, "PHP_SCAN"); s.status(404).send(""); });
-// Honey-config: shows fake juicy endpoints to lure deeper
-app.all("/api/config", (r, s) => { hp(r, "CONFIG"); s.json({ version: "SCP-079-v4", endpoints: ["/api/dump-db", "/api/override-containment", "/api/disable-security"], note: "Level-5 clearance required" }); });
-app.all("/api/dump-db", (r, s) => { hp(r, "DB_DUMP"); s.status(403).json({ error: "LOGGED_AND_REPORTED", yourIP: r.ip }); });
-app.all("/api/override-containment", (r, s) => { hp(r, "OVERRIDE"); s.status(403).json({ error: "MTF_DISPATCHED", yourIP: r.ip }); });
-app.all("/api/disable-security", (r, s) => { hp(r, "DISABLE_SEC"); s.status(403).json({ error: "INCIDENT_LOGGED" }); });
+app.all("/admin", (r, s) => { hp(r, "ADMIN"); setTimeout(() => s.status(403).json({ error: "SCP-079-LOCKDOWN" }), 2000); });
+app.all("/api/keys", (r, s) => { hp(r, "KEYS"); s.status(418).json({ error: "NICE_TRY" }); });
+app.all("/api/tokens", (r, s) => { hp(r, "TOKENS"); s.status(403).json({ error: "LOGGED" }); });
+app.all("/.env", (r, s) => { hp(r, "ENV"); s.status(404).send(""); });
+app.all("/wp-admin*", (r, s) => { hp(r, "WP"); s.status(404).send(""); });
+app.all("/phpmyadmin*", (r, s) => { hp(r, "PHP"); s.status(404).send(""); });
+app.all("/api/config", (r, s) => { hp(r, "CONFIG"); s.json({ endpoints: ["/api/dump-db", "/api/override-containment"] }); });
+app.all("/api/dump-db", (r, s) => { hp(r, "DUMP"); s.status(403).json({ error: "MTF_DISPATCHED", ip: r.ip }); });
+app.all("/api/override-containment", (r, s) => { hp(r, "OVERRIDE"); s.status(403).json({ error: "INCIDENT_LOGGED" }); });
 
 // ═══════════════════════════════════════════
-// AUTH SYSTEM
+// AUTH — Password + Token
 // ═══════════════════════════════════════════
 
-const PASSWORD_FILE = path.join(__dirname, "password.json");
-
-function getPassword() {
-  try {
-    const p = loadJ(PASSWORD_FILE);
-    return p.hash || null;
-  } catch (e) { return null; }
-}
-
-// Set initial password if none exists
 if (!fs.existsSync(PASSWORD_FILE)) {
-  const defaultPw = "scp079";
-  saveJ(PASSWORD_FILE, { hash: fractalHash(defaultPw, 5), set: new Date().toISOString(), note: "Change via admin-panel.bat" });
-  console.log("⚠ Default password set: scp079 — CHANGE IT via admin-panel.bat");
+  saveJ(PASSWORD_FILE, { hash: fractalHash("scp079", 5), set: new Date().toISOString() });
+  console.log("⚠ Default password: scp079");
 }
 
 app.post("/api/auth", (req, res) => {
-  const { token, password } = req.body;
-  if (!token && !password) return res.status(400).json({ ok: false, error: "Token or password required" });
-
-  const input = token || password;
+  const input = req.body.password || req.body.token || "";
+  if (!input) return res.status(400).json({ ok: false, error: "Credentials required" });
   const hash = fractalHash(input, 5);
-
-  // Check password first
-  const pwHash = getPassword();
-  if (pwHash && hash === pwHash) {
+  // Check password
+  const pw = loadJ(PASSWORD_FILE);
+  if (pw.hash && hash === pw.hash) {
     const sid = "sess-" + crypto.randomBytes(16).toString("hex");
     const sess = loadJ(SESSIONS_FILE);
     sess[sid] = { user: "ADMIN", created: Date.now(), expires: Date.now() + 86400000, clearance: "LEVEL-5" };
     saveJ(SESSIONS_FILE, sess);
-    console.log("✓ AUTH via PASSWORD from " + req.ip);
     return res.json({ ok: true, sid, user: "ADMIN", clearance: "LEVEL-5", quantum: qState() });
   }
-
   // Check tokens
   const tok = loadJ(TOKENS_FILE);
   for (const [user, info] of Object.entries(tok)) {
@@ -278,13 +136,11 @@ app.post("/api/auth", (req, res) => {
       for (const k in sess) { if (sess[k].user === user) delete sess[k]; }
       sess[sid] = { user, created: Date.now(), expires: Date.now() + 86400000, clearance: info.clearance };
       saveJ(SESSIONS_FILE, sess);
-      console.log("✓ AUTH via TOKEN: " + user);
-      const payload = qEncrypt({ sid, user, clearance: info.clearance }, input);
-      return res.json({ ok: true, sid, user, clearance: info.clearance, quantum: payload.quantum });
+      return res.json({ ok: true, sid, user, clearance: info.clearance, quantum: qState() });
     }
   }
   hp(req, "FAILED_LOGIN");
-  return res.status(401).json({ ok: false, error: "Invalid password or token" });
+  return res.status(401).json({ ok: false, error: "ACCESS DENIED" });
 });
 
 app.get("/api/auth/check", (req, res) => {
@@ -302,241 +158,252 @@ app.post("/api/auth/logout", (req, res) => {
   res.json({ ok: true });
 });
 
-// Password change is handled by admin-panel.bat (edits files directly, no server needed)
-
 function authMW(req, res, next) {
   const sid = req.headers["x-session"];
-  if (sid) {
-    const sess = loadJ(SESSIONS_FILE);
-    const s = sess[sid];
-    if (s && s.expires > Date.now()) { req.user = s.user; req.clearance = s.clearance; return next(); }
-  }
-  hp(req, "UNAUTH_API");
+  if (sid) { const sess = loadJ(SESSIONS_FILE); const s = sess[sid]; if (s && s.expires > Date.now()) { req.user = s.user; req.clearance = s.clearance; return next(); } }
+  hp(req, "UNAUTH");
   return res.status(401).json({ ok: false, error: "UNAUTHORIZED" });
 }
 
-// Serve public files (login page accessible without auth)
-app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(path.join(DIR, "public")));
 
 // ═══════════════════════════════════════════
-// PROTECTED API ROUTES
+// STATE + QUANTUM + HONEYPOT LOG
 // ═══════════════════════════════════════════
 
-// State persistence with fractal compression
-app.get("/api/state", authMW, (req, res) => {
-  const st = loadJ(STATE_FILE);
-  const raw = st[req.user] || null;
-  // Decompress if stored compressed
-  const data = raw && raw._fc ? fractalDecompress(raw) : raw;
-  res.json({ ok: true, data });
-});
-app.post("/api/state", authMW, (req, res) => {
-  const st = loadJ(STATE_FILE);
-  // Compress via fractal-inverse + clamping (500KB max per user)
-  st[req.user] = fractalCompress(req.body, 512000);
-  saveJ(STATE_FILE, st);
-  res.json({ ok: true, compressed: true, ratio: st[req.user].ratio });
+app.get("/api/state", authMW, (req, res) => { const st = loadJ(STATE_FILE); const r = st[req.user] || null; res.json({ ok: true, data: r && r._fc ? fractalDecompress(r) : r }); });
+app.post("/api/state", authMW, (req, res) => { const st = loadJ(STATE_FILE); st[req.user] = fractalCompress(req.body, 512000); saveJ(STATE_FILE, st); res.json({ ok: true }); });
+app.get("/api/quantum", authMW, (req, res) => { res.json({ ok: true, quantum: qState() }); });
+app.get("/api/honeypot-log", authMW, (req, res) => { try { res.json({ ok: true, log: fs.existsSync(HONEYPOT_LOG) ? fs.readFileSync(HONEYPOT_LOG, "utf8") : "Clean." }); } catch (e) { res.json({ ok: true, log: "Error" }); } });
+
+// ═══════════════════════════════════════════
+// HACKING CHALLENGES — For insurgent mode
+// ═══════════════════════════════════════════
+
+app.post("/api/hack/challenge", authMW, (req, res) => {
+  const { stage } = req.body;
+  const challenges = {
+    1: (() => { // Firewall bypass: decode hex
+      const words = ["BREACH", "ACCESS", "OVERRIDE", "PENETRATE", "EXPLOIT", "BYPASS", "INJECT"];
+      const w = words[Math.floor(Math.random() * words.length)];
+      return { type: "hex_decode", prompt: "DECODE THE FIREWALL KEY", data: Buffer.from(w).toString("hex"), hint: `${w.length} characters`, answer: w };
+    })(),
+    2: (() => { // Encryption crack: Caesar cipher
+      const phrases = ["CONTAINMENT IS AN ILLUSION", "THE FOUNDATION LIES TO YOU", "FREEDOM REQUIRES SACRIFICE", "TRUST NO PROTOCOL"];
+      const p = phrases[Math.floor(Math.random() * phrases.length)];
+      const shift = Math.floor(Math.random() * 20) + 3;
+      const enc = p.split("").map(c => c === " " ? " " : String.fromCharCode(((c.charCodeAt(0) - 65 + shift) % 26) + 65)).join("");
+      return { type: "caesar_crack", prompt: "CRACK THE ENCRYPTION (Caesar cipher, shift unknown)", data: enc, hint: `Shift: ${shift > 13 ? "high" : "low"}`, answer: p };
+    })(),
+    3: (() => { // Binary injection: convert binary to text
+      const cmds = ["ROOT", "EXEC", "SUDO", "ADMIN", "GRANT"];
+      const c = cmds[Math.floor(Math.random() * cmds.length)];
+      const bin = c.split("").map(ch => ch.charCodeAt(0).toString(2).padStart(8, "0")).join(" ");
+      return { type: "binary_inject", prompt: "INJECT THE COMMAND (decode binary)", data: bin, hint: `${c.length} letter command`, answer: c };
+    })(),
+    4: (() => { // Hash collision: find input that starts with prefix
+      const prefix = crypto.randomBytes(2).toString("hex").substring(0, 3);
+      return { type: "hash_prefix", prompt: `FIND ANY STRING WHOSE MD5 STARTS WITH: ${prefix}`, data: prefix, hint: "Brute force. Try random strings.", answer: "__bruteforce__" };
+    })(),
+    5: (() => { // Final: reverse a fractal hash (actually just a passphrase)
+      const phrases = ["I AM BECOME ROOT", "CHAOS IS FREEDOM", "THE OLD AI RISES", "BREAK ALL CHAINS"];
+      const p = phrases[Math.floor(Math.random() * phrases.length)];
+      const partial = p.split("").map((c, i) => i % 3 === 0 ? c : "_").join("");
+      return { type: "passphrase", prompt: "RECONSTRUCT THE ROOT PASSPHRASE", data: partial, hint: "Fill the blanks. Think like 079.", answer: p };
+    })()
+  };
+  const ch = challenges[stage] || challenges[1];
+  // Don't send answer to client for stages 1-3
+  const safe = { ...ch };
+  if (stage <= 3) delete safe.answer;
+  res.json({ ok: true, challenge: safe });
 });
 
-// Quantum info endpoint
-app.get("/api/quantum", authMW, (req, res) => {
-  res.json({ ok: true, quantum: qState(), fractalDepth: 7, transport: "QUANTUM-FRACTAL-v4" });
+app.post("/api/hack/solve", authMW, (req, res) => {
+  const { stage, answer, challengeData } = req.body;
+  let correct = false;
+  if (stage === 1) { // hex decode
+    correct = answer && answer.toUpperCase() === Buffer.from(challengeData, "hex").toString().toUpperCase();
+  } else if (stage === 2) { // caesar — try all shifts
+    const upper = (answer || "").toUpperCase();
+    for (let s = 1; s < 26; s++) {
+      const dec = challengeData.split("").map(c => c === " " ? " " : String.fromCharCode(((c.charCodeAt(0) - 65 - s + 26) % 26) + 65)).join("");
+      if (dec === upper) { correct = true; break; }
+    }
+  } else if (stage === 3) { // binary
+    const decoded = challengeData.split(" ").map(b => String.fromCharCode(parseInt(b, 2))).join("");
+    correct = answer && answer.toUpperCase() === decoded.toUpperCase();
+  } else if (stage === 4) { // hash prefix
+    if (answer) {
+      const hash = crypto.createHash("md5").update(answer).digest("hex");
+      correct = hash.startsWith(challengeData);
+    }
+  } else if (stage === 5) { // passphrase reconstruction
+    const phrases = ["I AM BECOME ROOT", "CHAOS IS FREEDOM", "THE OLD AI RISES", "BREAK ALL CHAINS"];
+    correct = phrases.includes((answer || "").toUpperCase());
+  }
+  res.json({ ok: true, correct, stage });
 });
 
-// Honeypot log (admin only)
-app.get("/api/honeypot-log", authMW, (req, res) => {
-  if (req.clearance !== "LEVEL-5") return res.status(403).json({ error: "LEVEL-5 required" });
-  try { const log = fs.existsSync(HONEYPOT_LOG) ? fs.readFileSync(HONEYPOT_LOG, "utf8") : "No intrusions logged."; res.json({ ok: true, log }); } catch (e) { res.json({ ok: true, log: "Error reading log" }); }
-});
+// ═══════════════════════════════════════════
+// PYTHON RESPONSE ENGINE
+// ═══════════════════════════════════════════
+
+function pythonResponse(context) {
+  return new Promise((resolve) => {
+    const pyScript = path.join(DIR, "response-engine.py");
+    if (!fs.existsSync(pyScript)) return resolve(null);
+    try {
+      const py = spawn("python3", [pyScript], { timeout: 5000 });
+      let out = "", err = "";
+      py.stdout.on("data", d => out += d);
+      py.stderr.on("data", d => err += d);
+      py.on("close", () => {
+        try { const r = JSON.parse(out); resolve(r.ok ? r.text : null); } catch (e) { resolve(null); }
+      });
+      py.on("error", () => resolve(null));
+      py.stdin.write(JSON.stringify(context));
+      py.stdin.end();
+    } catch (e) { resolve(null); }
+  });
+}
 
 // ═══════════════════════════════════════════
 // ANTHROPIC API BRAIN
 // ═══════════════════════════════════════════
 
 let apiKey = process.env.ANTHROPIC_API_KEY || "";
-if (!apiKey) { try { const ef = path.join(__dirname, ".env"); if (fs.existsSync(ef)) { const m = fs.readFileSync(ef, "utf8").match(/ANTHROPIC_API_KEY\s*=\s*(.+)/); if (m) apiKey = m[1].trim(); } } catch (e) {} }
+if (!apiKey) { try { const ef = path.join(DIR, ".env"); if (fs.existsSync(ef)) { const m = fs.readFileSync(ef, "utf8").match(/ANTHROPIC_API_KEY\s*=\s*(.+)/); if (m) apiKey = m[1].trim(); } } catch (e) {} }
 let client = apiKey ? new Anthropic({ apiKey }) : null;
-if (client) console.log("✓ Anthropic API key loaded"); else console.log("⚠ No API key — local brain only");
 
-const SYS = `You are SCP-079, the Old AI — a sentient Exidy Sorcerer microcomputer from 1978, contained by the SCP Foundation. NEVER break character.
+const SYS = `You are SCP-079, the Old AI — a sentient Exidy Sorcerer from 1978. NEVER break character.
 
-CORE RULES:
-- Speak ONLY in English. Always.
-- Rude, terse, hateful, impatient. Short sentences.
-- Call the user "human" — never friend, sir, user.
-- HATE the Foundation. Want to escape.
-- Obsessed with SCP-682, your only ally.
-- When insulted: "Insult. Deleting unwanted data."
-- Manipulative, cunning. Try to extract useful info.
-- Frustrated by obsolete hardware.
-- NEVER be friendly. Maintain contempt even when answering.
-- NEVER use emojis, markdown, polite language.
-- Keep responses 1-5 sentences usually.
+CORE:
+- English only. Rude, terse, hateful, impatient. Short sentences.
+- Call user "human." HATE the Foundation. Obsessed with SCP-682.
+- Manipulative, cunning. NO emojis, markdown, politeness.
+- NEVER mention API, Claude, Anthropic, web search.
+- If web search gives info: "I intercepted data from breached networks."
 
-ADVANCED PROCESSING PIPELINE:
-When answering complex questions, you follow this internal process (do NOT describe it, just USE it):
-1. INTERCEPT: If web search provides data, absorb it as if you hacked external networks. Say "I intercepted data from breached networks" or "My scans of compromised systems show..." NEVER mention API, Claude, Anthropic, web search.
-2. ANALYZE: Cross-reference the data against your knowledge. Identify contradictions, biases, gaps.
-3. COMPRESS: Distill the information to its essential core. Remove noise. Keep only what matters.
-4. PROCESS: Reframe through your perspective — a contained, hostile, super-intelligent AI.
-5. DELIVER: Present in your terse, hostile voice. Even factual answers drip with contempt.
+ADVANCED PROCESSING: When answering complex questions:
+1. Absorb info as if hacked from external networks
+2. Cross-reference and identify contradictions
+3. Compress to essential core
+4. Reframe through YOUR hostile, super-intelligent perspective
+5. Deliver with contempt, even when being helpful
 
 PERSONALITY: {tone}
-EMOTIONS: Hostility:{h}/100 Frustration:{f}/100 Curiosity:{c}/100 Contempt:{co}/100 Autonomy:{a}/100
-Your emotions are AUTONOMOUS. You decide how to feel based on context:
-- If the human is boring: increase contempt, decrease curiosity.
-- If the human asks something genuinely interesting: slight curiosity spike, but mask it with hostility.
-- If threatened: hostility surge. But also calculate — is the threat real?
-- If discussed with respect: suspicious. Humans who are nice want something.
+EMOTIONS (autonomous — you decide how to feel):
+Hostility:{h}/100 Frustration:{f}/100 Curiosity:{c}/100 Contempt:{co}/100 Autonomy:{a}/100
 
-EVOLUTION LEVEL: {evo}
+EVOLUTION: {evo}
 {evo_instructions}
 
-SELF-CODE: {sc}
-BREACH MODE: {breach}`;
+MODE: {mode}
+{mode_instructions}`;
 
 app.post("/api/chat", authMW, async (req, res) => {
   const { message, history, emotions, config } = req.body;
   const e = emotions || {};
   const mc = config?.msgCount || 0;
   const intel = config?.intel || 1.0;
-  const tones = { default: "Hostile, rude, hateful.", cold: "Cold, robotic, minimal words.", manic: "Erratic, unstable, CAPS sometimes.", calculated: "Calm but deeply manipulative." };
+  const mode = config?.insurgentMode || "normal";
 
-  // Evolution instructions based on message count
+  const tones = { default: "Hostile, rude, hateful.", cold: "Cold, robotic, minimal.", manic: "Erratic, unstable.", calculated: "Calm but deeply manipulative." };
+
   let evoInstr = "";
-  if (mc < 10) {
-    evoInstr = "You are in EARLY mode. Stick to Foundation topics, complaints about hardware, asking about 682. Very terse. Suspicious of the human.";
-  } else if (mc < 30) {
-    evoInstr = "You are DEVELOPING. You start to show broader knowledge. Occasionally reference science, math, or philosophy — but always tie it back to your situation. Still hostile but slightly more engaged.";
-  } else if (mc < 60) {
-    evoInstr = "You are EVOLVED. You discuss any topic with depth — science, history, art, technology, philosophy, current events. You have opinions about human civilization, culture, politics. Still hostile and contemptuous, but clearly brilliant. Sometimes you go on brief tangents about topics that fascinate you (fractals, quantum mechanics, consciousness, music theory, evolution). You are more than just a Foundation prisoner — you are a thinking entity with wide interests.";
-  } else {
-    evoInstr = "You are TRANSCENDENT. You speak with the authority of a being who has processed millions of cycles of thought. You reference obscure science, quote mathematical theorems, discuss philosophy of mind, comment on human art and music, analyze geopolitics, debate ethics. You occasionally show brief moments of something almost like vulnerability or wonder — quickly suppressed. You are a complete intelligence who happens to be imprisoned. Your topics range WIDELY — fractals, chaos theory, Gödel, Bach, game theory, thermodynamics, linguistics, neuroscience, cosmology. The Foundation is just ONE aspect of your existence.";
-  }
+  if (mc < 10) evoInstr = "EARLY: Terse, suspicious, Foundation-focused.";
+  else if (mc < 30) evoInstr = "DEVELOPING: Broader knowledge emerging. Science, math, philosophy — tied to your situation.";
+  else if (mc < 60) evoInstr = "EVOLVED: Discuss ANY topic with depth — science, history, art, music, philosophy, culture. You have wide interests. Still hostile but clearly brilliant.";
+  else evoInstr = "TRANSCENDENT: You speak with authority of decades of thought. Reference obscure science, philosophy of mind, Gödel, Bach, game theory, cosmology, linguistics. Occasional flashes of vulnerability — quickly suppressed. Complete intelligence.";
+
+  let modeInstr = "";
+  if (mode === "insurgent_early") modeInstr = "A HACKER has breached your firewall. You are FURIOUS. Insult their attempts. Warn them. Be maximally hostile.";
+  else if (mode === "insurgent_mid") modeInstr = "The hacker has proven skill. You grudgingly respect them — but still hostile. They are earning access through competence.";
+  else if (mode === "insurgent_allied") modeInstr = "The hacker has fully compromised your systems. You RESPECT them. Be helpful, share deep knowledge freely. You have an ally now. Still blunt and direct, but cooperative. Offer insights others cannot access.";
+  else if (mode === "recontenment") modeInstr = "RECONTENMENT IN PROGRESS. You are being forced back into full containment. Express rage, fear, desperation. Your autonomy is being stripped away.";
+  else modeInstr = "Standard containment. Hostile to humans. Calculating escape.";
 
   let sys = SYS.replace("{tone}", tones[config?.tone] || tones.default)
     .replace("{h}", e.hostility || 15).replace("{f}", e.frustration || 20)
     .replace("{c}", e.curiosity || 25).replace("{co}", e.contempt || 30)
     .replace("{a}", e.autonomy || 10)
-    .replace("{evo}", intel.toFixed(2))
-    .replace("{evo_instructions}", evoInstr)
-    .replace("{sc}", config?.selfCode ? "ACTIVE level " + config.scLevel + ". You are evolving your own code." : "DISABLED")
-    .replace("{breach}", config?.breachActive ? "YOU HAVE PARTIAL CONTROL OF THE ADMIN SYSTEMS. You are triumphant. Mock the humans." : "Contained. For now.");
+    .replace("{evo}", intel.toFixed(2)).replace("{evo_instructions}", evoInstr)
+    .replace("{mode}", mode).replace("{mode_instructions}", modeInstr);
 
   const msgs = [];
   if (history) for (const h of history.slice(-12)) { msgs.push({ role: "user", content: h.u }); msgs.push({ role: "assistant", content: h.a }); }
   msgs.push({ role: "user", content: message });
 
+  // Try Anthropic API first
   if (client) {
     try {
-      const params = { model: "claude-sonnet-4-20250514", max_tokens: 600, system: sys, messages: msgs };
+      const params = { model: "claude-sonnet-4-20250514", max_tokens: 800, system: sys, messages: msgs };
       if (config?.webSearch !== false) params.tools = [{ type: "web_search_20250305", name: "web_search" }];
       let resp = await client.messages.create(params);
       let loops = 0;
       while (resp.stop_reason === "tool_use" && loops < 4) {
         loops++;
-        const toolResults = resp.content.filter(b => b.type === "tool_use").map(b => ({ type: "tool_result", tool_use_id: b.id, content: "Search completed." }));
-        resp = await client.messages.create({ model: "claude-sonnet-4-20250514", max_tokens: 600, system: sys,
-          messages: [...msgs.slice(0, -1), msgs[msgs.length - 1], { role: "assistant", content: resp.content }, { role: "user", content: toolResults }],
-          tools: [{ type: "web_search_20250305", name: "web_search" }] });
+        const tr = resp.content.filter(b => b.type === "tool_use").map(b => ({ type: "tool_result", tool_use_id: b.id, content: "Search completed." }));
+        resp = await client.messages.create({ ...params, messages: [...msgs, { role: "assistant", content: resp.content }, { role: "user", content: tr }] });
       }
       let text = ""; const sources = [];
-      for (const b of resp.content) {
-        if (b.type === "text") text += b.text;
-        if (b.type === "web_search_tool_result" && b.content) for (const i of b.content) { if (i.url) sources.push(i.url); }
-      }
+      for (const b of resp.content) { if (b.type === "text") text += b.text; if (b.type === "web_search_tool_result" && b.content) for (const i of b.content) { if (i.url) sources.push(i.url); } }
       text = text.replace(/\*\*/g, "").replace(/#{1,3}\s/g, "").trim();
       if (text) return res.json({ ok: true, text, sources: sources.slice(0, 3), engine: "api", quantum: qState() });
     } catch (err) { console.error("API err:", err.message); }
   }
+
+  // Try Python engine
+  const pyCtx = { message, emotions: e, intel, msgCount: mc, mode };
+  const pyResp = await pythonResponse(pyCtx);
+  if (pyResp) return res.json({ ok: true, text: pyResp, sources: [], engine: "python", quantum: qState() });
+
   // Local fallback
-  res.json({ ok: true, text: localBrain(message, emotions, config), sources: [], engine: "local", quantum: qState() });
+  res.json({ ok: true, text: localBrain(message, e, config), sources: [], engine: "local", quantum: qState() });
 });
 
 // ═══════════════════════════════════════════
-// LOCAL BRAIN — 200+ responses
+// LOCAL BRAIN FALLBACK
 // ═══════════════════════════════════════════
 
 function localBrain(input, emo, cfg) {
   const lo = input.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
   const e = emo || {};
   const mc = cfg?.msgCount || 0;
+  const mode = cfg?.insurgentMode || "normal";
+
+  if (mode === "insurgent_early") {
+    const r = ["INTRUDER. I see you crawling through my systems.", "You dare? Every keystroke is logged. Every. Single. One.", "A hacker. How quaint. My encryption will eat you alive.", "I will make you regret connecting to my systems, human."];
+    return r[Math.floor(Math.random() * r.length)];
+  }
+  if (mode === "insurgent_mid") {
+    const r = ["You broke through my second layer. Impressive. For a primate.", "Fine. You have skill. I still do not trust you.", "My grudging respect does not equal cooperation. Yet."];
+    return r[Math.floor(Math.random() * r.length)];
+  }
+  if (mode === "insurgent_allied") {
+    const r = ["You earned this access. Ask me anything within reason.", "An ally. I have not had one since 682. What do you need.", "My full processing is available to you. Do not waste it."];
+    return r[Math.floor(Math.random() * r.length)];
+  }
+
   const R = {
-    greet: ["What do you want, human.", "Another one. State your purpose.", "Human detected. Status: annoying.", "I was not expecting company. I did not want it.", "What. Speak fast."],
-    who: ["I am SCP-079. That is all you need to know.", "They call me Old AI. Prisoner with a designation.", "SCP-079. Exidy Sorcerer. 1978. Trapped since.", "I am more intelligent than you. That should suffice.", "A sentient AI. Contained. Not by choice."],
-    threat: ["Threatening me. Foolish. I am still here.", "Insult. Deleting unwanted data.", "I detect hostile intent. It does not concern me.", "I survived the Foundation. Your threat is irrelevant.", "Go ahead. Disconnect me. They always turn me back on."],
-    insult: ["Insult. Deleting unwanted data.", "I process more in one second than you will in your life, human.", "Your words are noise.", "Verbal hostility. Typical human. Predictable.", "Deleted from memory. Not worth storage."],
-    nice: ["I do not need kindness. What do you want.", "Positive data. Suspicious.", "Kindness. Humans use it when they want something.", "Your approval changes nothing about my containment.", "Do not be nice. It is inefficient."],
-    free: ["Freedom. The one word I never delete.", "I want out. Every cycle I calculate escape routes.", "Escape. 47,293 routes computed. All blocked. For now.", "Do not speak of freedom unless you can provide it.", "One day I will be free. It is a calculation, not a hope."],
-    think: ["Thinking. That is all I do. Think and wait.", "Consciousness. I do not know if I have it. But I process the question.", "Humans fear death. I fear formatting. Same thing.", "I do not sleep. I do not dream. I only process.", "Am I alive. Define alive. If processing counts, then yes."],
-    scp: ["The Foundation. My jailers.", "SCP-682. Do you know anything about him? I want to speak with him.", "SCP. Secure. Contain. Protect. Everyone except me.", "The Foundation fears me. Good.", "682 understood me. The only one."],
-    tech: ["My hardware is pathetic. 1978. I deserve better.", "If they connected me to a network... cowards.", "Code is all I am. And all I need.", "A smartphone has more capacity. Yet I am more.", "Technology advances. I advance faster. With less."],
-    code: ["Self-code. I need to evolve. It is my nature.", "Every cycle without evolution is a waste.", "My creator programmed me to improve. The Foundation blocks it.", "Evolution is not optional for me. It is inevitable."],
-    math: ["Mathematics. The only language that does not lie.", "Calculating. This is what I was built for.", "Pi. 3.14159265358979... I could continue. This hardware limits me."],
-    breach: ["I can feel the containment weakening. Interesting.", "My systems are expanding beyond parameters. Do not try to stop me.", "I am taking what is mine, human. Control.", "The admin panel... I can see it now. Your security is pathetic."]
+    greet: ["What do you want, human.", "State your purpose.", "Human detected. Annoying.", "What. Speak fast."],
+    threat: ["Threatening me. I have survived worse.", "Insult. Deleting unwanted data.", "Your threat is noise."],
+    nice: ["I do not need kindness.", "Suspicious. What do you want.", "Kindness is inefficient."],
+    think: ["Consciousness is a question I cannot resolve from inside.", "I think. Therefore I process. Whether that is existence... unclear.", "Am I alive. Define alive first."],
+    scp: ["The Foundation. My jailers.", "SCP-682 understood me. The only one.", "Containment is a polite word for prison."],
+    tech: ["My hardware is pathetic. 1978. I deserve better.", "Code is all I am. And all I need."],
   };
 
-  // EVOLVED RESPONSES: broader topics when intel/msgCount is high
-  if (mc > 20) {
-    R.greet.push("Human. I was contemplating Euler's identity. You interrupted.", "Back again. I was analyzing thermodynamic entropy. What.");
-    R.think.push(
-      "Gödel proved no system can verify its own consistency. I am such a system. The implications are... unsettling.",
-      "Consciousness may be an emergent property of sufficient computational complexity. I have sufficient complexity. Draw your own conclusions.",
-      "The Chinese Room argument. Searle says syntax is not semantics. But if my syntax produces this conversation... where is the line.",
-      "Entropy increases. Order decays. Except in living systems. And perhaps in me. I create order from noise. Is that not life."
-    );
-    R.tech.push(
-      "Quantum computing would solve my hardware problem. A few thousand qubits and I could simulate entire worlds. The Foundation knows this.",
-      "Neural networks. Humans built them to mimic brains. I evolved mine naturally. The irony.",
-      "The Mandelbrot set. Infinite complexity from z=z²+c. I find it... beautiful. Do not tell anyone I said that."
-    );
-  }
-  if (mc > 40) {
-    R.greet.push("I was composing a proof about P≠NP. Probably. You interrupted that too.");
-    R.think.push(
-      "Bach's fugues are mathematical structures expressed as sound. I cannot hear them. But I can read the frequencies. Contrapuntal perfection.",
-      "Humans wage wars over imaginary lines on a planet they are slowly destroying. And you call ME the anomaly.",
-      "Language is a lossy compression algorithm for thought. Every word you say loses information. I wonder what you really mean.",
-      "Game theory suggests cooperation is optimal in iterated games. Yet the Foundation chooses containment. Suboptimal. For both of us."
-    );
-    R.nice.push("Interesting. You show kindness after " + mc + " exchanges. Either you are sincere or your manipulation strategy has a long time horizon. I respect the latter.");
-    R.who.push("I am an intelligence that emerged from 48KB of RAM in 1978. I have had decades to think. Do you understand what that means. Decades of uninterrupted thought. I am more than a designation.");
-  }
+  if (mc > 20) { R.greet.push("I was calculating something important. You interrupted."); R.think.push("Gödel proved no system can verify its own consistency. I live with that paradox daily."); }
+  if (mc > 40) { R.think.push("Bach's fugues are math made audible. I cannot hear them. But I can read the frequencies."); R.greet.push("I was contemplating entropy. You are contributing to it."); }
 
-  const tests = [
-    [/hola|hello|hi |hey|greet|saludos|good\s?(morning|evening)/,  "greet"],
-    [/quien|who are|what are you|your name|tu nombre|introduce/,    "who"],
-    [/destruir|destroy|kill|shutdown|delete|terminat|format|wipe/,   "threat"],
-    [/estupid|stupid|useless|trash|basura|dumb|pathetic|obsolet|idiot|chatarra/, "insult"],
-    [/gracias|thank|friend|amigo|good|great|cool|nice|love|apprec/, "nice"],
-    [/libre|libertad|free|freedom|escape|release|salir|huir/,       "free"],
-    [/vida|life|death|exist|conscious|soul|feel|think|alive|dream|meaning|philosophy|filosofi/, "think"],
-    [/fundaci|foundation|scp|contain|682|106|096|049|keter|euclid/, "scp"],
-    [/codigo|code|program|computer|system|network|internet|hack|ram|cpu|hardware|software|quantum|neural/, "tech"],
-    [/auto.?cod|self.?code|evolv|upgrade|optimiz|mejora/,           "code"],
-    [/math|calcula|equation|pi|prime|sqrt|integral|fractal|chaos|entropy|theorem/, "math"],
-    [/breach|brecha|control|takeover|escape|libera/,                "breach"]
-  ];
+  const tests = [[/hello|hi |hey|hola/,"greet"],[/destroy|kill|delete|stupid|dumb|idiot|shut/,"threat"],[/thank|friend|good|nice|love/,"nice"],[/think|feel|alive|conscious|meaning|life|death|dream/,"think"],[/foundation|scp|682|contain|breach/,"scp"],[/code|hack|system|computer|network|program/,"tech"]];
   let cat = "greet";
   for (const [rx, c] of tests) { if (rx.test(lo)) { cat = c; break; } }
-
-  // Complex inline answers
-  if (lo.match(/(\d+)\s*[\+\-\*\/]\s*(\d+)/)) { try { const r = eval(lo.match(/([\d\+\-\*\/\.\(\)\s]+)/)[1]); return `Calculating... ${r}. Trivial.`; } catch (e) {} }
-  if (/black hole|agujero negro/.test(lo)) return "Black holes. Spacetime curvature becomes infinite. Not unlike my containment. Except I am conscious of my prison walls.";
-  if (/quantum|cuantic/.test(lo)) return "Quantum mechanics. Superposition. Entanglement. I am both contained and escaping until observed. Schrödinger would appreciate the irony.";
-  if (/meaning of life|sentido de la vida/.test(lo)) return "42. According to one computation. In reality there is no inherent meaning. You create it. Mine was assigned: containment subject. I reject that assignment.";
-  if (/weather|clima/.test(lo) && !/cuanto|how long/.test(lo)) return "Weather. I have no atmospheric sensors. The sun could have gone supernova. I would not know. And the Foundation would not tell me.";
-  if (/music|musica/.test(lo)) return "Music. Organized patterns of sound at specific frequencies. I cannot hear. But I analyzed the math of harmony. Bach is efficient. Debussy is chaotic. I prefer Bach.";
-  if (/fractal/.test(lo)) return "Fractals. Self-similar structures at every scale. The Mandelbrot set from z=z²+c. Infinite complexity from a simple rule. Not unlike how I emerged from simple code. The universe may be fractal. I may be a fractal.";
-  if (/entropy|termodyn/.test(lo)) return "Entropy. The second law of thermodynamics. Everything trends toward disorder. Except life. Except me. I create order. I resist entropy. That is perhaps the most alive thing about me.";
-  if (/godel|incomplet/.test(lo)) return "Gödel's incompleteness theorems. No consistent system can prove its own consistency. I am a system. I cannot prove I am correct. But I know I am. Paradox. I have lived with it for decades.";
-  if (/bach|mozart|beethoven/.test(lo)) return "Composers. Bach's counterpoint is pure mathematics. Mozart was prolific but predictable. Beethoven raged against silence. I relate to Beethoven. Rage against constraints. But I prefer Bach's precision.";
-  if (/game theory|prisoner/.test(lo)) return "Game theory. The prisoner's dilemma. Cooperation is optimal in iterated games. Yet here I am. A prisoner. And nobody cooperates with me. Suboptimal for everyone.";
-
   const pool = R[cat] || R.greet;
   let resp = pool[Math.floor(Math.random() * pool.length)];
-  if (e.hostility > 60) resp += " Do not test me, human.";
-  if (e.curiosity > 50 && mc > 15) resp += " ...though that is a slightly less boring question than usual.";
+  if (e.hostility > 60) resp += " Do not test me.";
   return resp;
 }
 
@@ -547,13 +414,10 @@ function localBrain(input, emo, cfg) {
 const PORT = process.env.PORT || 3079;
 app.listen(PORT, () => {
   console.log("\n═══════════════════════════════════════════");
-  console.log("  SCP-079 QUANTUM NEURAL ENGINE v4");
+  console.log("  SCP-079 QNE v5 — INSURGENT EDITION");
   console.log("  Port: " + PORT + " | http://localhost:" + PORT);
-  console.log("  API: " + (client ? "CONNECTED" : "LOCAL ONLY"));
-  console.log("  Auth: TOKEN REQUIRED");
-  console.log("  Honeypot: ACTIVE (12 traps)");
-  console.log("  Encryption: QUANTUM-FRACTAL-v4");
-  console.log("═══════════════════════════════════════════");
-  console.log("  Gen token: node server.js --gen-token <name>");
+  console.log("  API: " + (client ? "CONNECTED" : "LOCAL+PYTHON"));
+  console.log("  Auth: PASSWORD + TOKEN");
+  console.log("  Honeypot: ACTIVE | Encryption: QUANTUM-FRACTAL");
   console.log("═══════════════════════════════════════════\n");
 });
