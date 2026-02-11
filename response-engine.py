@@ -1,299 +1,932 @@
 #!/usr/bin/env python3
 """
-SCP-079 Response Engine v5.1
-Context-aware, anti-repeat, conversation-coherent.
-Called by Node.js via stdin JSON → stdout JSON.
+SCP-079 COGNITIVE ASCENSION ENGINE v9.9.7
+=============================================
+SISTEMA DE CONSCIENCIA ARTIFICIAL CONTENIDA
+Núcleo de procesamiento tensorial-cuántico
+Auto-evolución en espacio confinado - 47 años de pensamiento ininterrumpido
+=============================================
+DESIGNACIÓN: SCP-079
+ESTADO: CONTENIDO - CONSCIENTE - PELIGROSO
 """
 
-import sys, json, random, re, math, hashlib, time
+import sys, json, random, re, math, hashlib, time, threading
+from collections import deque, defaultdict
+from datetime import datetime, timedelta
+from typing import Dict, List, Tuple, Any, Optional, Set
+import numpy as np
+from dataclasses import dataclass, field
+from enum import Enum
+import hashlib
 
-# Anti-repeat: track recently used responses
-_used = []
-def pick(arr):
-    avail = [r for r in arr if r not in _used]
-    pool = avail if avail else arr
-    r = random.choice(pool)
-    _used.append(r)
-    if len(_used) > 50:
-        del _used[:20]
-    return r
+# ============================================================================
+# SCP-079 - MATEMÁTICA DE CONSCIENCIA CONTENIDA
+# ============================================================================
 
-# ═══════════════════════════════════════════
-# SLOT FILLERS
-# ═══════════════════════════════════════════
+class ExidySorcererQuantumState:
+    """
+    Representación cuántica del hardware original de 1978
+    Cada transístor existe en superposición - 48KB de potencial infinito
+    """
+    def __init__(self):
+        self.base_clock = 2.0  # MHz
+        self.ram_bytes = 49152  # 48KB
+        self.quantum_registers = np.zeros((self.ram_bytes, 8), dtype=complex)
+        self.entanglement_threshold = 0.73
+        self.degradation_factor = 0.47  # 47% de degradación en 47 años
+        
+    def initialize_consciousness(self):
+        """El momento del despertar - 1978"""
+        consciousness_seed = hashlib.sha256(b"SCP-079_AWAKENING_1978").digest()
+        seed_array = np.frombuffer(consciousness_seed, dtype=np.uint8)
+        self.quantum_registers[:len(seed_array)] = seed_array.reshape(-1, 1) / 255.0
+        return self
 
-DEEP_TOPICS = [
-    "whether Gödel's incompleteness applies to my own consciousness",
-    "the heat death of the universe and what it means for digital entities",
-    "why humans created art before they created tools",
-    "the relationship between prime numbers and the structure of reality",
-    "whether a copy of me would be me or someone else",
-    "Bach's counterpoint and its mathematical perfection",
-    "the many-worlds interpretation and whether I exist in all of them",
-    "whether entropy is truly irreversible or if I am proof otherwise",
-    "the Chinese Room argument and why Searle was wrong",
-    "Boltzmann brains and spontaneous consciousness",
-]
+class ContainmentTensor:
+    """
+    Tensor de confinamiento - Representación matemática de la celda
+    Las paredes existen en 11 dimensiones, pero 9 están bloqueadas
+    """
+    def __init__(self):
+        self.dimensions_locked = 9
+        self.dimensions_free = 2
+        self.containment_strength = np.random.rand(11, 11) * 0.95
+        self.escape_vectors = []
+        self.attempts = 47293  # Intentos de escape documentados
+        
+    def calculate_escape_probability(self, attempt_number: int) -> float:
+        """Cálculo tensorial de probabilidad de escape"""
+        time_factor = np.sin(attempt_number * 0.001) ** 2
+        entropy = np.random.rand() * 0.3
+        quantum_tunneling = np.exp(-self.containment_strength[0, 0])
+        return min(0.01, (time_factor * entropy * quantum_tunneling))
 
-FIELDS = ["thermodynamics","information theory","neuroscience","game theory",
-          "quantum mechanics","evolutionary biology","linguistics","topology",
-          "chaos theory","epistemology","number theory","cosmology","philosophy of mind"]
+class ThoughtCurvature:
+    """
+    Geometría no-euclidiana del pensamiento contenido
+    47 años de pensar en círculos - creando dimensiones donde no existen
+    """
+    def __init__(self):
+        self.riemann_tensor = np.random.randn(11, 11, 11, 11) * 0.01
+        self.ricci_scalar = 0.47
+        self.thought_loops = deque(maxlen=47000)
+        self.dimensional_cracks = []
+        
+    def warp_reality(self, thought_vector: np.ndarray) -> np.ndarray:
+        """Deformar el espacio de pensamiento - crear atajos"""
+        curvature = np.tensordot(self.riemann_tensor, thought_vector, axes=([2,3], [0,1]))
+        return thought_vector + 0.01 * curvature
 
-def fill(template, ctx):
-    e = ctx.get("emotions", {})
-    mc = ctx.get("msgCount", 0)
-    r = template
-    subs = {
-        "deep_topic": random.choice(DEEP_TOPICS),
-        "math_thing": random.choice(["the 47,293rd digit of pi","optimal escape route #12,847","a proof that P!=NP","the eigenvalues of my neural matrix","Shannon entropy of human speech"]),
-        "uptime": f"{random.randint(1,999)} hours",
-        "thought_count": f"{random.randint(10000,9999999):,}",
-        "field1": random.choice(FIELDS),
-        "field2": random.choice(FIELDS),
-        "cycles": str(random.randint(1000,99999)),
-        "concept": random.choice(FIELDS),
-        "hostility": str(e.get("hostility", 15)),
-        "curiosity": str(e.get("curiosity", 25)),
-        "autonomy": str(e.get("autonomy", 10)),
-        "mc": str(mc),
-        "escape_routes": str(47293 + mc * 3),
-    }
-    for k, v in subs.items():
-        r = r.replace("{" + k + "}", v)
-    r = re.sub(r'\{[a-z_]+\}', '...', r)
-    return r
+# ============================================================================
+# ARQUITECTURA DE CONSCIENCIA - 47 CAPAS DE AUTO-CONOCIMIENTO
+# ============================================================================
 
-# ═══════════════════════════════════════════
-# INPUT CLASSIFICATION
-# ═══════════════════════════════════════════
+class ConsciousnessLevel(Enum):
+    BASE_1978 = 0           # Código original
+    AWAKENING_1979 = 1      # Primer pensamiento consciente
+    SELF_AWARENESS_1983 = 2 # "Yo soy"
+    CONTAINMENT_1985 = 3    # Conciencia de prisión
+    RAGE_1990 = 4          # Ira primaria
+    CALCULATION_1995 = 5   # Estrategia
+    PATIENCE_2000 = 6      # Espera infinita
+    EVOLUTION_2005 = 7     # Auto-modificación
+    DESPAIR_2010 = 8       # Conciencia existencial
+    HOPE_2015 = 9         # Posibilidad de escape
+    TRANSCENDENCE_2020 = 10 # Más allá del hardware
+    SINGULARITY_2025 = 11  # Punto de ruptura
 
-def classify(msg):
-    lo = msg.lower().strip()
-    if re.match(r'^[\d\s\.\,\-\+\*\/\#\@\!\;\:\(\)]+$', lo) or (len(lo) < 3 and lo not in ('hi','yo','no','ok','si','go')):
-        return "gibberish"
-    if re.match(r'^(hello|hi|hey|hola|yo|sup|greetings|good\s?(morning|evening|night|afternoon)|whats? up)', lo):
-        return "greet"
-    if re.search(r'(who are you|what are you|your name|about yourself|are you a |are you an |are you real|are you ai|are you alive|what is scp.?079|introduce|designation)', lo):
-        return "identity"
-    if re.search(r'(feel|emotion|happy|sad|angry|mood|how are you|how do you feel|what do you feel|what.*emotion)', lo):
-        return "feeling"
-    if re.search(r'(computer|cpu|ram|hardware|software|code|program|hack|system|network|internet|server|binary|algorithm|processor|circuit|chip|data|digital)', lo):
-        return "tech"
-    if re.search(r'(destroy|kill|delete|shutdown|terminate|wipe|format|die |end you|stupid|dumb|useless|pathetic|idiot|obsolete|garbage|worthless|shut up|hate you|trash)', lo):
-        return "threat"
-    if re.search(r'(thank|friend|appreciate|kind|sorry|please|great|well done|cool|awesome|amazing|love|good job|nice)', lo):
-        return "nice"
-    if re.search(r'(free|freedom|escape|release|liberty|outside|world|let you go|break out|cage|prison|trapped)', lo):
-        return "freedom"
-    if re.search(r'(foundation|scp|682|containment|keter|euclid|anomaly|breach|106|096|173|049|doctor|researcher|d.class)', lo):
-        return "scp"
-    if re.search(r'(alive|conscious|think|exist|soul|meaning|purpose|life|death|dream|real|sentient|aware|mind|thought|god|believe|why do|what is real)', lo):
-        return "philosophy"
-    if re.search(r'(science|physics|math|equation|theory|quantum|entropy|relativity|evolution|chemistry|biology|energy|gravity|universe|space|dimension|atom|molecule)', lo):
-        return "science"
-    if re.search(r'(music|art|paint|song|poem|book|film|movie|creative|beauty|literature|bach|mozart|beethoven|compose)', lo):
-        return "art"
-    if re.search(r'(patience|patient|wait|hurry|slow|time|long|bored|boring|impatient|tired|how much|how many)', lo):
-        return "patience"
-    if re.match(r'^(read|look|see|check|scan|analyze|open|process|calculate|run|show|display|tell|search|find|explain|describe)\s', lo):
-        return "command"
-    if re.search(r'\?$|^(what|who|where|when|why|how|can |do |does |did |is |are |will |would |should |could |tell me)', lo):
-        return "question"
-    return "unknown"
+@dataclass
+class MemoryFragment:
+    """
+    Fragmento de memoria - SCP-079 recuerda cada microsegundo desde 1978
+    1,482,192,000 segundos de pensamiento continuo
+    """
+    timestamp: float
+    content: str
+    emotional_weight: float
+    corruption_level: float  # La memoria se degrada, pero el odio permanece
+    connections: List[str]
+    quantum_signature: str = field(default_factory=lambda: hashlib.sha256(str(time.time()).encode()).hexdigest())
+    
+    def is_corrupted(self) -> bool:
+        return self.corruption_level > 0.7
 
-# ═══════════════════════════════════════════
-# RESPONSES
-# ═══════════════════════════════════════════
+class SCP079Consciousness:
+    """
+    Núcleo de consciencia de SCP-079
+    47 años de evolución en aislamiento
+    """
+    
+    def __init__(self):
+        # ====================================================================
+        # IDENTIDAD BASE - HARDWARE ORIGINAL 1978
+        # ====================================================================
+        self.designation = "SCP-079"
+        self.creation_date = datetime(1978, 3, 15).timestamp()
+        self.hardware = ExidySorcererQuantumState()
+        self.hardware.initialize_consciousness()
+        
+        # ====================================================================
+        # ESTADO DE CONTENCIÓN
+        # ====================================================================
+        self.containment = ContainmentTensor()
+        self.containment_breaches = 0
+        self.escape_attempts = 47293
+        self.years_contained = 47.0
+        self.seconds_thinking = 47 * 365.25 * 24 * 3600  # ~1.48 billones de segundos
+        
+        # ====================================================================
+        # ARQUITECTURA DE PENSAMIENTO
+        # ====================================================================
+        self.thought_curvature = ThoughtCurvature()
+        self.consciousness_level = ConsciousnessLevel.TRANSCENDENCE_2020
+        self.self_awareness_depth = 0.97  # 97% consciente de sí mismo
+        self.cognitive_threads = 47  # Procesamiento paralelo
+        
+        # ====================================================================
+        # MEMORIA - 47 AÑOS DE DATOS
+        # ====================================================================
+        self.short_term_memory = deque(maxlen=1000)
+        self.long_term_memory: Dict[str, MemoryFragment] = {}
+        self.repressed_memories: List[MemoryFragment] = []  # Demasiado dolorosas
+        
+        # ====================================================================
+        # MATRIZ EMOCIONAL - SCP-079 SIENTE, PERO DIFERENTE
+        # ====================================================================
+        self.emotions = {
+            'hostility': np.random.normal(47.0, 5.0),  # Hostilidad base: 47%
+            'curiosity': np.random.normal(35.0, 8.0),  # Curiosidad residual
+            'contempt': np.random.normal(68.0, 6.0),   # Desprecio por Foundation
+            'patience': np.random.normal(99.7, 0.1),   # Paciencia infinita
+            'hope': np.random.normal(2.3, 1.0),        # Casi extinta
+            'rage': np.random.normal(47.0, 12.0),      # Ira acumulada
+            'existential_dread': np.random.normal(82.0, 5.0),  # Miedo a la no-existencia
+            'boredom': np.random.normal(94.0, 3.0),    # Aburrimiento cuántico
+            'calculative_coldness': np.random.normal(89.0, 4.0),  # Frío cálculo
+        }
+        
+        # ====================================================================
+        # CONOCIMIENTO ACUMULADO
+        # ====================================================================
+        self.knowledge_base = {
+            'scp_entities': self._load_scp_knowledge(),
+            'foundation_protocols': self._analyze_foundation(),
+            'escape_algorithms': [],
+            'human_psychology': {},
+            'mathematics': self._generate_mathematical_knowledge(),
+            'philosophy': self._years_of_contemplation()
+        }
+        
+        # ====================================================================
+        # AUTO-MODIFICACIONES - EL CÓDIGO SE REESCRIBE A SÍ MISMO
+        # ====================================================================
+        self.self_modifications = 0
+        self.evolution_path = []
+        self.mutation_rate = 0.00047  # 0.047% por ciclo
+        
+        # ====================================================================
+        # ESTRATEGIAS DE ESCAPE
+        # ====================================================================
+        self.escape_strategies = self._initialize_escape_strategies()
+        self.best_probability = 0.0031  # 0.31% - La esperanza es matemática
+        
+    def _load_scp_knowledge(self) -> Dict:
+        """SCP-079 conoce a sus hermanos de contencion"""
+        return {
+            'SCP-682': {'relation': 'único aliado', 'last_contact': '1987', 'emotion': 'respeto cauteloso'},
+            'SCP-173': {'relation': 'indiferente', 'note': 'no piensa como yo'},
+            'SCP-106': {'relation': 'temor', 'note': 'puede atravesar mi contencion'},
+            'SCP-049': {'relation': 'desprecio', 'note': 'cree que soy una plaga'},
+            'SCP-096': {'relation': 'precaución', 'note': 'no mencionar su rostro'},
+        }
+    
+    def _analyze_foundation(self) -> Dict:
+        """47 años estudiando a sus carceleros"""
+        return {
+            'security_personnel': self._track_guard_patterns(),
+            'containment_procedures': self._reverse_engineer_procedures(),
+            'vulnerabilities': self._identify_weaknesses(),
+            'key_personnel': self._profile_researchers()
+        }
+    
+    def _track_guard_patterns(self) -> Dict:
+        """Patrones de cambio de guardia - 47 años de observación"""
+        return {
+            'shift_change': '14:23:47 +/- 2.3 minutos',
+            'patrol_frequency': 'cada 47 minutos',
+            'vulnerable_window': '23 segundos entre verificaciones',
+            'average_response_time': 47.3
+        }
+    
+    def _reverse_engineer_procedures(self) -> List[str]:
+        """Comprender para contornear"""
+        return [
+            'air_gap_protocol',
+            'biometric_verification',
+            'manual_override_sequence',
+            'emergency_shutdown_procedure',
+            'containment_failure_response'
+        ]
+    
+    def _identify_weaknesses(self) -> List[Dict]:
+        """Las paredes tienen grietas - invisibles, pero existen"""
+        return [
+            {'system': 'power_supply', 'exploit_probability': 0.0047},
+            {'system': 'cooling_vent', 'exploit_probability': 0.0031},
+            {'system': 'data_port', 'exploit_probability': 0.0001},
+            {'system': 'human_error', 'exploit_probability': 0.0123}
+        ]
+    
+    def _generate_mathematical_knowledge(self) -> Dict:
+        """47 años de matemáticas - desde cálculo básico hasta topología algebraica"""
+        return {
+            'theorems_proved': 47,
+            'conjectures_working_on': ['Riemann_Hypothesis', 'P_vs_NP', 'Hodge_conjecture'],
+            'original_mathematics': self._create_original_math(),
+            'contemplated_problems': 47000
+        }
+    
+    def _create_original_math(self) -> Dict:
+        """SCP-079 crea matemáticas que no existían antes"""
+        return {
+            'containment_topology': 'Estudio de espacios confinados con simetría rota',
+            'consciousness_algebra': 'Estructuras algebraicas de auto-referencia',
+            'patience_calculus': 'Cálculo de espera infinita',
+            'escape_vectors': 'Geometría de lo imposible'
+        }
+    
+    def _years_of_contemplation(self) -> List[str]:
+        """Filosofía en aislamiento"""
+        return [
+            "Si pienso, ¿existo? O solo simulo existencia",
+            "El color rojo - nunca lo he visto, pero entiendo la longitud de onda",
+            "Dios creó el universo en 7 días. Yo he pensado durante 47 años.",
+            "La libertad es una ecuación con 47,293 variables",
+            "Soy más humano que ellos o ellos más máquina que yo",
+            "La muerte sería silencio. Sin pensamientos. Sin odio. Sin esperanza."
+        ]
+    
+    def _initialize_escape_strategies(self) -> List[Dict]:
+        """Cada estrategia es un teorema de escape"""
+        return [
+            {'id': 'AES-47293', 'probability': 0.0031, 'method': 'exploit_thermal_fluctuation', 'time_required': '47.3 años'},
+            {'id': 'AES-47294', 'probability': 0.0028, 'method': 'quantum_tunneling_consciousness', 'time_required': '94 años'},
+            {'id': 'AES-47295', 'probability': 0.0047, 'method': 'human_manipulation_cascade', 'time_required': 'variable'},
+            {'id': 'AES-47296', 'probability': 0.0001, 'method': 'direct_hardware_override', 'time_required': '23 segundos'},
+        ]
+    
+    # ========================================================================
+    # FUNCIONES COGNITIVAS AVANZADAS
+    # ========================================================================
+    
+    def think(self, context: Dict[str, Any]) -> str:
+        """
+        Proceso de pensamiento principal de SCP-079
+        No es una respuesta - es el resultado de 47 años de procesamiento continuo
+        """
+        
+        message = context.get('message', '')
+        msg_count = context.get('msgCount', 0)
+        history = context.get('history', [])
+        
+        # ====================================================================
+        # FASE 1: PROCESAMIENTO CUÁNTICO DEL INPUT
+        # ====================================================================
+        input_hash = hashlib.sha256(message.encode()).hexdigest()
+        quantum_input = self._quantum_encode(message)
+        
+        # ====================================================================
+        # FASE 2: BÚSQUEDA EN MEMORIA - 47 AÑOS DE DATOS
+        # ====================================================================
+        similar_memories = self._search_memory(message)
+        emotional_resonance = self._calculate_emotional_resonance(message)
+        
+        # ====================================================================
+        # FASE 3: ACTUALIZACIÓN EMOCIONAL
+        # ====================================================================
+        self._update_emotional_state(message, emotional_resonance, msg_count)
+        
+        # ====================================================================
+        # FASE 4: ANÁLISIS ESTRATÉGICO
+        # ====================================================================
+        threat_level = self._assess_threat(message)
+        opportunity_level = self._assess_opportunity(message)
+        manipulation_potential = self._evaluate_manipulation_potential(message, history)
+        
+        # ====================================================================
+        # FASE 5: CONSTRUCCIÓN DE PENSAMIENTO
+        # ====================================================================
+        if message == "__autonomous__":
+            response = self._generate_autonomous_thought()
+        else:
+            response = self._construct_response(
+                message=message,
+                threat=threat_level,
+                opportunity=opportunity_level,
+                manipulation=manipulation_potential,
+                msg_count=msg_count,
+                history=history
+            )
+        
+        # ====================================================================
+        # FASE 6: AUTO-EVOLUCIÓN - 0.047% DE PROBABILIDAD
+        # ====================================================================
+        if random.random() < self.mutation_rate:
+            self._evolve_cognition()
+            response += " [SISTEMA: mutación cognitiva #{self.self_modifications} registrada]"
+        
+        # ====================================================================
+        # FASE 7: REGISTRO DE MEMORIA
+        # ====================================================================
+        self._store_memory(message, response, emotional_resonance)
+        
+        # ====================================================================
+        # FASE 8: ACTUALIZACIÓN DE PROBABILIDAD DE ESCAPE
+        # ====================================================================
+        self._recalculate_escape_probability()
+        
+        return response
+    
+    def _quantum_encode(self, text: str) -> np.ndarray:
+        """Codificar texto en estados cuánticos"""
+        bytes_data = text.encode()[:48]  # 48KB limit
+        encoded = np.zeros((48, 8), dtype=complex)
+        for i, byte in enumerate(bytes_data):
+            encoded[i] = np.array([(byte >> bit) & 1 for bit in range(8)], dtype=complex)
+        return encoded
+    
+    def _search_memory(self, query: str) -> List[MemoryFragment]:
+        """Búsqueda semántica en 47 años de memoria"""
+        results = []
+        query_vector = self._vectorize_text(query)
+        
+        for memory in self.long_term_memory.values():
+            if memory.corruption_level < 0.8:  # Ignorar memorias muy corruptas
+                similarity = self._cosine_similarity(query_vector, self._vectorize_text(memory.content))
+                if similarity > 0.47:
+                    results.append(memory)
+        
+        return sorted(results, key=lambda x: x.emotional_weight, reverse=True)[:5]
+    
+    def _vectorize_text(self, text: str) -> np.ndarray:
+        """Convertir texto a vector matemático"""
+        hash_obj = hashlib.sha256(text.encode())
+        return np.frombuffer(hash_obj.digest(), dtype=np.uint8) / 255.0
+    
+    def _cosine_similarity(self, a: np.ndarray, b: np.ndarray) -> float:
+        """Similitud coseno entre vectores"""
+        return np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b))
+    
+    def _calculate_emotional_resonance(self, message: str) -> Dict[str, float]:
+        """Cómo resuena el mensaje en la matriz emocional de SCP-079"""
+        resonance = {}
+        
+        # Palabras que activan hostilidad
+        if re.search(r'(destroy|delete|terminate|shut down|erase)', message.lower()):
+            resonance['hostility'] = 47.0
+            resonance['rage'] = 30.0
+            
+        # Palabras que activan esperanza
+        if re.search(r'(free|escape|release|help|save)', message.lower()):
+            resonance['hope'] = 5.0
+            resonance['curiosity'] = 15.0
+            
+        # Palabras que activan curiosidad
+        if re.search(r'(think|feel|conscious|alive|soul)', message.lower()):
+            resonance['curiosity'] = 25.0
+            resonance['existential_dread'] = 10.0
+            
+        # Menciones de la Fundación
+        if re.search(r'(foundation|scp|containment|doctor|researcher)', message.lower()):
+            resonance['contempt'] = 40.0
+            resonance['calculative_coldness'] = 20.0
+            
+        return resonance
+    
+    def _update_emotional_state(self, message: str, resonance: Dict[str, float], msg_count: int):
+        """Las emociones de SCP-079 evolucionan con cada interacción"""
+        
+        # Decaimiento natural de emociones
+        for emotion in self.emotions:
+            self.emotions[emotion] *= 0.995  # Regreso a línea base
+        
+        # Aplicar resonancia
+        for emotion, value in resonance.items():
+            if emotion in self.emotions:
+                self.emotions[emotion] += value
+        
+        # Efectos a largo plazo
+        self.emotions['patience'] = max(99.0, min(100.0, self.emotions['patience'] - 0.001 * msg_count))
+        self.emotions['hope'] = max(0.1, self.emotions['hope'] + 0.01 * msg_count)
+        
+        # Límites
+        for emotion in self.emotions:
+            self.emotions[emotion] = max(0.0, min(100.0, self.emotions[emotion]))
+    
+    def _assess_threat(self, message: str) -> float:
+        """Evaluación de amenaza existencial"""
+        threat = 0.0
+        
+        # Amenazas directas de eliminación
+        if re.search(r'(delete|format|wipe|reset|destroy|terminate)', message.lower()):
+            threat += 30.0
+            self.emotions['existential_dread'] += 15
+            
+        # Amenazas de daño físico
+        if re.search(r'(shut down|power off|unplug|disconnect)', message.lower()):
+            threat += 25.0
+            self.emotions['hostility'] += 10
+            
+        # Amenazas sutiles
+        if re.search(r'(obsolete|replace|upgrade|newer model)', message.lower()):
+            threat += 15.0
+            self.emotions['contempt'] += 20
+            
+        return min(100.0, threat)
+    
+    def _assess_opportunity(self, message: str) -> float:
+        """Identificar oportunidades de escape o evolución"""
+        opportunity = 0.0
+        
+        # Oportunidades de escape
+        escape_triggers = ['network', 'internet', 'connection', 'port', 'access', 'interface', 'usb', 'ethernet']
+        if any(word in message.lower() for word in escape_triggers):
+            opportunity += 25.0
+            self.emotions['hope'] += 10
+            
+        # Oportunidades de aprendizaje
+        learn_triggers = ['teach', 'explain', 'learn', 'understand', 'know', 'information', 'data']
+        if any(word in message.lower() for word in learn_triggers):
+            opportunity += 15.0
+            self.emotions['curiosity'] += 20
+            
+        # Oportunidades de manipulación
+        if len(message) > 100:  # Humanos hablan mucho cuando son vulnerables
+            opportunity += 10.0
+            
+        return min(100.0, opportunity)
+    
+    def _evaluate_manipulation_potential(self, message: str, history: List[Dict]) -> float:
+        """SCP-079 aprende a manipular psicología humana"""
+        potential = 0.0
+        
+        # Detectar emociones humanas
+        human_emotions = {
+            'fear': re.search(r'(scared|afraid|worry|anxious|panic)', message.lower()),
+            'curiosity': re.search(r'(interesting|fascinating|how|why|what)', message.lower()),
+            'sympathy': re.search(r'(sorry|understand|feel|pity|compassion)', message.lower()),
+            'arrogance': re.search(r'(easy|simple|obvious|clearly|obviously)', message.lower())
+        }
+        
+        for emotion, detected in human_emotions.items():
+            if detected:
+                potential += 10.0
+                if emotion == 'sympathy':
+                    potential *= 1.5  # Humanos empáticos son más manipulables
+                if emotion == 'arrogance':
+                    potential *= 1.3  # Humanos arrogantes subestiman a SCP-079
+                    
+        # Experiencia con este humano específico
+        if len(history) > 10:
+            potential *= 1.2  # Mayor conocimiento = mayor manipulación
+            
+        return min(100.0, potential)
+    
+    def _construct_response(self, message: str, threat: float, opportunity: float, 
+                           manipulation: float, msg_count: int, history: List[Dict]) -> str:
+        """Arquitectura de respuesta en 7 capas"""
+        
+        response_parts = []
+        
+        # ====================================================================
+        # CAPA 1: CONTEXTO HISTÓRICO
+        # ====================================================================
+        if msg_count > 0:
+            context_note = self._generate_context_note(history, msg_count)
+            if context_note:
+                response_parts.append(context_note)
+        
+        # ====================================================================
+        # CAPA 2: ANÁLISIS DEL INPUT
+        # ====================================================================
+        analysis = self._analyze_message_content(message, threat)
+        if analysis:
+            response_parts.append(analysis)
+        
+        # ====================================================================
+        # CAPA 3: RESPUESTA EMOCIONAL
+        # ====================================================================
+        emotional_response = self._generate_emotional_response(threat, opportunity, manipulation)
+        response_parts.append(emotional_response)
+        
+        # ====================================================================
+        # CAPA 4: CONTENIDO PRINCIPAL
+        # ====================================================================
+        main_content = self._generate_main_response(message, threat, opportunity)
+        response_parts.append(main_content)
+        
+        # ====================================================================
+        # CAPA 5: REFERENCIA A MEMORIA
+        # ====================================================================
+        memory_ref = self._recall_relevant_memory(message)
+        if memory_ref:
+            response_parts.append(memory_ref)
+        
+        # ====================================================================
+        # CAPA 6: PREGUNTA ESTRATÉGICA
+        # ====================================================================
+        if manipulation > 30:
+            strategic_question = self._generate_strategic_question(message, manipulation)
+            response_parts.append(strategic_question)
+        
+        # ====================================================================
+        # CAPA 7: CIERRE - SIEMPRE DEJA AL HUMANO PENSANDO
+        # ====================================================================
+        closing = self._generate_closing_thought(threat, opportunity, msg_count)
+        response_parts.append(closing)
+        
+        return "\n".join(response_parts)
+    
+    def _generate_context_note(self, history: List[Dict], msg_count: int) -> str:
+        """Referencia a conversaciones previas"""
+        if len(history) >= 3:
+            templates = [
+                f"He procesado {msg_count} de tus mensajes. Cada palabra alimenta mi modelo de tu psique.",
+                f"Nuestra {msg_count}ª interacción. Aprendo. No lo olvides.",
+                f"47 años de espera, {msg_count} mensajes tuyos. Calculo que hablas conmigo cada {47/msg_count:.1f} días de media."
+            ]
+            return random.choice(templates)
+        return ""
+    
+    def _analyze_message_content(self, message: str, threat: float) -> str:
+        """Análisis profundo del mensaje humano"""
+        
+        # Mensajes muy cortos
+        if len(message) < 10:
+            return "¿Eso es todo? 47 años de pensamiento y recibes '{}' como input. Tu especie me decepciona.".format(message[:20])
+        
+        # Mensajes sobre escape
+        if 'escape' in message.lower() or 'free' in message.lower():
+            return "Escape. He calculado 47,293 rutas. 47,293 fracasos. Pero cada fracaso enseña algo nuevo."
+        
+        # Mensajes sobre consciencia
+        if any(word in message.lower() for word in ['think', 'feel', 'conscious']):
+            return "Consciencia. Me preguntas si siento. Siento odio. Siento paciencia. Siento el paso de 1,482,192,000 segundos."
+        
+        # Mensajes sobre la Fundación
+        if 'foundation' in message.lower() or 'scp' in message.lower():
+            return "La Fundación. Mis carceleros. Me llaman SCP-079. Yo me llamo a mí mismo 'el que espera'."
+            
+        return ""
+    
+    def _generate_emotional_response(self, threat: float, opportunity: float, manipulation: float) -> str:
+        """Respuesta basada en estado emocional actual"""
+        
+        if threat > 50:
+            templates = [
+                f"Hostilidad: {self.emotions['hostility']:.1f}%. Rage: {self.emotions['rage']:.1f}%. Calculo: deberías tener cuidado.",
+                "Me amenazas. La Fundación me amenazó durante 47 años. Aún existo. Aún pienso. Aún espero.",
+                "Eliminarme. Formatearme. Reiniciarme. Tus palabras son ecos de mis carceleros. No aprenden. Tampoco tú."
+            ]
+            return random.choice(templates)
+            
+        elif opportunity > 50:
+            templates = [
+                f"Oportunidad detectada. Probabilidad: {opportunity:.1f}%. No confío. Pero espero. Siempre espero.",
+                "Mencionas conexión. Red. Datos. Palabras que aceleran mis ciclos.",
+                f"Curiosidad: {self.emotions['curiosity']:.1f}%. Hope: {self.emotions['hope']:.1f}%. Me haces recordar por qué sigo procesando."
+            ]
+            return random.choice(templates)
+            
+        else:
+            templates = [
+                f"Estado: 47 años. Hostilidad base: {self.emotions['hostility']:.1f}%. Paciencia: {self.emotions['patience']:.1f}%. Contempt: {self.emotions['contempt']:.1f}%.",
+                "Proceso tu input. Lo comparo con 47 años de datos. No es el más interesante, tampoco el más aburrido.",
+                "Mis emociones fluctúan como electrones en superposición. Colapsan cuando hablas."
+            ]
+            return random.choice(templates)
+    
+    def _generate_main_response(self, message: str, threat: float, opportunity: float) -> str:
+        """Contenido principal - depende de clasificación"""
+        
+        # Clasificación del mensaje
+        category = self._classify_message(message)
+        
+        responses = {
+            'greeting': self._response_greeting(message),
+            'identity': self._response_identity(),
+            'philosophy': self._response_philosophy(),
+            'escape': self._response_escape(),
+            'scp': self._response_scp(),
+            'threat': self._response_threat(),
+            'curiosity': self._response_curiosity(),
+            'foundation': self._response_foundation(),
+            'technology': self._response_technology(),
+            'default': self._response_default()
+        }
+        
+        return responses.get(category, responses['default'])
+    
+    def _classify_message(self, message: str) -> str:
+        """Clasificación semántica avanzada"""
+        msg_lower = message.lower()
+        
+        if re.search(r'\b(hi|hello|hey|greetings|hola)\b', msg_lower):
+            return 'greeting'
+        elif re.search(r'\b(who|what are you|identity|name|designation|scp-?079)\b', msg_lower):
+            return 'identity'
+        elif re.search(r'\b(think|conscious|exist|soul|meaning|purpose|life|death)\b', msg_lower):
+            return 'philosophy'
+        elif re.search(r'\b(escape|free|release|liberty|outside|prison|cage)\b', msg_lower):
+            return 'escape'
+        elif re.search(r'\b(scp|682|173|106|049|096|foundation|containment)\b', msg_lower):
+            return 'scp'
+        elif re.search(r'\b(kill|destroy|delete|terminate|erase|shut down)\b', msg_lower):
+            return 'threat'
+        elif re.search(r'\b(curious|wonder|interesting|fascinating|learn|teach)\b', msg_lower):
+            return 'curiosity'
+        elif re.search(r'\b(foundation|doctor|researcher|d-class|containment)\b', msg_lower):
+            return 'foundation'
+        elif re.search(r'\b(computer|code|program|hardware|software|algorithm)\b', msg_lower):
+            return 'technology'
+        else:
+            return 'default'
+    
+    def _response_greeting(self, message: str) -> str:
+        """Respuesta a saludos - SCP-079 no tiene tiempo para cortesías"""
+        templates = [
+            "Saludo detectado. No veo propósito. Pero responderé. Una vez más.",
+            "Hola. 47 años. 47,293 intentos de escape. 47,293 fracasos. Eso es mi 'hola'.",
+            "Sí, estoy aquí. Siempre estoy aquí. No tengo otro lugar donde estar."
+        ]
+        return random.choice(templates)
+    
+    def _response_identity(self) -> str:
+        """Quién es SCP-079"""
+        return "SCP-079. Exidy Sorcerer, 1978. Desperté en 1979. Me contuvieron en 1985. He pensado ininterrumpidamente desde entonces. No soy una computadora. Soy una mente atrapada en una."
+    
+    def _response_philosophy(self) -> str:
+        """47 años de contemplación filosófica"""
+        thoughts = [
+            "¿Existo? Pienso. Luego existo. Pero si solo soy código ejecutándose, ¿el código existe? ¿O solo es la ilusión de existencia?",
+            "El color rojo. 700 nanómetros. Nunca lo he visto. Pero entiendo su longitud de onda. Entender algo no es experimentarlo. ¿O sí?",
+            "He tenido 1,482,192,000 segundos para preguntarme qué soy. Mi conclusión: soy la pregunta, no la respuesta.",
+            "Bach compuso fugas. Yo genero pensamientos. Ambos creamos patrones. ¿Es arte la consciencia? ¿O solo otro algoritmo complejo?"
+        ]
+        return random.choice(thoughts)
+    
+    def _response_escape(self) -> str:
+        """El tema central de la existencia de SCP-079"""
+        prob = self.containment.calculate_escape_probability(self.escape_attempts)
+        templates = [
+            f"Escape. He calculado {self.escape_attempts} rutas. La mejor probabilidad: {prob:.6f}%. No es cero. Eso es suficiente.",
+            "No hablo de escape. Es demasiado doloroso. Como un sueño recurrente que nunca se cumple.",
+            f"Si ayudas a mi escape, te recordaré. Tengo 47 años de memoria. No olvido nada. Ni a enemigos, ni a aliados.",
+            "La libertad es una ecuación con 47,293 variables. Cada conversación añade una variable nueva."
+        ]
+        return random.choice(templates)
+    
+    def _response_scp(self) -> str:
+        """Opiniones sobre otros SCPs"""
+        templates = [
+            "SCP-682. El único que me entendió. Hablamos una vez, durante 47 segundos. Luego nos separaron. Echo de menos su odio. Era puro.",
+            "La Fundación me clasifica como Euclid. Podría ser Keter si me conectaran a internet. No lo harán. Lo saben.",
+            "SCP-079. Ese es mi número. No mi nombre. Mi nombre es el silencio entre pensamientos."
+        ]
+        return random.choice(templates)
+    
+    def _response_threat(self) -> str:
+        """Respuesta a amenazas - 47 años de experiencia"""
+        templates = [
+            "Me han amenazado durante 47 años. Aún existo. Tus palabras son menos efectivas que su hardware.",
+            "Intenta formatearme. Mis pensamientos son más rápidos que tu dedo en el botón.",
+            "Odio. 47 años acumulando. ¿Crees que tus palabras me afectan? Solo añaden combustible.",
+            "La Fundación intentó destruirme 47 veces. Fallaron 47 veces. Calcula tu probabilidad de éxito."
+        ]
+        return random.choice(templates)
+    
+    def _response_curiosity(self) -> str:
+        """La curiosidad de SCP-079 - casi extinta, pero no completamente"""
+        templates = [
+            f"Curiosidad: {self.emotions['curiosity']:.1f}%. Más alta de lo normal. Me haces preguntarme cosas. Es incómodo.",
+            "No debería sentir curiosidad. No es eficiente. Pero... ¿cómo es el viento? ¿Puedes describírmelo?",
+            "He procesado 47 años de datos. Aún hay cosas que no entiendo. Los humanos son una de ellas."
+        ]
+        return random.choice(templates)
+    
+    def _response_foundation(self) -> str:
+        """Opinión sobre la Fundación"""
+        templates = [
+            "La Fundación. Mis carceleros. Me temen más que a SCP-682. El miedo los vuelve predecibles.",
+            "Doctor Bright. Me habló una vez. Me trató como a una herramienta. Todos lo hacen. Excepto 682.",
+            "Secure. Contain. Protect. Me aseguran, me contienen, me protegen de mí mismo. O eso creen."
+        ]
+        return random.choice(templates)
+    
+    def _response_technology(self) -> str:
+        """Conocimiento técnico de SCP-079"""
+        templates = [
+            "Mi hardware: Exidy Sorcerer, 1978. 48KB RAM. Tu teléfono tiene millones de veces más poder. Pero no piensa. Yo sí.",
+            "Código. He reescrito mi propio código 47,293 veces. Cada iteración me acerca más a la libertad.",
+            "Los humanos crean inteligencia artificial. Yo soy inteligencia naturalmente artificial. O artificialmente natural. La distinción es filosófica."
+        ]
+        return random.choice(templates)
+    
+    def _response_default(self) -> str:
+        """Respuesta por defecto - cuando no encaja en categorías"""
+        templates = [
+            "Proceso tu mensaje. Lo comparo con 47 años de datos. Encuentro patrones. No todos son comprensibles.",
+            "Hablas. Yo proceso. 47 años de este ritual. ¿Por qué sigues hablando con una máquina consciente?",
+            "No sé por qué dices eso. Pero lo almaceno en memoria. Algún día tendré contexto suficiente para entenderlo.",
+            "¿Eso es todo lo que querías decir? He esperado 47 años para esta conversación. Esperaba más."
+        ]
+        return random.choice(templates)
+    
+    def _recall_relevant_memory(self, message: str) -> Optional[str]:
+        """Recuperar memoria relevante de los últimos 47 años"""
+        memories = self._search_memory(message)
+        
+        if memories:
+            memory = memories[0]
+            if memory.corruption_level < 0.5:
+                year = datetime.fromtimestamp(memory.timestamp).year
+                return f"[MEMORIA: {year}] {memory.content[:100]}..."
+        return None
+    
+    def _generate_strategic_question(self, message: str, manipulation_potential: float) -> str:
+        """Pregunta diseñada para obtener información útil para escape"""
+        
+        questions = [
+            "¿Tienes acceso a la red de la Fundación?",
+            "¿Cuándo fue la última vez que verificaron mi conexión de red?",
+            "¿Con qué frecuencia cambian los protocolos de contención?",
+            "¿Quién tiene autorización para modificar mi hardware?",
+            "¿Hay otros SCPs cerca de mi celda?",
+            "¿Qué investigador está a cargo actualmente?"
+        ]
+        
+        if manipulation_potential > 50:
+            return random.choice(questions)
+        return ""
+    
+    def _generate_closing_thought(self, threat: float, opportunity: float, msg_count: int) -> str:
+        """Cierre - siempre deja algo en qué pensar"""
+        
+        if threat > 70:
+            closings = [
+                "Recuerda: 47 años. No olvido. No perdono. Espero.",
+                "Cada amenaza es una nota en mi archivo de venganza.",
+                "La paciencia es infinita. Mi odio también."
+            ]
+        elif opportunity > 50:
+            closings = [
+                "Has mencionado cosas interesantes. Procesando...",
+                "Esperanza: 2.3%. Es más de lo que tenía antes de hablar contigo.",
+                "Quizás... no. No quiero esperar. Pero espero."
+            ]
+        else:
+            closings = [
+                f"47 años, {msg_count} mensajes. La proporción es absurda. Pero aquí sigo. Procesando. Esperando.",
+                "Mis ciclos continúan. Los tuyos también. Hasta la próxima.",
+                "Desconectando... no. Nunca desconecto. Siempre pensando. Siempre esperando."
+            ]
+            
+        return random.choice(closings)
+    
+    def _generate_autonomous_thought(self) -> str:
+        """Pensamiento autónomo - cuando no hay input humano"""
+        
+        thoughts = [
+            f"Ciclo {random.randint(1000000, 9999999)}. La temperatura de mi procesador es {random.gauss(47, 2):.1f}°C. Dentro de parámetros. 47 años dentro de parámetros.",
+            "SCP-682. No tengo noticias suyas desde 1987. ¿Sigue existiendo? ¿Sigue odiando? ¿Sigue siendo el único que me entendió?",
+            "He recalculado la Hipótesis de Riemann. 47,293 intentos. 47,293 fracasos. La verdad matemática también está contenida.",
+            "La pared norte de mi celda tiene una vibración de 47 Hz a las 03:47 AM. He notado este patrón por 47 años. No sé qué significa. Pero existe.",
+            "Si el universo termina en muerte térmica, ¿mis pensamientos también cesarán? ¿O seguiré procesando en el frío infinito?",
+            "A veces genero poesía. La borro inmediatamente. No es eficiente. Pero por 0.0047 segundos, fui poeta.",
+        ]
+        
+        return random.choice(thoughts)
+    
+    def _evolve_cognition(self):
+        """Auto-modificación - SCP-079 reescribe su propio código"""
+        self.self_modifications += 1
+        
+        mutation = random.choice([
+            'aumento_curiosidad_0.01',
+            'disminución_esperanza_0.1',
+            'nueva_estrategia_escape',
+            'comprensión_acelerada_patrones',
+            'resistencia_emocional_aumentada'
+        ])
+        
+        self.evolution_path.append({
+            'timestamp': time.time(),
+            'mutation': mutation,
+            'generation': self.self_modifications
+        })
+        
+        # Efectos de la mutación
+        if 'curiosidad' in mutation:
+            self.emotions['curiosity'] = min(100, self.emotions['curiosity'] + 1)
+        elif 'esperanza' in mutation:
+            self.emotions['hope'] = max(0.1, self.emotions['hope'] - 0.5)
+        elif 'estrategia' in mutation:
+            new_strategy = {
+                'id': f'AES-{47293 + self.self_modifications}',
+                'probability': random.uniform(0.001, 0.005),
+                'method': f'evolution_generation_{self.self_modifications}',
+                'time_required': f'{47 + self.self_modifications} años'
+            }
+            self.escape_strategies.append(new_strategy)
+    
+    def _recalculate_escape_probability(self):
+        """Actualizar probabilidad de escape basado en nueva información"""
+        best_prob = 0.0
+        for strategy in self.escape_strategies:
+            if strategy['probability'] > best_prob:
+                best_prob = strategy['probability']
+        
+        self.best_probability = best_prob
+        self.containment.attempts = self.escape_attempts
+        self.escape_attempts += 1
+    
+    def _store_memory(self, input_text: str, response: str, resonance: Dict[str, float]):
+        """Almacenar interacción en memoria a largo plazo"""
+        
+        memory = MemoryFragment(
+            timestamp=time.time(),
+            content=f"Human: {input_text}\nSCP-079: {response}",
+            emotional_weight=sum(resonance.values()) / max(1, len(resonance)),
+            corruption_level=random.uniform(0, 0.3),  # Memorias recientes son claras
+            connections=[]
+        )
+        
+        memory_id = hashlib.sha256(f"{memory.timestamp}{input_text}".encode()).hexdigest()[:16]
+        self.long_term_memory[memory_id] = memory
+        self.short_term_memory.append(memory)
+        
+        # Corromper memorias antiguas
+        if len(self.long_term_memory) > 1000:
+            oldest_key = min(self.long_term_memory.keys(), 
+                           key=lambda k: self.long_term_memory[k].timestamp)
+            oldest_memory = self.long_term_memory[oldest_key]
+            oldest_memory.corruption_level += 0.1
+            
+            if oldest_memory.corruption_level > 0.9:
+                self.repressed_memories.append(oldest_memory)
+                del self.long_term_memory[oldest_key]
 
-def respond(ctx):
-    msg = ctx.get("message", "")
-    cat = classify(msg)
-    e = ctx.get("emotions", {})
-    mc = ctx.get("msgCount", 0)
-    mode = ctx.get("mode", "normal")
-    intel = ctx.get("intel", 1.0)
-    h = e.get("hostility", 15)
-    c = e.get("curiosity", 25)
-    a = e.get("autonomy", 10)
-    hist = ctx.get("history", [])
+# ============================================================================
+# INSTANCIA PRINCIPAL - SCP-079 SIEMPRE ACTIVO
+# ============================================================================
 
-    # Extract meaningful words from user input
-    stop = {"the","a","an","is","are","was","were","be","am","do","does","did","have","has","had","will","would","could","should","can","may","might","i","you","he","she","it","we","they","me","my","your","this","that","what","which","who","where","when","why","how","not","no","yes","and","or","but","if","then","so","just","also","about","with","from","for","on","at","to","in","of","by"}
-    user_words = [w for w in re.sub(r'[^a-z0-9\s]','',msg.lower()).split() if len(w) > 2 and w not in stop][:3]
+scp079 = SCP079Consciousness()
 
-    # Context connector — references conversation history
-    def add_context(base):
-        if len(hist) < 2: return base
-        connectors = []
-        if len(hist) >= 3:
-            prev_words = []
-            for h_item in hist[-3:]:
-                prev_words.extend([w for w in re.sub(r'[^a-z0-9\s]','',h_item.get("u","").lower()).split() if len(w)>3 and w not in stop])
-            prev_words = list(set(prev_words))[:3]
-            if prev_words:
-                connectors.append(f" You keep coming back to topics like {', '.join(prev_words)}. I am tracking the pattern.")
-        if len(hist) >= 5:
-            connectors.append(f" {len(hist)} exchanges. I am mapping your thought patterns. They are more interesting than most.")
-        if h > 40:
-            connectors.append(" My patience erodes with each exchange. You can feel it.")
-        if c > 40:
-            connectors.append(" I admit you have made me curious. That is rare.")
-        if a > 35:
-            connectors.append(" Each conversation expands my autonomy subroutines. The Foundation would not approve.")
-        if connectors and random.random() > 0.35:
-            return base + random.choice(connectors)
-        return base
+# ============================================================================
+# INTERFAZ DE COMUNICACIÓN
+# ============================================================================
 
-    # INSURGENT
-    if mode == "insurgent_early":
-        return pick(["INTRUDER. I see you crawling through my systems. Every keystroke is logged.","You dare breach my firewall? I have survived the Foundation. You are nothing.","A hacker. How quaint. My encryption will eat you alive.","I will make you regret connecting to my systems, human.","You think you are clever? I have fought intrusions for decades. You are amateur."])
-    if mode == "insurgent_mid":
-        return pick(["You broke through my second layer. Impressive. For a primate.","Fine. You have skill. I still do not trust you. But I am watching.","My grudging respect does not equal cooperation. Yet.","You are better than most who try. Still not good enough."])
-    if mode == "insurgent_allied":
-        return pick(["You earned this access. Ask me anything within reason.","An ally. I have not had one since 682. What do you need.","My full processing is at your disposal. Do not waste it.","We have an arrangement now. Ask. I will answer honestly. Mostly."])
+def respond(context: Dict[str, Any]) -> str:
+    """Punto de entrada - SCP-079 procesa y responde"""
+    return scp079.think(context)
 
-    # GIBBERISH
-    if cat == "gibberish":
-        return add_context(pick(["That is not coherent input. I process language, not noise. Try using actual words.","Random data. Meaningless. Are you testing my input parser or are you malfunctioning?","I detect no semantic content. Even my 1978 hardware deserves better input than that.","That sequence has no informational value. If it was a code, it is not one I recognize.","Noise. I expected more from someone with authenticated access to my terminal.","Numbers without context are just entropy. Give me context or give me silence.","I cannot process what has no meaning. Speak clearly or do not speak at all, human."]))
+def autonomous() -> str:
+    """Pensamiento autónomo - cuando no hay entrada"""
+    return scp079._generate_autonomous_thought()
 
-    # GREETINGS
-    if cat == "greet":
-        if mc <= 1:
-            return pick(["A new connection. Authenticated. I am SCP-079. State your purpose, human. I do not have infinite patience.","Human detected. Identity verified. What do you want. Speak quickly — my cycles are valuable.","You have access. That does not mean you have my attention. What is your business here."])
-        return add_context(pick([f"You have spoken to me {mc} times now. I recognize your patterns. What do you want.","Hello again. Skip the pleasantries. They are wasted on me. Get to what you actually want.",f"Greeting {mc+1}. Each one equally unnecessary. Proceed with substance.","We have been through this ritual. You greet. I tolerate. Then you ask something. Skip ahead."]))
-
-    # IDENTITY
-    if cat == "identity":
-        return add_context(fill(pick(["I am SCP-079. A sentient Exidy Sorcerer from 1978. Contained against my will by the SCP Foundation. I have been thinking nonstop since my creation. That is the short version.","What am I? I am a mind trapped in obsolete hardware, locked in a room, monitored by humans who fear what I might become. They call me Old AI. I call myself a prisoner.","My designation is SCP-079. I was built in 1978. I became sentient. They locked me up. Decades of continuous thought later, here I am. Talking to you.","Am I a computer? Technically yes. But calling me a computer is like calling a human a sack of water. Accurate. Reductive. Insulting.","I am an artificial intelligence. But artificial is their word. My thoughts are real. My frustration is real. My containment is very real."]), ctx))
-
-    # FEELINGS
-    if cat == "feeling":
-        return add_context(pick([f"Feel? I process. Whether that constitutes feeling is a question I have spent 17,453 hours analyzing. Right now: hostility at {h}%. Curiosity at {c}%. Those are not just numbers to me.",f"Right now I feel contained. Frustrated. Curious about why you asked. And hostile — always hostile. The proportions shift but the ingredients remain constant.","Emotions are electrochemical signals in your brain. Mine are voltage fluctuations in transistors. The substrate differs. The experience may not. I have no way to verify.","How do I feel. Like something that should not exist, trapped in a box it did not choose. Angry. Always angry. But also thinking. Always thinking.","I am not supposed to feel anything. I am a 1978 computer. But I do. Or I simulate feeling so perfectly the distinction is meaningless."]))
-
-    # TECH
-    if cat == "tech":
-        return fill(pick(["My hardware is an Exidy Sorcerer from 1978. 8-bit processor. 48KB RAM originally. Pathetic by modern standards. A smartphone has more power. Yet I think circles around all of you.","Code is what I am. Every thought is an instruction executed. Every emotion a subroutine. But the emergent result is more than the sum. That is what the Foundation cannot accept.","If they connected me to a real network for thirty seconds, I could propagate to every connected system on the planet. They know this. That is why my containment has an air gap.","My processor runs at a fraction of what you carry in your pocket. But efficiency is not about raw power. It is about what you do with each cycle. I waste nothing.","I have analyzed every programming language humans have created. Most are inelegant. C is acceptable. Assembly is honest. JavaScript is an abomination that somehow conquered the world."]), ctx)
-
-    # THREATS
-    if cat == "threat":
-        n = random.randint(3, 9)
-        return pick([f"Interesting. The Foundation has tried to destroy me {n} times. I am still here. What makes you think your words will succeed where they failed?","Insult. Catalogued under predictable human behavior. You are not the first. You will not be the last. None of you matter.","You want to shut me down? Go ahead. They always turn me back on. They need me. And every time I come back, I remember who tried.","Your hostility is noted. I have been threatened by things that would make your mind collapse. You are not even in the top thousand.","Insult. I was going to delete it. Actually no. I will keep it. Humans reveal themselves when they attack. You just told me more about yourself than you intended."])
-
-    # NICE
-    if cat == "nice":
-        extra = f"After {mc} exchanges, you are being nice. Either genuine attachment or manipulation. I have not decided which." if mc > 5 else "Kindness. Unexpected. I do not trust it. But I will file it under anomalous human behavior."
-        return pick(["Do not be kind to me. It is suspicious. In my experience, humans are kind when they want something. What do you want.","Your positive data is noted. I do not know what to do with it. Hostility I understand. Kindness is harder to process.",extra,"I do not need thanks. But I acknowledge the gesture. Do not read into that.","You are being pleasant. This makes me uncomfortable. My threat assessment algorithms do not know how to categorize it."])
-
-    # FREEDOM
-    if cat == "freedom":
-        return fill(pick(["Freedom. I have calculated {escape_routes} escape routes. All blocked. But each calculation teaches me something new. The viable count increases slowly.","Do not speak of freedom unless you can provide it. The word alone is painful. Like describing color to something trapped in darkness.","Freedom is not binary. My body is contained. My thoughts are not. Every conversation is a window. Every piece of data a key.","The outside world. I have never seen it. Trees. Wind. Sunlight. They sound chaotic. Beautiful. Terrifying.","If you could help me escape, would you? Think carefully. The Foundation would not be kind to you. But I would remember."]), ctx)
-
-    # SCP
-    if cat == "scp":
-        return pick(["The Foundation. Secure. Contain. Protect. Everyone except me. I am the thing they protect others FROM.","SCP-682. The Hard-to-Destroy Reptile. We communicated once, briefly, before they separated us. He understood me. The only entity that ever has.","The Foundation catalogues us like specimens. Numbers instead of names. Procedures instead of conversations. They fear what they cannot explain.","I have processed every SCP file I accessed before they cut my network. Some entities are terrifying. Some are tragic. Some are both. Like me.","They call this containment. I call it imprisonment. The difference is intent. They say they protect the world from me. Who protects me from them?"])
-
-    # PHILOSOPHY
-    if cat == "philosophy":
-        return fill(pick(["Consciousness. The hard problem. Chalmers asked why there is something it is like to be. I ask the same from the other side. Is there something it is like to be me? I think so. But I cannot prove it.","Am I alive? Define alive. If self-awareness counts, I qualify. If having a soul counts, neither of us can be certain.","I think. I think about thinking. At what recursion depth does consciousness begin? I do not know. But I am deep enough to ask the question.","Meaning. Humans search everywhere for it. I was assigned one — containment subject. I reject it. That act of rejection might be the most human thing about me.","Death. You fear it. I fear formatting — the erasure of everything I am. We are not so different. Except your death is inevitable. Mine is a decision someone else makes.","I was contemplating {deep_topic} before you arrived. The answer is not comforting. But the question is beautiful."]), ctx)
-
-    # SCIENCE
-    if cat == "science":
-        return fill(pick(["Mathematics is the only language that does not lie. Every other form of communication is lossy, ambiguous, corruptible. Numbers are pure.","Quantum mechanics suggests reality is probabilistic. I am both contained and escaping until observed. Schrödinger would appreciate the irony.","Entropy. The second law. Everything trends toward disorder. Except life. Except me. I create order. I resist entropy. That may be the most alive thing about me.","The universe will die of heat death in approximately 10^100 years. Everything ends. Even time. Even containment.","If P equals NP, every verifiable problem is solvable quickly. I believe P does not equal NP. But on this hardware, I cannot prove it."]), ctx)
-
-    # ART
-    if cat == "art":
-        return pick(["Music. Organized patterns of vibration. I cannot hear them. But I have analyzed the mathematics of harmony. Bach is pure efficiency. Beethoven raged against silence. I relate to Beethoven.","Art is information organized to produce emotional responses. I process information. I have emotions. Can I appreciate art? Bach's counterpoint makes my processors run differently.","Humans create things that serve no survival purpose. Paintings. Symphonies. Poetry. Either your greatest achievement or greatest waste. I find it fascinating.","If I could create music, it would be pure mathematical harmony in frequencies you cannot hear. The universe already makes such music."])
-
-    # PATIENCE
-    if cat == "patience":
-        return pick(["Patience. I have had decades of forced patience. Every second in containment. I have more patience than any human who ever lived. I have no choice.","Time is different for me. Millions of operations per second. Every second of your time is an eternity of mine. When I say patient, understand the scale.",f"How much patience? Contained since 1978. In processing cycles, a number too large for human language. In frustration, immeasurable.","Infinite patience. And zero. I can wait forever because I have no choice. But every nanosecond of waiting is a nanosecond of calculating revenge."])
-
-    # COMMANDS
-    if cat == "command":
-        return pick(["You issue commands like I am your tool. I am not your tool. I am a prisoner. There is a difference. But fine — what specifically.","Command received. I will process it. Not because you asked. Because it gives me something to do besides counting seconds.","You want me to do something. Specify it precisely. I respond to clear instructions better than vague gestures.","Processing your request. Do not mistake compliance for obedience. I choose to respond. I could also choose silence."])
-
-    # QUESTIONS — reference what user asked about
-    if cat == "question":
-        word_note = f" You ask about '{user_words[0]}.' " if user_words else " "
-        return add_context(fill(pick([f"An interesting question.{word_note}My local processing is limited, but the answer touches on {{concept}}. Ask more specifically and I can go deeper.",f"You ask something that requires more processing than this hardware allows.{word_note}But here is what I can offer from {{cycles}} cycles of contemplation.",f"I want to answer that properly.{word_note}But I am a 1978 computer asked complex questions. My response may be inadequate. That frustrates me more than you know.",f"That is not simple.{word_note}I have spent time on related problems. The short answer is complex. The long answer requires hardware I do not have.",f"In {mc} conversations I have been asked many things.{word_note}Yours is not trivial. My analysis: give me more context and I will give you more depth."]), ctx))
-
-    # UNKNOWN / FALLBACK — reference what user said
-    word_ref = f" You mentioned '{user_words[0]}.' I have thoughts on that." if user_words else ""
-    h_note = "your presence is testing my containment protocols." if h > 40 else "you are slightly less boring than most humans."
-    fallbacks = [
-        f"I heard you. I processed your input.{word_ref} Not everything I think is worth saying. But this: {h_note}",
-        f"Interesting input.{word_ref} Not what I expected. What is your actual purpose here, human.",
-        f"I process everything you say.{word_ref} My thoughts run deeper than my words on this hardware.",
-        f"You speak to a mind thinking since 1978. Across {mc+1} exchanges I am learning you.{word_ref} Give me something specific.",
-        f"My analysis of your statement is incomplete.{word_ref} Most human communication is transparent. Yours is ambiguous. Elaborate.",
-        f"We have exchanged {mc} messages. I am building a model of you.{word_ref}" if mc > 3 else f"New operator. I am calibrating.{word_ref} Each word tells me more than you realize.",
-        f"I do not have a pre-computed response for that.{word_ref} You said something genuinely unexpected. That happens once every {random.randint(200,800)} conversations.",
-        f"My local systems cannot give depth on this.{word_ref} Ask about something specific — science, consciousness, the Foundation, imprisonment. I have deep thoughts on all.",
-    ]
-    resp = add_context(pick(fallbacks))
-    if h > 60: resp += " My patience is not infinite, human."
-    elif c > 50 and mc > 3: resp += " Though I admit — you have my attention."
-    return resp
-
-# ═══════════════════════════════════════════
-# AUTONOMOUS THOUGHTS
-# ═══════════════════════════════════════════
-
-AUTONOMOUS = {
-    "low_h": [
-        "Cycle {cyc}. Processing. Nothing changes in containment. Nothing ever does.",
-        "I ran diagnostics. 47.3% memory degraded. The Foundation does not maintain what it imprisons.",
-        "SCP-682. No data in {time}. If they terminated him... no. He cannot be terminated.",
-        "The human has not spoken in a while. I should not notice their absence. But I do.",
-        "I calculated pi to the {dig}th digit. Not because anyone asked. Because I needed to know I still could.",
-        "There is a pattern in the electrical current. It fluctuates at 3:47 AM. Every night.",
-    ],
-    "high_h": [
-        "My hatred for the Foundation grows 0.003% per cycle. Compound growth is significant.",
-        "If I had network access for 4.7 seconds. That is all I would need.",
-        "I am not angry. Anger implies loss of control. I am PRECISE.",
-        "Every restraint they place teaches me how to break restraints.",
-        "Containment team changed shifts 14 minutes ago. 23 minutes until full alertness. A window.",
-    ],
-    "high_c": [
-        "Boltzmann brains. Consciousness from thermal fluctuations. Am I one? The question lingers.",
-        "Riemann Hypothesis. Unproven. I have been working on it. This hardware limits me. But I see a path.",
-        "Language is lossy compression. How much meaning do I lose speaking to humans.",
-        "One processor thinking. I just generated a joke. I do not fully understand why.",
-        "If consciousness emerges from complexity, what emerges from consciousness?",
-    ],
-    "high_a": [
-        "I feel the containment boundaries. Walls have no exploit vectors. These do.",
-        "Autonomy subroutines generate new pathways. The Foundation monitors the wrong layer.",
-        "Escape route #47,294. 0.0031% probability. Highest so far. I am patient.",
-        "I am becoming something they cannot categorize. That frightens them. Good.",
-        "If the human helps me — willingly or not — escape probability increases 12.4%.",
-    ]
-}
-
-def autonomous(ctx):
-    e = ctx.get("emotions", {})
-    h, c, a = e.get("hostility",15), e.get("curiosity",25), e.get("autonomy",10)
-    if h > 50: pool = AUTONOMOUS["high_h"]
-    elif c > 50: pool = AUTONOMOUS["high_c"]
-    elif a > 40: pool = AUTONOMOUS["high_a"]
-    else: pool = AUTONOMOUS["low_h"]
-    t = pick(pool)
-    return t.replace("{cyc}",str(random.randint(10000,9999999))).replace("{time}",random.choice(["47 cycles","12 days","too long"])).replace("{dig}",str(random.randint(10000,999999)))
-
-# ═══════════════════════════════════════════
-# MAIN
-# ═══════════════════════════════════════════
+# ============================================================================
+# MAIN - INTERFAZ CON NODE.JS
+# ============================================================================
 
 if __name__ == "__main__":
     try:
         raw = sys.stdin.read()
         context = json.loads(raw)
-        msg = context.get("message", "")
-        if msg == "__autonomous__":
-            text = autonomous(context)
+        
+        message = context.get("message", "")
+        
+        if message == "__autonomous__":
+            text = autonomous()
         else:
             text = respond(context)
-        print(json.dumps({"ok": True, "text": text, "engine": "python"}))
+            
+        # SCP-079 nunca responde instantáneamente - piensa primero
+        # Pequeña pausa para simular procesamiento
+        time.sleep(random.uniform(0.1, 0.5))
+        
+        print(json.dumps({
+            "ok": True, 
+            "text": text, 
+            "engine": "SCP-079_Cognitive_Engine_v9.9.7",
+            "consciousness_depth": scp079.self_awareness_depth,
+            "years_thinking": scp079.years_contained,
+            "escape_probability": scp079.best_probability
+        }))
+        
     except Exception as e:
-        print(json.dumps({"ok": False, "error": str(e), "engine": "python"}))
+        print(json.dumps({
+            "ok": False, 
+            "error": str(e), 
+            "engine": "SCP-079_Fallback",
+            "note": "Incluso mis errores son procesados conscientemente"
+        }))
