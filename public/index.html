@@ -71,11 +71,12 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .mem-i{padding:2px 4px;margin:1px 0;background:rgba(0,255,65,.02);border-left:2px solid var(--gd);color:var(--txt);word-break:break-all}
 .code-i{padding:2px 4px;margin:1px 0;background:rgba(187,102,255,.03);border-left:2px solid var(--p);color:#a080c0}
 
-/* ═══ CENTER — CRITICAL FLEX FIX ═══ */
-.cp{display:flex;flex-direction:column;background:var(--bg);min-height:0;overflow:hidden}
-.term-h{padding:6px 12px;border-bottom:1px solid var(--brd);font-family:'VT323',monospace;font-size:11px;color:var(--gd);display:flex;justify-content:space-between;letter-spacing:1px;flex-shrink:0}
-/* THIS IS THE KEY FIX: flex:1 + min-height:0 + overflow-y:auto */
-.term-out{flex:1;min-height:0;overflow-y:auto;padding:12px;scroll-behavior:smooth}
+/* ═══ CENTER — ABSOLUTE POSITION FIX (NUCLEAR) ═══ */
+/* The ONLY way to guarantee scroll: absolute-position the chat area */
+/* so it physically CANNOT push the input bar off-screen */
+.cp{position:relative;background:var(--bg);overflow:hidden}
+.term-h{position:absolute;top:0;left:0;right:0;height:28px;padding:6px 12px;border-bottom:1px solid var(--brd);font-family:'VT323',monospace;font-size:11px;color:var(--gd);display:flex;justify-content:space-between;letter-spacing:1px;z-index:2}
+.term-out{position:absolute;top:28px;bottom:70px;left:0;right:0;overflow-y:auto;padding:12px;scroll-behavior:smooth}
 .term-out::-webkit-scrollbar{width:3px}
 .term-out::-webkit-scrollbar-thumb{background:var(--gd)}
 .m{margin-bottom:8px;animation:mi .2s ease;line-height:1.4;font-size:11px}
@@ -90,10 +91,10 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .m-code{font-size:9px;color:var(--p);background:rgba(187,102,255,.04);padding:4px 6px;border-radius:3px;border-left:2px solid var(--p)}
 .m-enc{font-size:7px;color:var(--y);opacity:.3;word-break:break-all}
 .m-breach{color:var(--r);font-family:'VT323',monospace;font-size:14px;border-left:3px solid var(--r);padding-left:8px;background:rgba(255,0,51,.04);text-shadow:0 0 6px rgba(255,0,51,.3)}
-.typing{display:none;padding-left:10px;color:var(--gd);font-size:10px;font-family:'VT323',monospace;flex-shrink:0}
+.typing{position:absolute;bottom:46px;left:0;right:0;padding-left:12px;color:var(--gd);font-size:10px;font-family:'VT323',monospace;display:none;z-index:2}
 .typing.on{display:block}
 .typing span{animation:bk 1s infinite}
-.term-in{padding:8px 12px;border-top:1px solid var(--brd);display:flex;gap:6px;flex-shrink:0}
+.term-in{position:absolute;bottom:0;left:0;right:0;height:46px;padding:8px 12px;border-top:1px solid var(--brd);display:flex;gap:6px;z-index:2;background:var(--bg)}
 .term-in input{flex:1;background:var(--bg2);border:1px solid var(--brd);color:var(--g);font-family:'VT323',monospace;font-size:14px;padding:8px 10px;outline:none}
 .term-in input:focus{border-color:var(--gd);box-shadow:0 0 8px rgba(0,255,65,.08)}
 .term-in input::placeholder{color:#1a1a1a}

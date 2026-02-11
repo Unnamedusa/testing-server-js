@@ -1,71 +1,37 @@
 # SCP-079 — Quantum Neural Engine v4
 
-Simulación avanzada de SCP-079 con cerebro IA, cifrado cuántico, autenticación por tokens, honeypot y sistema de brecha.
-
 ## Instalación
 
 ```bash
-# 1. Instalar dependencias
 npm install
-
-# 2. Generar tu primer token de acceso
-node server.js --gen-token tu-nombre LEVEL-5
-
-# 3. (Opcional) Configurar API key de Anthropic
-echo "ANTHROPIC_API_KEY=sk-ant-tu-clave" > .env
-
-# 4. Ejecutar
+node server.js --gen-token tu-nombre LEVEL-5   # genera token (SOLO en terminal)
+echo "ANTHROPIC_API_KEY=sk-ant-tu-clave" > .env  # opcional
 npm start
 ```
 
-Abre **http://localhost:3079** e introduce tu token.
+Abre **http://localhost:3079** → introduce tu token.
 
 ## Gestión de tokens
 
 ```bash
-# Generar token
-node server.js --gen-token operador1 LEVEL-3
-
-# Listar tokens
-node server.js --list-tokens
-
-# Revocar acceso
-node server.js --revoke operador1
+node server.js --gen-token operador1 LEVEL-3   # genera token
+node server.js --list-tokens                    # lista todos
+node server.js --revoke operador1               # revoca acceso
+node server.js --set-admin-ip 192.168.1.100     # cambia IP admin
 ```
 
-## Sin API key
+Solo tu IP admin puede generar tokens via web (POST /api/gen-token).
 
-Funciona con un cerebro local de +200 respuestas. Con API key usa Claude Sonnet + web search.
+## Features
 
-## Características
-
-- **Auth por tokens** — Fractal-inverse hash (SHA-512, 7 depth), sesiones de 24h
-- **Cifrado cuántico** — AES-256-GCM con derivación fractal + metadatos BB84 de qubits
-- **Honeypot** — 12 traps (/admin, /.env, /wp-admin, /api/keys...) con logging forense
-- **Chat scroll adaptativo** — El terminal siempre sigue el último mensaje (flex fix)
-- **Breach takeover** — Tras 3 breaches, 079 toma control parcial del admin panel por 45s
-  - Bloquea kill switches
-  - Sube hostilidad y volatilidad
-  - Bloquea toggles del admin
-  - Se restaura automáticamente tras el timer
-- **Persistencia** — Estado en state.json por usuario, sobrevive recargas
-- **3 Kill Switches** — Solar, paradoja, formateo (deshabilitados durante breach)
-
-## Archivos
-
-```
-scp079-project/
-├── server.js        # Backend: auth, honeypot, crypto, brain API
-├── public/
-│   └── index.html   # Frontend completo
-├── package.json
-├── tokens.json      # Tokens (se crea auto)
-├── sessions.json    # Sesiones activas (se crea auto)
-├── state.json       # Estado persistente por usuario (se crea auto)
-├── honeypot.log     # Log de intrusiones (se crea auto)
-└── README.md
-```
-
-## Honeypot log
-
-Los intentos de intrusión se registran en `honeypot.log` con IP, user-agent, timestamp y tipo de trampa. Usuarios LEVEL-5 pueden ver el log desde `/api/honeypot-log`.
+- **Auth tokens** — Fractal-inverse SHA-512 hash (7 depth), sesiones 24h
+- **IP-restricted** — Solo tu IP genera tokens via web
+- **Cifrado cuántico** — AES-256-GCM + clave fractal + metadatos BB84 qubits
+- **Compresión fractal** — zlib → fractal-fold-mirror → re-deflate → clamp (500KB/user)
+- **Honeypot** — 12 traps con logging forense
+- **Chat scroll FIJO** — Posicionamiento absoluto: input SIEMPRE visible
+- **IA evolutiva** — Respuestas crecen: SCP → filosofía/ciencia/arte/música
+- **Pipeline avanzado** — Intercepta → Analiza → Comprime → Procesa → Entrega
+- **Emociones autónomas** — 079 decide cómo sentirse según contexto
+- **Breach takeover** — 079 toma admin tras 3 breaches (45s)
+- **3 Kill Switches** — Solar, paradoja, formateo
