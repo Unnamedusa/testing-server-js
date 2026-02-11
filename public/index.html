@@ -526,6 +526,7 @@ body.light input,body.light textarea,body.light select{background:#fff;color:#33
         <input id="o5Extra" placeholder="Badge name / description / plugin URL">
         <select id="o5BdgType" style="display:none"><option value="ach">🏅 Achievement</option><option value="mod">🛡 Moderator</option><option value="vip">⭐ VIP</option><option value="o5">☢ O5</option><option value="red">█ REDACTED</option><option value="custom">⚙ Custom</option></select>
         <input id="o5BdgDesc" placeholder="Badge description (what it does)" style="display:none">
+        <input type="color" id="o5BdgColor" value="#00ff41" style="display:none;width:40px;height:24px;border:1px solid #333;background:none;cursor:pointer;margin-top:4px"><span id="o5BdgColorLbl" style="display:none;font-family:VT323,monospace;font-size:8px;color:#555;margin-left:4px">Badge color</span>
         <button onclick="o5Exec()">⟐ EXECUTE COMMAND</button>
         <div id="o5Result" style="font-family:'VT323',monospace;font-size:10px;color:var(--g);margin-top:6px;min-height:14px"></div>
       </div>
@@ -720,6 +721,7 @@ body.light input,body.light textarea,body.light select{background:#fff;color:#33
     <select id="o5L2" style="width:100%;background:var(--bg);border:1px solid #331111;color:var(--r);font-family:'VT323',monospace;font-size:11px;padding:5px;outline:none;margin:3px 0;border-radius:2px"><option value="-1">CLASS-D</option><option value="0">CLASS-E</option><option value="1">L1</option><option value="2">L2</option><option value="3">L3</option><option value="4">L4</option><option value="5">L5</option><option value="6">O5</option></select>
     <input id="o5E2" placeholder="Badge name / reason" style="width:100%;background:var(--bg);border:1px solid #331111;color:var(--r);font-family:'VT323',monospace;font-size:11px;padding:5px;outline:none;margin:3px 0;border-radius:2px">
     <select id="o5BT2" style="width:100%;background:var(--bg);border:1px solid #331111;color:var(--r);font-family:'VT323',monospace;font-size:11px;padding:5px;outline:none;margin:3px 0;border-radius:2px"><option value="ach">🏅 Achievement</option><option value="mod">🛡 Moderator</option><option value="vip">⭐ VIP</option><option value="o5">☢ O5</option><option value="red">█ REDACTED</option></select>
+    <input type="color" id="o5BC2" value="#00ff41" style="width:100%;height:24px;border:1px solid #331111;background:var(--bg);cursor:pointer;margin:3px 0;display:none;border-radius:2px">
     <input id="o5BD2" placeholder="Badge description" style="width:100%;background:var(--bg);border:1px solid #331111;color:var(--r);font-family:'VT323',monospace;font-size:11px;padding:5px;outline:none;margin:3px 0;border-radius:2px">
     <button onclick="o5Exec2()" style="width:100%;padding:8px;font-family:'VT323',monospace;font-size:11px;letter-spacing:1px;border:1px solid var(--r);background:rgba(255,0,51,.1);color:var(--r);cursor:pointer;border-radius:2px;margin-top:4px">⟐ EXECUTE</button>
     <div id="o5R2" style="font-family:'VT323',monospace;font-size:10px;color:var(--g);margin-top:6px;min-height:14px"></div>
@@ -868,6 +870,7 @@ body.light input,body.light textarea,body.light select{background:#fff;color:#33
     <button class="ba" id="tcBtn" onclick="openTC()" style="border-color:var(--y);color:var(--y);display:none">🧪 CHAMBER</button>
     <button class="ba" id="hwBtn" onclick="toggleHW()" style="border-color:var(--b);color:var(--b);display:none">🔧 HARDWARE</button>
     <button class="ba" id="aofBtn" onclick="openAOF()" style="border-color:#aa00ff;color:#aa00ff;display:none">🔒 OFFICE</button>
+    <button class="ba" id="o5ChatBtn" onclick="o5ChatPick()" style="border-color:var(--r);color:var(--r);display:none">💬 ALL CHATS</button>
     <button class="ba" id="vofBtn" onclick="openVOF()" style="border-color:var(--b);color:var(--b);display:none">🏢 MY OFFICE</button>
     <button class="ba" onclick="openArchiveFromMain()" style="border-color:var(--b);color:var(--b)">📁 ARCHIVES</button>
     <span class="theme-toggle" onclick="toggleTheme()"><span class="tt-icon" id="themeIcon">🌙</span></span>
@@ -1002,7 +1005,7 @@ async function _authFinish(user,cl){
     // Load profile
     _pfLoad(user);
     // Load badges
-    try{const b=JSON.parse(localStorage.getItem('s79_user_badges')||'{}');if(b[user.toLowerCase()])b[user.toLowerCase()].forEach(bg=>addBadge(bg.type,bg.name))}catch(e){}
+    try{const b=JSON.parse(localStorage.getItem('s79_user_badges')||'{}');if(b[user.toLowerCase()])b[user.toLowerCase()].forEach(bg=>addBadge(bg.type,bg.name,bg.color))}catch(e){}
     return true}
   }catch(e){}return false;
 }
@@ -1690,7 +1693,7 @@ function applyClearance(level){
   // Hardware: L4+, Containment: L5+, Admin: O5 only, Monitor: L3+, Personnel: L2+, Archives: L1+, Chamber: L3+
   const vis=(id,show)=>{const e=$(id);if(e)e.style.display=show?'':'none'};
   vis('hwBtn',level>=4);vis('hwContain',level>=5);vis('mnBtn',level>=3);vis('pmBtn',level>=2);vis('tcBtn',level>=3);
-  vis('o5CmdBtn',level>=6);vis('plgBtn',level>=6);vis('aofBtn',level>=5||isMod());vis('vofBtn',level>=2);
+  vis('o5CmdBtn',level>=6);vis('plgBtn',level>=6);vis('aofBtn',level>=5||isMod());vis('vofBtn',level>=2);vis('o5ChatBtn',level>=6);
   const ab=document.querySelector('.ba[onclick="togAdm()"]');if(ab)ab.style.display=level>=6?'':'none';
   const arb=document.querySelector('.ba[onclick="openArchiveFromMain()"]');if(arb)arb.style.display=level>=1?'':'none';
   vis('cellCtrl',level>=3);
@@ -2103,14 +2106,18 @@ function o5Exec2(){
     R.innerHTML='✓ REVOKED: '+target;R.style.color='var(--y)';autoLog('O5','REVOKE '+target);sysM('☢ O5: Revoked '+target);
   }else if(action==='badge'){
     if(!extra){R.textContent='⛔ Enter badge name.';R.style.color='var(--r)';return}
-    try{const reg=JSON.parse(localStorage.getItem('s79_badge_registry')||'{}');reg[extra]={type:btype,desc:bdesc,by:UN};localStorage.setItem('s79_badge_registry',JSON.stringify(reg))}catch(e){}
-    try{const b=JSON.parse(localStorage.getItem('s79_user_badges')||'{}');if(!b[target.toLowerCase()])b[target.toLowerCase()]=[];b[target.toLowerCase()].push({type:btype,name:extra,desc:bdesc});localStorage.setItem('s79_user_badges',JSON.stringify(b))}catch(e){}
+    const bcolor=($('o5BC2')||{}).value||'';
+    try{const reg=JSON.parse(localStorage.getItem('s79_badge_registry')||'{}');reg[extra]={type:btype,desc:bdesc,by:UN,color:bcolor};localStorage.setItem('s79_badge_registry',JSON.stringify(reg))}catch(e){}
+    try{const b=JSON.parse(localStorage.getItem('s79_user_badges')||'{}');if(!b[target.toLowerCase()])b[target.toLowerCase()]=[];b[target.toLowerCase()].push({type:btype,name:extra,desc:bdesc,color:bcolor});localStorage.setItem('s79_user_badges',JSON.stringify(b))}catch(e){}
     if(btype==='red'){try{const p=JSON.parse(localStorage.getItem('s79_profiles')||'{}');if(!p[target.toLowerCase()])p[target.toLowerCase()]={};p[target.toLowerCase()].redact='blur';localStorage.setItem('s79_profiles',JSON.stringify(p))}catch(e){}}
     R.innerHTML='✓ <span class="bdg bdg-'+btype+'">'+extra+'</span> → '+target;R.style.color='var(--g)';
     autoLog('O5','Badge ['+extra+'] → '+target);sysM('☢ O5: Badge ['+extra+'] → '+target);
   }else if(action==='bdgEdit'){
     let reg={};try{reg=JSON.parse(localStorage.getItem('s79_badge_registry')||'{}')}catch(e){}
-    R.innerHTML=Object.entries(reg).map(([n,b])=>'<span class="bdg bdg-'+b.type+'">'+n+'</span> '+(b.desc||'')).join('<br>')||'No badges.';R.style.color='var(--g)';
+    R.innerHTML=Object.entries(reg).map(([n,b])=>{
+      const st=b.color&&b.color!=='#00ff41'?'style="border-color:'+b.color+';color:'+b.color+'"':'class="bdg bdg-'+b.type+'"';
+      return '<span class="bdg" '+st+'>'+n+'</span> '+(b.desc||'');
+    }).join('<br>')||'No badges.';R.style.color='var(--g)';
   }else if(action==='plugin'){
     $('o5CmdOv').classList.remove('on');openPluginMgr();
   }else if(action==='grantxp'){
@@ -2159,11 +2166,10 @@ function o5Exec(){
     try{const g=JSON.parse(localStorage.getItem('s79_clearances')||'{}');delete g[target.toLowerCase()];localStorage.setItem('s79_clearances',JSON.stringify(g))}catch(e){}
   }else if(action==='badge'){
     const btype=$('o5BdgType').value||'ach';const bdesc=$('o5BdgDesc').value.trim()||'';
+    const bcolor=($('o5BdgColor')||{}).value||'';
     if(!extra){$('o5Result').textContent='⛔ Enter badge name.';$('o5Result').style.color='var(--r)';return}
-    // Save to badge registry
-    try{const reg=JSON.parse(localStorage.getItem('s79_badge_registry')||'{}');reg[extra]={type:btype,desc:bdesc,by:UN};localStorage.setItem('s79_badge_registry',JSON.stringify(reg))}catch(e){}
-    // Award to target
-    try{const b=JSON.parse(localStorage.getItem('s79_user_badges')||'{}');if(!b[target.toLowerCase()])b[target.toLowerCase()]=[];b[target.toLowerCase()].push({type:btype,name:extra,desc:bdesc});localStorage.setItem('s79_user_badges',JSON.stringify(b))}catch(e){}
+    try{const reg=JSON.parse(localStorage.getItem('s79_badge_registry')||'{}');reg[extra]={type:btype,desc:bdesc,by:UN,color:bcolor};localStorage.setItem('s79_badge_registry',JSON.stringify(reg))}catch(e){}
+    try{const b=JSON.parse(localStorage.getItem('s79_user_badges')||'{}');if(!b[target.toLowerCase()])b[target.toLowerCase()]=[];b[target.toLowerCase()].push({type:btype,name:extra,desc:bdesc,color:bcolor});localStorage.setItem('s79_user_badges',JSON.stringify(b))}catch(e){}
     addBadge(btype,extra);
     $('o5Result').innerHTML='✓ <span class="bdg bdg-'+btype+'">'+extra+'</span> → '+target+(bdesc?' — '+bdesc:'');$('o5Result').style.color='var(--g)';
     // If redacted badge, set profile
@@ -2202,10 +2208,14 @@ function o5Exec(){
   }
 }
 // Show/hide badge fields based on action
-document.addEventListener('change',e=>{if(e.target.id==='o5Action'){const v=e.target.value;const sh=v==='badge';$('o5BdgType').style.display=sh?'':'none';$('o5BdgDesc').style.display=sh?'':'none'}})
+document.addEventListener('change',e=>{if(e.target.id==='o5Action'){const v=e.target.value;const sh=v==='badge';$('o5BdgType').style.display=sh?'':'none';$('o5BdgDesc').style.display=sh?'':'none';$('o5BdgColor').style.display=sh?'':'none';$('o5BdgColorLbl').style.display=sh?'inline':'none'}})
+document.addEventListener('change',e=>{if(e.target.id==='o5A2'){const v=e.target.value;const sh=v==='badge';try{$('o5BC2').style.display=sh?'':'none'}catch(e){}}});
 function openBadgeRegistry(){
   let reg={};try{reg=JSON.parse(localStorage.getItem('s79_badge_registry')||'{}')}catch(e){}
-  const list=Object.entries(reg).map(([n,b])=>'<span class="bdg bdg-'+b.type+'">'+n+'</span> — '+(b.desc||'No description')+' <i style="color:#555">(by '+b.by+')</i>').join('<br>')||'No badges created yet.';
+  const list=Object.entries(reg).map(([n,b])=>{
+    const style=b.color&&b.color!=='#00ff41'?'style="border-color:'+b.color+';color:'+b.color+'"':'class="bdg bdg-'+b.type+'"';
+    return '<span class="bdg" '+style+'>'+n+'</span> — '+(b.desc||'No desc')+' <i style="color:#555">('+b.by+')</i>';
+  }).join('<br>')||'No badges yet.';
   $('o5Result').innerHTML='<div style="max-height:120px;overflow-y:auto;font-size:9px;line-height:1.8">'+list+'</div>';$('o5Result').style.color='var(--g)';
 }
 
@@ -2745,6 +2755,73 @@ function neutralizeUser(target){
   sysM('⚡ '+target+' has been neutralized by '+UN+'.');
   autoLog('SECURITY',UN+' neutralized '+target);
   xpAdd(5,'Neutralize personnel');
+}
+
+// ═══ v10.7 O5 ALL CHATS ACCESS ═══
+function o5ChatPick(){
+  if(userClearance<6){sysM('⛔ O5 only.');return}
+  const choice=prompt('O5 — Access all chats:\n\n1 = Test Chamber\n2 = Administrative Office\n3 = Direct Message user\n\nSelect:');
+  if(choice==='1'){openTC()}
+  else if(choice==='2'){openAOF()}
+  else if(choice==='3'){
+    const target=prompt('DM target username:');
+    if(!target)return;
+    o5DirectMsg(target);
+  }
+}
+function o5DirectMsg(target){
+  const key='s79_dm_'+[UN.toLowerCase(),target.toLowerCase()].sort().join('_');
+  // Create DM overlay
+  let ov=document.getElementById('dmOv');
+  if(!ov){
+    ov=document.createElement('div');ov.id='dmOv';
+    ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:9900;display:flex;justify-content:center;align-items:center';
+    ov.innerHTML='<div style="background:#050508;border:1px solid var(--r);width:480px;max-height:80vh;border-radius:4px;overflow:hidden;display:flex;flex-direction:column"><div class="mg-hd"><h2 id="dmTitle">💬 DM</h2><button class="arc-btn close" onclick="document.getElementById(\'dmOv\').remove()">✕</button></div><div id="dmFeed" style="flex:1;overflow-y:auto;padding:8px;min-height:200px;max-height:350px;font-family:VT323,monospace;font-size:11px;color:var(--g);line-height:1.6"></div><div style="display:flex;gap:4px;padding:6px;border-top:1px solid #1a1a2a"><input id="dmInp" placeholder="Message..." style="flex:1;background:var(--bg);border:1px solid #1a1a2a;color:var(--g);font-family:VT323,monospace;font-size:11px;padding:6px;outline:none;border-radius:2px"><button id="dmFileBtn" onclick="document.getElementById(\'dmFileIn\').click()" style="padding:6px 8px;border:1px solid var(--y);background:none;color:var(--y);font-family:VT323,monospace;font-size:10px;cursor:pointer;border-radius:2px">📎</button><input type="file" id="dmFileIn" style="display:none" onchange="dmFileHandle(this)" accept="image/*,audio/*,.txt,.pdf,.doc,.docx,.json,.csv,.md"><button onclick="dmSend()" style="padding:6px 12px;border:1px solid var(--r);background:none;color:var(--r);font-family:VT323,monospace;font-size:10px;cursor:pointer;border-radius:2px">SEND</button></div></div>';
+    document.body.appendChild(ov);
+    document.getElementById('dmInp').addEventListener('keypress',e=>{if(e.key==='Enter')dmSend()});
+  }else{ov.style.display='flex'}
+  document.getElementById('dmTitle').textContent='💬 DM — '+target;
+  ov.dataset.target=target;ov.dataset.key=key;
+  dmRefresh(key);
+}
+function dmRefresh(key){
+  try{const msgs=JSON.parse(localStorage.getItem(key)||'[]');
+  const feed=document.getElementById('dmFeed');
+  feed.innerHTML=msgs.slice(-60).map(m=>{
+    const t=new Date(m.time).toLocaleTimeString();
+    const isMe=m.from.toLowerCase()===UN.toLowerCase();
+    return '<div style="color:'+(isMe?'var(--r)':'var(--g)')+'"><span style="color:#555">['+t+']</span> <b>'+redactName(m.from)+':</b> '+m.text+'</div>';
+  }).join('');feed.scrollTop=feed.scrollHeight}catch(e){}
+}
+function dmSend(){
+  const ov=document.getElementById('dmOv');if(!ov)return;
+  const key=ov.dataset.key;const inp=document.getElementById('dmInp');
+  const txt=inp.value.trim();if(!txt)return;
+  try{const msgs=JSON.parse(localStorage.getItem(key)||'[]');
+  msgs.push({from:UN,text:txt,time:Date.now()});
+  localStorage.setItem(key,JSON.stringify(msgs))}catch(e){}
+  inp.value='';dmRefresh(key);
+}
+function dmFileHandle(input){
+  const f=input.files[0];if(!f)return;
+  const ext=f.name.split('.').pop().toLowerCase();
+  if(BLOCKED_EXT.includes(ext)){sysM('⛔ Blocked: .'+ext);input.value='';return}
+  const ov=document.getElementById('dmOv');if(!ov)return;
+  const key=ov.dataset.key;
+  if(f.type.startsWith('image/')){
+    const r=new FileReader();r.onload=e=>{
+      try{const msgs=JSON.parse(localStorage.getItem(key)||'[]');
+      msgs.push({from:UN,text:'📎 '+f.name+'<br><img src="'+e.target.result+'" style="max-width:200px;max-height:140px;border:1px solid #222;border-radius:3px;margin-top:3px">',time:Date.now()});
+      localStorage.setItem(key,JSON.stringify(msgs))}catch(e){}
+      dmRefresh(key);
+    };r.readAsDataURL(f);
+  }else{
+    try{const msgs=JSON.parse(localStorage.getItem(key)||'[]');
+    msgs.push({from:UN,text:'📎 '+f.name+' ('+Math.round(f.size/1024)+'KB)',time:Date.now()});
+    localStorage.setItem(key,JSON.stringify(msgs))}catch(e){}
+    dmRefresh(key);
+  }
+  input.value='';
 }
 
 // ═══ KNOCK NOTIFICATIONS CHECK ═══
@@ -3323,15 +3400,20 @@ function tcAddMsg(type,msg){
 
 // ═══ v9 BADGES ═══
 let userBadges=[];
-function addBadge(type,name){
+function addBadge(type,name,color){
   if(userBadges.find(b=>b.name===name))return;
-  userBadges.push({type,name});
+  userBadges.push({type,name,color:color||''});
   sysM('🏅 Badge earned: '+name);
   try{localStorage.setItem('s79_badges',JSON.stringify(userBadges))}catch(e){}
 }
 function loadBadges(){try{userBadges=JSON.parse(localStorage.getItem('s79_badges')||'[]')}catch(e){}}
 function getBadgeHTML(){
-  return userBadges.map(b=>'<span class="bdg bdg-'+b.type+'">'+b.name+'</span>').join('');
+  return userBadges.map(b=>{
+    if(b.color&&b.color!=='#00ff41'){
+      return '<span class="bdg" style="border-color:'+b.color+';color:'+b.color+'">'+b.name+'</span>';
+    }
+    return '<span class="bdg bdg-'+b.type+'">'+b.name+'</span>';
+  }).join('');
 }
 
 // Hook into send to log to monitor + earn badges
