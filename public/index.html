@@ -378,6 +378,24 @@ body.light input,body.light textarea,body.light select{background:#fff;color:#33
 .bdg{display:inline-block;padding:1px 5px;font-family:'VT323',monospace;font-size:8px;border:1px solid;border-radius:2px;margin:0 2px;letter-spacing:1px}
 .bdg-o5{border-color:var(--r);color:var(--r)}.bdg-mod{border-color:var(--y);color:var(--y)}.bdg-vip{border-color:var(--p);color:var(--p)}
 .bdg-ach{border-color:var(--g);color:var(--g)}.bdg-red{border-color:#333;color:#333;background:#111;filter:blur(3px)}
+
+/* v9 AUTH */
+.auth-social{display:flex;gap:8px;margin:10px 0}
+.auth-social button{flex:1;padding:10px;font-family:'VT323',monospace;font-size:11px;letter-spacing:1px;border:1px solid;border-radius:3px;cursor:pointer;background:none;transition:all .2s}
+.auth-discord{border-color:#5865F2!important;color:#5865F2}.auth-discord:hover{background:#5865F2;color:#fff}
+.auth-google{border-color:#4285F4!important;color:#4285F4}.auth-google:hover{background:#4285F4;color:#fff}
+.auth-sep{text-align:center;font-family:'VT323',monospace;font-size:9px;color:#333;letter-spacing:2px;margin:8px 0;position:relative}
+.auth-sep::before,.auth-sep::after{content:'';position:absolute;top:50%;width:38%;height:1px;background:#1a1a1a}
+.auth-sep::before{left:0}.auth-sep::after{right:0}
+.o5-panel{display:none;border:1px solid var(--r);border-radius:3px;padding:10px;margin-top:10px;background:rgba(255,0,51,.03)}
+.o5-panel.on{display:block}
+.o5-panel h3{font-family:'VT323',monospace;font-size:10px;color:var(--r);letter-spacing:2px;margin-bottom:6px}
+.o5-panel input{width:100%;background:var(--bg);border:1px solid var(--r);color:var(--r);font-family:'VT323',monospace;font-size:12px;padding:6px;outline:none;margin-bottom:6px;border-radius:2px}
+.o5-panel button{width:100%;padding:8px;font-family:'VT323',monospace;font-size:11px;letter-spacing:1px;border:1px solid var(--r);background:rgba(255,0,51,.1);color:var(--r);cursor:pointer;border-radius:2px}
+.o5-cmd{border:1px solid var(--r);border-radius:3px;padding:8px;margin-top:8px;background:rgba(255,0,51,.02);display:none}
+.o5-cmd.on{display:block}
+.o5-cmd input,.o5-cmd select{width:100%;background:var(--bg);border:1px solid #331111;color:var(--r);font-family:'VT323',monospace;font-size:11px;padding:5px;outline:none;margin:3px 0;border-radius:2px}
+
 /* v9 TEST CHAMBER */
 .tc-ov{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:9200;display:none;justify-content:center;align-items:center}
 .tc-ov.on{display:flex}
@@ -399,19 +417,44 @@ body.light input,body.light textarea,body.light select{background:#fff;color:#33
   </div>
   <!-- TERMINAL TAB -->
   <div class="ltab-body active" id="ltab-term">
-    <input type="password" id="pwIn" placeholder="PASSWORD OR TOKEN" autocomplete="off">
-    <div style="font-size:8px;color:var(--g);margin:6px 0;letter-spacing:1px;font-family:'VT323',monospace">CLEARANCE LEVEL</div>
+    <div class="auth-social">
+      <button class="auth-discord" onclick="socialLogin('discord')">⟐ DISCORD LOGIN</button>
+      <button class="auth-google" onclick="socialLogin('google')">⊕ GOOGLE LOGIN</button>
+    </div>
+    <div class="auth-sep">OR KEYCARD / TOKEN</div>
+    <input type="password" id="pwIn" placeholder="KEYCARD CODE OR TOKEN" autocomplete="off">
+    <div style="font-size:8px;color:var(--g);margin:6px 0;letter-spacing:1px;font-family:'VT323',monospace">CLEARANCE LEVEL <span style="color:#555">(requires O5 authorization for L1+)</span></div>
     <select id="termLevel" style="width:100%;background:var(--bg);border:1px solid var(--brd);color:var(--g);font-family:'VT323',monospace;font-size:13px;padding:8px;margin-bottom:10px;outline:none">
+      <option value="0" selected>CLASS-E — BASE (default)</option>
       <option value="-1">CLASS-D — EXPENDABLE</option>
-      <option value="0">CLASS-E — PROVISIONAL</option>
       <option value="1">LEVEL 1 — RESTRICTED</option>
       <option value="2">LEVEL 2 — CONFIDENTIAL</option>
-      <option value="3" selected>LEVEL 3 — SECRET</option>
+      <option value="3">LEVEL 3 — SECRET</option>
       <option value="4">LEVEL 4 — TOP SECRET</option>
       <option value="5">LEVEL 5 — THAUMIEL</option>
       <option value="6">O5 COUNCIL — UNRESTRICTED</option>
     </select>
     <button class="lbtn" onclick="doLogin()">AUTHENTICATE</button>
+    <div style="text-align:center;margin-top:8px"><button style="background:none;border:none;color:var(--r);font-family:'VT323',monospace;font-size:10px;cursor:pointer;letter-spacing:1px;text-decoration:underline" onclick="togO5Panel()">☢ O5 COMMAND ACCESS</button></div>
+    <div class="o5-panel" id="o5Panel">
+      <h3>☢ O5 COUNCIL COMMAND TERMINAL</h3>
+      <input type="password" id="o5Key" placeholder="MASTER KEY (encrypted)">
+      <button onclick="o5Auth()">☢ AUTHENTICATE O5</button>
+      <div class="o5-cmd" id="o5Cmd">
+        <div style="font-family:'VT323',monospace;font-size:9px;color:var(--r);letter-spacing:1px;margin-bottom:6px">O5 AUTHORIZED — COMMAND PANEL</div>
+        <input id="o5Target" placeholder="Target username">
+        <select id="o5Action">
+          <option value="grant">GRANT CLEARANCE</option>
+          <option value="revoke">REVOKE CLEARANCE</option>
+          <option value="badge">AWARD BADGE</option>
+          <option value="rekey">REGENERATE MASTER KEY</option>
+        </select>
+        <select id="o5Level"><option value="-1">CLASS-D</option><option value="0">CLASS-E</option><option value="1">L1</option><option value="2">L2</option><option value="3">L3</option><option value="4">L4</option><option value="5">L5</option><option value="6">O5</option></select>
+        <input id="o5Extra" placeholder="Badge name / reason (optional)">
+        <button onclick="o5Exec()">⟐ EXECUTE COMMAND</button>
+        <div id="o5Result" style="font-family:'VT323',monospace;font-size:10px;color:var(--g);margin-top:6px;min-height:14px"></div>
+      </div>
+    </div>
   </div>
   <!-- CHAOS INSURGENT TAB -->
   <div class="ltab-body" id="ltab-ins">
@@ -559,8 +602,12 @@ body.light input,body.light textarea,body.light select{background:#fff;color:#33
 <div class="pm-bar" id="pmBar">
   <span style="font-size:9px;color:#555;letter-spacing:1px;margin-right:6px">PERSONNEL:</span>
   <button class="pm-stun" onclick="pmStun()">🔇 STUN</button>
+  <button class="pm-stun" onclick="pmUnstun()">🔊 UNSTUN</button>
   <button class="pm-kick" onclick="pmKick()">🚪 NEUTRALIZE</button>
+  <button class="pm-kick" onclick="pmRecall()">↩ RECALL</button>
   <button class="pm-ban" onclick="pmBan()">☠ EXECUTE</button>
+  <button style="border-color:var(--g)!important;color:var(--g)" onclick="pmUnban()">⟲ REINSTATE</button>
+  <button style="border-color:var(--p)!important;color:var(--p)" onclick="pmBadge()">🏅 BADGE</button>
 </div>
 <!-- BREACH OVERLAY -->
 <div class="bov" id="bov"><span>⚠ CONTAINMENT BREACH ⚠</span></div>
@@ -695,9 +742,24 @@ async function doLogin(){const cl=parseInt($('termLevel').value);
     const d=await r.json();if(d.ok){SID=d.sid;UN=d.user;localStorage.setItem('s79s',SID);applyClearance(cl);showMain()}else $('lerr').textContent='Error'}catch(e){$('lerr').textContent='Offline'}
     return;
   }
-  const t=$('pwIn').value.trim();if(!t)return;
-  $('lerr').textContent='...';
-  // Check keycard code
+  const t=$('pwIn').value.trim();if(!t){$('lerr').textContent='Enter keycard code or token.';return}
+  $('lerr').textContent='Verifying...';
+  // For L1+: verify O5 grant exists OR valid keycard
+  if(cl>=1){
+    let hasGrant=false;
+    try{const g=JSON.parse(localStorage.getItem('s79_clearances')||'{}');
+    // Check all grants for matching level
+    for(const[k,v]of Object.entries(g)){if(v>=cl){hasGrant=true;break}}}catch(e){}
+    const validKeycard=KCODES[cl]&&t.toUpperCase()===KCODES[cl];
+    if(!validKeycard&&!hasGrant){
+      // Try real token auth as fallback
+      try{const r=await fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:t,token:t})});
+      const d=await r.json();if(d.ok){SID=d.sid;UN=d.user;localStorage.setItem('s79s',SID);applyClearance(cl);showMain();return}
+      }catch(e){}
+      $('lerr').textContent='⛔ L'+cl+'+ requires O5 authorization or valid keycard.';return;
+    }
+  }
+  // Keycard auth
   if(KCODES[cl]&&t.toUpperCase()===KCODES[cl]){
     try{const r=await fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({guest:true,guestClass:'KC',kcLevel:cl})});
     const d=await r.json();if(d.ok){SID=d.sid;UN=d.user;localStorage.setItem('s79s',SID);applyClearance(cl);showMain();return}}catch(e){}
@@ -1682,6 +1744,85 @@ async function breachAttack(){
 }
 
 
+
+// ═══ v9 O5 MASTER KEY SYSTEM ═══
+let O5={masterKey:'O5-OMEGA-PRIME',authed:false,grants:[]};
+function _o5Load(){try{const d=JSON.parse(localStorage.getItem('s79_o5')||'{}');if(d.masterKey)O5.masterKey=d.masterKey;if(d.grants)O5.grants=d.grants}catch(e){}}
+function _o5Save(){try{localStorage.setItem('s79_o5',JSON.stringify(O5))}catch(e){}}
+function togO5Panel(){$('o5Panel').classList.toggle('on');_o5Load()}
+function o5Auth(){
+  _o5Load();
+  const key=$('o5Key').value.trim();
+  if(key===O5.masterKey){
+    O5.authed=true;$('o5Cmd').classList.add('on');
+    $('o5Result').textContent='✓ O5 AUTHENTICATED — Command access granted.';$('o5Result').style.color='var(--g)';
+    autoLog('O5','O5 command terminal authenticated');
+  }else{
+    $('o5Result').textContent='✗ INVALID MASTER KEY.';$('o5Result').style.color='var(--r)';
+    autoLog('SECURITY','Failed O5 auth attempt');
+  }
+}
+function o5Exec(){
+  if(!O5.authed){$('o5Result').textContent='⛔ Not authenticated.';return}
+  const action=$('o5Action').value,target=$('o5Target').value.trim(),level=parseInt($('o5Level').value),extra=$('o5Extra').value.trim();
+  if(!target&&action!=='rekey'){$('o5Result').textContent='⛔ Enter target.';$('o5Result').style.color='var(--r)';return}
+  if(action==='grant'){
+    const clName=CL_LABELS[level]||'UNKNOWN';
+    O5.grants.push({target,level,by:UN||'O5',time:Date.now()});_o5Save();
+    $('o5Result').innerHTML='✓ GRANTED: '+target+' → '+clName+(extra?' ('+extra+')':'');$('o5Result').style.color='var(--g)';
+    autoLog('O5','Clearance GRANTED: '+target+' → '+clName+' by O5 '+(UN||'CONSOLE'));
+    // Save to localStorage for the target to find on login
+    try{const g=JSON.parse(localStorage.getItem('s79_clearances')||'{}');g[target.toLowerCase()]=level;localStorage.setItem('s79_clearances',JSON.stringify(g))}catch(e){}
+  }else if(action==='revoke'){
+    O5.grants=O5.grants.filter(g=>g.target.toLowerCase()!==target.toLowerCase());_o5Save();
+    $('o5Result').innerHTML='✓ REVOKED: '+target+' → CLASS-E (base)';$('o5Result').style.color='var(--y)';
+    autoLog('O5','Clearance REVOKED: '+target+' by O5');
+    try{const g=JSON.parse(localStorage.getItem('s79_clearances')||'{}');delete g[target.toLowerCase()];localStorage.setItem('s79_clearances',JSON.stringify(g))}catch(e){}
+  }else if(action==='badge'){
+    if(!extra){$('o5Result').textContent='⛔ Enter badge name in extra field.';$('o5Result').style.color='var(--r)';return}
+    const type=(['o5','mod','vip','ach'])[level%4]||'ach';
+    addBadge(type,extra);
+    $('o5Result').innerHTML='✓ Badge <span class="bdg bdg-'+type+'">'+extra+'</span> → '+target;$('o5Result').style.color='var(--g)';
+    autoLog('O5','Badge ['+extra+'] awarded to '+target);
+    try{const b=JSON.parse(localStorage.getItem('s79_user_badges')||'{}');if(!b[target.toLowerCase()])b[target.toLowerCase()]=[];b[target.toLowerCase()].push({type,name:extra});localStorage.setItem('s79_user_badges',JSON.stringify(b))}catch(e){}
+  }else if(action==='rekey'){
+    const newKey=prompt('Enter new master key:');if(!newKey||newKey.length<6){$('o5Result').textContent='⛔ Key must be 6+ chars.';$('o5Result').style.color='var(--r)';return}
+    const confirm1=prompt('Confirm new key:');if(confirm1!==newKey){$('o5Result').textContent='⛔ Keys do not match.';$('o5Result').style.color='var(--r)';return}
+    O5.masterKey=newKey;_o5Save();
+    $('o5Result').textContent='✓ Master key regenerated. Old key invalidated.';$('o5Result').style.color='var(--g)';
+    autoLog('O5','Master key regenerated by O5');
+  }
+}
+
+// ═══ v9 SOCIAL LOGIN (Discord/Google simulated) ═══
+function socialLogin(provider){
+  const name=prompt(provider==='discord'?'Enter your Discord username:':'Enter your Google email:');
+  if(!name||name.length<2){$('lerr').textContent='Invalid '+provider+' credentials.';return}
+  $('lerr').textContent='Authenticating via '+provider+'...';
+  // Check if user has been granted clearance by O5
+  let grantedLevel=0;// Default CLASS-E
+  try{const g=JSON.parse(localStorage.getItem('s79_clearances')||'{}');if(g[name.toLowerCase()]!==undefined)grantedLevel=g[name.toLowerCase()]}catch(e){}
+  // Load user badges
+  try{const b=JSON.parse(localStorage.getItem('s79_user_badges')||'{}');if(b[name.toLowerCase()])b[name.toLowerCase()].forEach(bg=>addBadge(bg.type,bg.name))}catch(e){}
+  // Check if banned
+  try{const bans=JSON.parse(localStorage.getItem('s79_bans')||'[]');if(bans.find(b=>b.user.toLowerCase()===name.toLowerCase())){$('lerr').textContent='☠ ACCOUNT TERMINATED. Access denied.';return}}catch(e){}
+  // Authenticate via guest endpoint
+  setTimeout(async()=>{
+    try{
+      const gc=grantedLevel<=-1?'D':grantedLevel===0?'E':'KC';
+      const body=gc==='KC'?{guest:true,guestClass:'KC',kcLevel:grantedLevel}:{guest:true,guestClass:gc};
+      const r=await fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+      const d=await r.json();
+      if(d.ok){
+        SID=d.sid;UN=name+(provider==='discord'?' ⟐':' ⊕');localStorage.setItem('s79s',SID);
+        applyClearance(grantedLevel);showMain();
+        addBadge(provider==='discord'?'mod':'ach',provider.toUpperCase());
+        monLog('AUTH',name+' logged in via '+provider+' — Clearance '+CL_LABELS[grantedLevel]);
+      }else $('lerr').textContent='Auth server error.';
+    }catch(e){$('lerr').textContent='Server offline'}
+  },800);
+}
+
 // ═══ v9 MINIGAME ENGINE ═══
 let MG={on:false,m:'',iv:null,dt:null,clk:null};
 function mgLaunch(m){
@@ -2011,32 +2152,66 @@ function openMon(){
 }
 
 // ═══ v9 PERSONNEL MANAGEMENT (Level 2+) ═══
-let pmVisible=false,pmStunned=false;
-function togPM(){if(userClearance<2)return;pmVisible=!pmVisible;$('pmBar').classList.toggle('on',pmVisible)}
+let pmVisible=false,pmStunned=false,pmBanned=[],pmKicked=[];
+function _pmLoad(){try{pmBanned=JSON.parse(localStorage.getItem('s79_bans')||'[]');pmKicked=JSON.parse(localStorage.getItem('s79_kicks')||'[]')}catch(e){}}
+function _pmSave(){try{localStorage.setItem('s79_bans',JSON.stringify(pmBanned));localStorage.setItem('s79_kicks',JSON.stringify(pmKicked))}catch(e){}}
+function togPM(){if(userClearance<2)return;pmVisible=!pmVisible;$('pmBar').classList.toggle('on',pmVisible);_pmLoad()}
 function pmStun(){
-  if(userClearance<2)return;
-  pmStunned=!pmStunned;
-  $('wrap').classList.toggle('pm-stunned',pmStunned);
-  sysM(pmStunned?'🔇 D/E session STUNNED (muted)':'🔇 D/E session UN-STUNNED');
-  monLog('SECURITY',(pmStunned?'STUN':'UNSTUN')+' applied by '+UN);
-  autoLog('PERSONNEL',(pmStunned?'Stun':'Unstun')+' by '+UN);
+  if(userClearance<2)return;pmStunned=true;
+  $('wrap').classList.add('pm-stunned');
+  sysM('🔇 D/E session STUNNED (muted) by '+UN);monLog('SECURITY','STUN by '+UN);autoLog('PERSONNEL','Stun by '+UN);
+}
+function pmUnstun(){
+  if(userClearance<2)return;pmStunned=false;
+  $('wrap').classList.remove('pm-stunned');
+  sysM('🔊 D/E session UNSTUNNED by '+UN);monLog('SECURITY','UNSTUN by '+UN);autoLog('PERSONNEL','Unstun by '+UN);
 }
 function pmKick(){
   if(userClearance<2)return;
-  if(!confirm('NEUTRALIZE (kick) active D/E session?'))return;
-  sysM('🚪 D/E session NEUTRALIZED (kicked) by '+UN);
-  monLog('SECURITY','NEUTRALIZE: D/E kicked by '+UN);
-  autoLog('PERSONNEL','Neutralize (kick) executed by '+UN);
-  addM('sys','⟐ D-Class/E personnel removed from terminal access.');
+  const t=prompt('Enter D/E designation to NEUTRALIZE (kick):');if(!t)return;
+  if(!confirm('Neutralize '+t+'?'))return;
+  pmKicked.push({user:t,by:UN,time:Date.now()});_pmSave();
+  sysM('🚪 '+t+' NEUTRALIZED by '+UN);monLog('SECURITY','KICK: '+t+' by '+UN);autoLog('PERSONNEL','Kick '+t+' by '+UN);
+  addM('sys','⟐ '+t+' removed from terminal access.');
+}
+function pmRecall(){
+  if(userClearance<2)return;_pmLoad();
+  if(pmKicked.length===0){sysM('⟐ No kicked personnel.');return}
+  const list=pmKicked.map((k,i)=>i+': '+k.user).join('\n');
+  const idx=prompt('Kicked:\n'+list+'\n\nEnter # to RECALL:');if(idx===null)return;
+  const n=parseInt(idx);if(isNaN(n)||n<0||n>=pmKicked.length){sysM('⛔ Invalid.');return}
+  const r=pmKicked.splice(n,1)[0];_pmSave();
+  sysM('↩ '+r.user+' RECALLED by '+UN);monLog('SECURITY','RECALL: '+r.user+' by '+UN);autoLog('PERSONNEL','Recall '+r.user);
+  addM('sys','↩ '+r.user+' access restored.');
 }
 function pmBan(){
   if(userClearance<2)return;
-  if(!confirm('☠ EXECUTE (permanent ban) D/E personnel? This is irreversible.'))return;
-  if(!confirm('FINAL CONFIRMATION: Execute order?'))return;
-  sysM('☠ D/E personnel EXECUTED (permanent ban) by '+UN);
-  monLog('SECURITY','☠ EXECUTE: D/E permanently banned by '+UN);
-  autoLog('PERSONNEL','EXECUTE (ban) ordered by '+UN);
-  addM('sys','☠ D-Class personnel terminated. Session permanently revoked.');
+  const t=prompt('Enter D/E designation to EXECUTE (permanent ban):');if(!t)return;
+  if(!confirm('☠ EXECUTE '+t+'? PERMANENT BAN.'))return;
+  if(!confirm('FINAL: Execute '+t+'?'))return;
+  pmBanned.push({user:t,by:UN,time:Date.now()});_pmSave();
+  sysM('☠ '+t+' EXECUTED by '+UN);monLog('SECURITY','☠ BAN: '+t+' by '+UN);autoLog('PERSONNEL','Execute '+t);
+  addM('sys','☠ '+t+' terminated. Session permanently revoked.');
+}
+function pmUnban(){
+  if(userClearance<3)return;_pmLoad();
+  if(pmBanned.length===0){sysM('⟐ No banned personnel.');return}
+  const list=pmBanned.map((b,i)=>i+': '+b.user+' (by '+b.by+')').join('\n');
+  const idx=prompt('Banned:\n'+list+'\n\nEnter # to REINSTATE:');if(idx===null)return;
+  const n=parseInt(idx);if(isNaN(n)||n<0||n>=pmBanned.length){sysM('⛔ Invalid.');return}
+  const r=pmBanned.splice(n,1)[0];_pmSave();
+  sysM('⟲ '+r.user+' REINSTATED by '+UN);monLog('SECURITY','UNBAN: '+r.user+' by '+UN);autoLog('PERSONNEL','Reinstate '+r.user);
+  addM('sys','⟲ '+r.user+' execution order revoked. Access restored.');
+}
+function pmBadge(){
+  if(userClearance<6){sysM('⛔ Custom badges require O5.');return}
+  const t=prompt('Target designation:');if(!t)return;
+  const name=prompt('Badge name:');if(!name)return;
+  const type=prompt('Type (ach/mod/vip/o5):','ach');
+  if(!['ach','mod','vip','o5'].includes(type)){sysM('⛔ Invalid type.');return}
+  addBadge(type,name);
+  sysM('🏅 Badge ['+name+'] ('+type+') → '+t);monLog('BADGE','🏅 '+t+' got ['+name+'] from '+UN);autoLog('BADGE','Award ['+name+'] to '+t);
+  addM('sys','🏅 <span class="bdg bdg-'+type+'">'+name+'</span> → '+t);
 }
 
 // ═══ v9 TEST CHAMBER ═══
