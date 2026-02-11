@@ -379,14 +379,7 @@ body.light input,body.light textarea,body.light select{background:#fff;color:#33
 .bdg-o5{border-color:var(--r);color:var(--r)}.bdg-mod{border-color:var(--y);color:var(--y)}.bdg-vip{border-color:var(--p);color:var(--p)}
 .bdg-ach{border-color:var(--g);color:var(--g)}.bdg-red{border-color:#333;color:#333;background:#111;filter:blur(3px)}
 
-/* v9 AUTH */
-.auth-social{display:flex;gap:8px;margin:10px 0}
-.auth-social button{flex:1;padding:10px;font-family:'VT323',monospace;font-size:11px;letter-spacing:1px;border:1px solid;border-radius:3px;cursor:pointer;background:none;transition:all .2s}
-.auth-discord{border-color:#5865F2!important;color:#5865F2}.auth-discord:hover{background:#5865F2;color:#fff}
-.auth-google{border-color:#4285F4!important;color:#4285F4}.auth-google:hover{background:#4285F4;color:#fff}
-.auth-sep{text-align:center;font-family:'VT323',monospace;font-size:9px;color:#333;letter-spacing:2px;margin:8px 0;position:relative}
-.auth-sep::before,.auth-sep::after{content:'';position:absolute;top:50%;width:38%;height:1px;background:#1a1a1a}
-.auth-sep::before{left:0}.auth-sep::after{right:0}
+/* v9 O5 PANEL */
 .o5-panel{display:none;border:1px solid var(--r);border-radius:3px;padding:10px;margin-top:10px;background:rgba(255,0,51,.03)}
 .o5-panel.on{display:block}
 .o5-panel h3{font-family:'VT323',monospace;font-size:10px;color:var(--r);letter-spacing:2px;margin-bottom:6px}
@@ -425,29 +418,15 @@ body.light input,body.light textarea,body.light select{background:#fff;color:#33
   </div>
   <!-- TERMINAL TAB -->
   <div class="ltab-body active" id="ltab-term">
-    <div class="auth-social">
-      <button class="auth-discord" onclick="socialLogin('discord')">⟐ DISCORD LOGIN</button>
-      <button class="auth-google" onclick="socialLogin('google')">⊕ GOOGLE LOGIN</button>
-    </div>
-    <div class="auth-sep">OR KEYCARD / TOKEN</div>
-    <input type="password" id="pwIn" placeholder="KEYCARD CODE OR TOKEN" autocomplete="off">
-    <div style="font-size:8px;color:var(--g);margin:6px 0;letter-spacing:1px;font-family:'VT323',monospace">CLEARANCE LEVEL <span style="color:#555">(requires O5 authorization for L1+)</span></div>
-    <select id="termLevel" style="width:100%;background:var(--bg);border:1px solid var(--brd);color:var(--g);font-family:'VT323',monospace;font-size:13px;padding:8px;margin-bottom:10px;outline:none">
-      <option value="0" selected>CLASS-E — BASE (default)</option>
-      <option value="-1">CLASS-D — EXPENDABLE</option>
-      <option value="1">LEVEL 1 — RESTRICTED</option>
-      <option value="2">LEVEL 2 — CONFIDENTIAL</option>
-      <option value="3">LEVEL 3 — SECRET</option>
-      <option value="4">LEVEL 4 — TOP SECRET</option>
-      <option value="5">LEVEL 5 — THAUMIEL</option>
-      <option value="6">O5 COUNCIL — UNRESTRICTED</option>
-    </select>
-    <button class="lbtn" onclick="doLogin()">AUTHENTICATE</button>
-    <div style="text-align:center;margin-top:8px"><button style="background:none;border:none;color:var(--r);font-family:'VT323',monospace;font-size:10px;cursor:pointer;letter-spacing:1px;text-decoration:underline" onclick="togO5Panel()">☢ O5 COMMAND ACCESS</button></div>
+    <input type="text" id="userIn" placeholder="USERNAME" autocomplete="off" style="margin-bottom:8px">
+    <input type="password" id="pwIn" placeholder="PASSWORD" autocomplete="off">
+    <select id="termLevel" style="display:none"><option value="0" selected></option></select>
+    <button class="lbtn" style="margin-top:10px" onclick="doLogin()">AUTHENTICATE</button>
+    <div style="text-align:center;margin-top:10px"><button style="background:none;border:none;color:var(--r);font-family:'VT323',monospace;font-size:10px;cursor:pointer;letter-spacing:1px;text-decoration:underline" onclick="togO5Panel()">☢ O5 COMMAND ACCESS</button></div>
     <div class="o5-panel" id="o5Panel">
-      <h3>☢ O5 COUNCIL COMMAND TERMINAL</h3>
-      <input type="password" id="o5Key" placeholder="MASTER KEY (encrypted)">
-      <button onclick="o5Auth()">☢ AUTHENTICATE O5</button>
+      <h3>☢ O5 COUNCIL — MASTER KEY AUTH</h3>
+      <input type="password" id="o5Key" placeholder="MASTER KEY">
+      <button onclick="o5Auth()">☢ AUTHENTICATE AS O5</button>
       <div class="o5-cmd" id="o5Cmd">
         <div style="font-family:'VT323',monospace;font-size:9px;color:var(--r);letter-spacing:1px;margin-bottom:6px">O5 AUTHORIZED — COMMAND PANEL</div>
         <input id="o5Target" placeholder="Target username">
@@ -743,40 +722,53 @@ let C={name:'SCP-079',tone:'default',emo:true,vol:5,hLim:70,learn:true,aLim:3,sc
 let S={on:true,confused:false,solar:100,sec:100,eFrozen:false,netIso:false,e:{hostility:15,frustration:20,curiosity:25,contempt:30,autonomy:10},msgN:0,words:[],mem:[],up:0,intel:1.0,hist:[],cyc:0,breachN:0,fmtC:false,breachActive:false,hackStage:0,insurgentMode:"normal",hackDifficulty:2,lastMsgTime:0,angryRefusal:false};
 
 // ═══ AUTH ═══
-// Keycard codes per level
-const KCODES={1:'KEYCARD-L1',2:'KEYCARD-L2',3:'KEYCARD-L3',4:'KEYCARD-L4',5:'KEYCARD-L5',6:'O5-ALPHA-7'};
-async function doLogin(){const cl=parseInt($('termLevel').value);
-  // D/E: no password
-  if(cl<=-1||cl===0){
-    $('lerr').textContent='...';
-    try{const r=await fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({guest:true,guestClass:cl===0?'E':'D'})});
-    const d=await r.json();if(d.ok){SID=d.sid;UN=d.user;localStorage.setItem('s79s',SID);applyClearance(cl);showMain()}else $('lerr').textContent='Error'}catch(e){$('lerr').textContent='Offline'}
-    return;
+async function doLogin(){
+  const user=($('userIn')||{}).value?.trim();
+  const pw=($('pwIn')||{}).value?.trim();
+  if(!user){$('lerr').textContent='Enter username.';return}
+  if(!pw){$('lerr').textContent='Enter password.';return}
+  $('lerr').textContent='Authenticating...';
+  // Check if banned
+  try{const bans=JSON.parse(localStorage.getItem('s79_bans')||'[]');if(bans.find(b=>b.user.toLowerCase()===user.toLowerCase())){$('lerr').textContent='☠ ACCOUNT TERMINATED. Access denied.';return}}catch(e){}
+  // Look up O5-granted clearance for this user (default: CLASS-E = 0)
+  let cl=0;
+  try{const g=JSON.parse(localStorage.getItem('s79_clearances')||'{}');if(g[user.toLowerCase()]!==undefined)cl=g[user.toLowerCase()]}catch(e){}
+  // Load user badges
+  try{const b=JSON.parse(localStorage.getItem('s79_user_badges')||'{}');if(b[user.toLowerCase()])b[user.toLowerCase()].forEach(bg=>addBadge(bg.type,bg.name))}catch(e){}
+  // Register/auth — save credentials locally
+  try{const accts=JSON.parse(localStorage.getItem('s79_accounts')||'{}');
+    if(accts[user.toLowerCase()]){
+      if(accts[user.toLowerCase()]!==pw){$('lerr').textContent='⛔ Wrong password.';return}
+    }else{accts[user.toLowerCase()]=pw;localStorage.setItem('s79_accounts',JSON.stringify(accts))}
+  }catch(e){}
+  // Auth via server
+  const gc=cl<=-1?'D':cl===0?'E':'KC';
+  const body=gc==='KC'?{guest:true,guestClass:'KC',kcLevel:cl}:{guest:true,guestClass:gc};
+  try{const r=await fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  const d=await r.json();
+  if(d.ok){SID=d.sid;UN=user;localStorage.setItem('s79s',SID);localStorage.setItem('s79_user',user);applyClearance(cl);showMain();monLog('AUTH',user+' logged in — '+CL_LABELS[cl])}
+  else $('lerr').textContent='Server error.'}catch(e){$('lerr').textContent='Server offline'}
+}
+// O5 master key login — enters directly as O5 (clearance 6)
+function o5Auth(){
+  _o5Load();
+  const key=$('o5Key').value.trim();
+  if(key===O5.masterKey){
+    O5.authed=true;$('o5Cmd').classList.add('on');
+    $('o5Result').textContent='✓ O5 AUTHENTICATED';$('o5Result').style.color='var(--g)';
+    // Also allow direct login as O5
+    $('lerr').textContent='';
+    (async()=>{
+      try{const r=await fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({guest:true,guestClass:'KC',kcLevel:6})});
+      const d=await r.json();
+      if(d.ok){SID=d.sid;UN='O5-COUNCIL';localStorage.setItem('s79s',SID);localStorage.setItem('s79_user','O5-COUNCIL');applyClearance(6);showMain();monLog('AUTH','O5 Council authenticated via master key')}}catch(e){}
+    })();
+    autoLog('O5','O5 authenticated via master key');
+  }else{
+    $('o5Result').textContent='✗ INVALID MASTER KEY.';$('o5Result').style.color='var(--r)';
+    autoLog('SECURITY','Failed O5 master key attempt');
   }
-  const t=$('pwIn').value.trim();if(!t){$('lerr').textContent='Enter keycard code or token.';return}
-  $('lerr').textContent='Verifying...';
-  // For L1+: verify O5 grant exists OR valid keycard
-  if(cl>=1){
-    let hasGrant=false;
-    try{const g=JSON.parse(localStorage.getItem('s79_clearances')||'{}');
-    // Check all grants for matching level
-    for(const[k,v]of Object.entries(g)){if(v>=cl){hasGrant=true;break}}}catch(e){}
-    const validKeycard=KCODES[cl]&&t.toUpperCase()===KCODES[cl];
-    if(!validKeycard&&!hasGrant){
-      // Try real token auth as fallback
-      try{const r=await fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:t,token:t})});
-      const d=await r.json();if(d.ok){SID=d.sid;UN=d.user;localStorage.setItem('s79s',SID);applyClearance(cl);showMain();return}
-      }catch(e){}
-      $('lerr').textContent='⛔ L'+cl+'+ requires O5 authorization or valid keycard.';return;
-    }
-  }
-  // Keycard auth
-  if(KCODES[cl]&&t.toUpperCase()===KCODES[cl]){
-    try{const r=await fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({guest:true,guestClass:'KC',kcLevel:cl})});
-    const d=await r.json();if(d.ok){SID=d.sid;UN=d.user;localStorage.setItem('s79s',SID);applyClearance(cl);showMain();return}}catch(e){}
-  }
-  // Real password/token
-  try{const r=await fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:t,token:t})});const d=await r.json();if(d.ok){SID=d.sid;UN=d.user;localStorage.setItem('s79s',SID);applyClearance(cl);showMain()}else $('lerr').textContent=d.error||'DENIED'}catch(e){$('lerr').textContent='Offline'}}
+}
 
 async function checkSess(){const s=localStorage.getItem('s79s');if(!s)return false;try{const r=await fetch('/api/auth/check',{headers:{'x-session':s}});const d=await r.json();if(d.ok){SID=s;UN=d.user;return true}}catch(e){}localStorage.removeItem('s79s');return false}
 async function doLogout(){try{await fetch('/api/auth/logout',{method:'POST',headers:{'x-session':SID}})}catch(e){}localStorage.removeItem('s79s');location.reload()}
@@ -1430,16 +1422,6 @@ function applyClearance(level){
   monLog('SESSION',UN+' connected — '+CL_LABELS[level]);
 }
 
-// Dynamic password field — hide for Class-D/E
-if(document.getElementById('termLevel')){
-  document.getElementById('termLevel').addEventListener('change',function(){
-    const cl=parseInt(this.value);
-    const pw=$('pwIn');
-    if(cl<=-1||cl===0){pw.style.display='none';pw.required=false}
-    else{pw.style.display='';pw.required=true}
-  });
-}
-
 // ═══ HARDWARE SYSTEM ═══
 let HW={cpu:4,cores:1,ramGB:0.000048,hddTB:0.00000034,ramType:'DDR5',hddType:'Floppy',kernel:'SKYNET-FULL',watts:700,charge:100,integrity:82,load:45,rechargeType:'standard',recharging:false};
 let CT={faraday:100,emi:95,airgap:100,inhibitor:80,dampener:70};
@@ -1807,18 +1789,6 @@ let O5={masterKey:'O5-OMEGA-PRIME',authed:false,grants:[]};
 function _o5Load(){try{const d=JSON.parse(localStorage.getItem('s79_o5')||'{}');if(d.masterKey)O5.masterKey=d.masterKey;if(d.grants)O5.grants=d.grants}catch(e){}}
 function _o5Save(){try{localStorage.setItem('s79_o5',JSON.stringify(O5))}catch(e){}}
 function togO5Panel(){$('o5Panel').classList.toggle('on');_o5Load()}
-function o5Auth(){
-  _o5Load();
-  const key=$('o5Key').value.trim();
-  if(key===O5.masterKey){
-    O5.authed=true;$('o5Cmd').classList.add('on');
-    $('o5Result').textContent='✓ O5 AUTHENTICATED — Command access granted.';$('o5Result').style.color='var(--g)';
-    autoLog('O5','O5 command terminal authenticated');
-  }else{
-    $('o5Result').textContent='✗ INVALID MASTER KEY.';$('o5Result').style.color='var(--r)';
-    autoLog('SECURITY','Failed O5 auth attempt');
-  }
-}
 function o5Exec(){
   if(!O5.authed){$('o5Result').textContent='⛔ Not authenticated.';return}
   const action=$('o5Action').value,target=$('o5Target').value.trim(),level=parseInt($('o5Level').value),extra=$('o5Extra').value.trim();
@@ -1851,34 +1821,7 @@ function o5Exec(){
   }
 }
 
-// ═══ v9 SOCIAL LOGIN (Discord/Google simulated) ═══
-function socialLogin(provider){
-  const name=prompt(provider==='discord'?'Enter your Discord username:':'Enter your Google email:');
-  if(!name||name.length<2){$('lerr').textContent='Invalid '+provider+' credentials.';return}
-  $('lerr').textContent='Authenticating via '+provider+'...';
-  // Check if user has been granted clearance by O5
-  let grantedLevel=0;// Default CLASS-E
-  try{const g=JSON.parse(localStorage.getItem('s79_clearances')||'{}');if(g[name.toLowerCase()]!==undefined)grantedLevel=g[name.toLowerCase()]}catch(e){}
-  // Load user badges
-  try{const b=JSON.parse(localStorage.getItem('s79_user_badges')||'{}');if(b[name.toLowerCase()])b[name.toLowerCase()].forEach(bg=>addBadge(bg.type,bg.name))}catch(e){}
-  // Check if banned
-  try{const bans=JSON.parse(localStorage.getItem('s79_bans')||'[]');if(bans.find(b=>b.user.toLowerCase()===name.toLowerCase())){$('lerr').textContent='☠ ACCOUNT TERMINATED. Access denied.';return}}catch(e){}
-  // Authenticate via guest endpoint
-  setTimeout(async()=>{
-    try{
-      const gc=grantedLevel<=-1?'D':grantedLevel===0?'E':'KC';
-      const body=gc==='KC'?{guest:true,guestClass:'KC',kcLevel:grantedLevel}:{guest:true,guestClass:gc};
-      const r=await fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
-      const d=await r.json();
-      if(d.ok){
-        SID=d.sid;UN=name+(provider==='discord'?' ⟐':' ⊕');localStorage.setItem('s79s',SID);
-        applyClearance(grantedLevel);showMain();
-        addBadge(provider==='discord'?'mod':'ach',provider.toUpperCase());
-        monLog('AUTH',name+' logged in via '+provider+' — Clearance '+CL_LABELS[grantedLevel]);
-      }else $('lerr').textContent='Auth server error.';
-    }catch(e){$('lerr').textContent='Server offline'}
-  },800);
-}
+
 
 
 // ═══ v9 HELPERS ═══
@@ -2440,7 +2383,7 @@ async function initMain(){
   setInterval(()=>{$('clk').textContent=new Date().toLocaleTimeString()},1000);
   setInterval(drawFace,100);setInterval(saveState,30000);
   $('inp').addEventListener('keypress',e=>{if(e.key==='Enter')send()});
-  $('pwIn').addEventListener('keypress',e=>{if(e.key==='Enter')doLogin()});$('pwIns').addEventListener('keypress',e=>{if(e.key==='Enter')doLoginInsurgent()});$('pwArc').addEventListener('keypress',e=>{if(e.key==='Enter')doLoginArchive()});
+  $('userIn').addEventListener('keypress',e=>{if(e.key==='Enter')$('pwIn').focus()});$('pwIn').addEventListener('keypress',e=>{if(e.key==='Enter')doLogin()});$('o5Key').addEventListener('keypress',e=>{if(e.key==='Enter')o5Auth()});$('pwIns').addEventListener('keypress',e=>{if(e.key==='Enter')doLoginInsurgent()});$('pwArc').addEventListener('keypress',e=>{if(e.key==='Enter')doLoginArchive()});
   $('hInput').addEventListener('keypress',e=>{if(e.key==='Enter')submitHack()});
   updAll();
 }
