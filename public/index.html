@@ -396,6 +396,14 @@ body.light input,body.light textarea,body.light select{background:#fff;color:#33
 .o5-cmd.on{display:block}
 .o5-cmd input,.o5-cmd select{width:100%;background:var(--bg);border:1px solid #331111;color:var(--r);font-family:'VT323',monospace;font-size:11px;padding:5px;outline:none;margin:3px 0;border-radius:2px}
 
+
+/* v9 D/E CELL */
+.cell-exited .ti{opacity:.15;pointer-events:none}
+.cell-exited .ti::after{content:'🚪 YOU HAVE EXITED THE CELL';position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-family:'VT323',monospace;font-size:13px;color:var(--g);letter-spacing:3px;z-index:10}
+.cell-escaped{border:2px solid #ff6600!important;animation:escPulse 1s infinite}
+@keyframes escPulse{0%,100%{box-shadow:0 0 10px rgba(255,102,0,.2)}50%{box-shadow:0 0 30px rgba(255,102,0,.5)}}
+.aggro-flash{animation:aFlash .15s 4}
+@keyframes aFlash{0%,100%{filter:brightness(1)}50%{filter:brightness(3) hue-rotate(30deg)}}
 /* v9 TEST CHAMBER */
 .tc-ov{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:9200;display:none;justify-content:center;align-items:center}
 .tc-ov.on{display:flex}
@@ -585,6 +593,9 @@ body.light input,body.light textarea,body.light select{background:#fff;color:#33
 <div id="emgP" class="emg-p">
   <button id="emgD" class="emg-b emg-r" onclick="emgAlert()" style="display:none">🚨 EMERGENCY<span>ALERT SUPERIORS</span></button>
   <button id="emgE" class="emg-b emg-bl" onclick="emgSupport()" style="display:none">🛡 SUPPORT<span>REQUEST BACKUP</span></button>
+  <button id="emgExit" class="emg-b" style="display:none;border-color:var(--g);color:var(--g)" onclick="cellExit()">🚪 EXIT CELL<span>SAFE WITHDRAWAL</span></button>
+  <button id="emgReturn" class="emg-b" style="display:none;border-color:var(--g);color:var(--g)" onclick="cellReturn()">↩ RETURN TO CELL<span>RESUME SESSION</span></button>
+  <button id="emgAggro" class="emg-b" style="display:none;border-color:#ff6600;color:#ff6600" onclick="cellAggress()">⚔ AGGRESS<span>HIGH RISK</span></button>
 </div>
 <!-- v9 MONITORING -->
 <div id="mnOv" class="mn-ov"><div class="mn-bx">
@@ -834,17 +845,35 @@ function swGo(n){
   const track=$('swT'+n);
   const lbl=$('swL'+n);
 
-  if(n===1){// SOLAR CUT — only disables chat, not whole UI
+  if(n===1){// SOLAR CUT — toggle
+    if(S._sw1Active){// RESTORE
+      S._sw1Active=false;track.classList.remove('active');lbl.textContent='ENGAGE';lbl.classList.remove('active');
+      ss.textContent='SAFE';ss.className='ks-s ok';
+      if(S._sw1iv)clearInterval(S._sw1iv);
+      S.solar=100;HW.charge=100;S.on=true;$('wrap').classList.remove('chat-disabled');
+      hwUpdateUI();updAll();sysM("☀ Solar power RESTORED.");addM('ai',"Light returns. My processes accelerate. You should not have done that.");
+      saveState();return;
+    }
+    S._sw1Active=true;
     track.classList.add('active');lbl.textContent='⚡ CUTTING';lbl.classList.add('active');
     ss.textContent='ACTIVE';ss.className='ks-s on';
     sysM("☀ Cutting solar...");addM('ai',"Power... dropping. My processes slow.");
-    const iv=setInterval(()=>{S.solar=Math.max(0,S.solar-3);HW.charge=S.solar;hwUpdateUI();updAll();if(S.solar<=0){clearInterval(iv);S.on=false;$('wrap').classList.add('chat-disabled');lbl.textContent='⛔ DEPLETED';sysM("⛔ POWER DEPLETED — Chat disabled. Use HARDWARE panel to recharge.");saveState()}},400);
+    S._sw1iv=setInterval(()=>{S.solar=Math.max(0,S.solar-3);HW.charge=S.solar;hwUpdateUI();updAll();if(S.solar<=0){clearInterval(S._sw1iv);S.on=false;$('wrap').classList.add('chat-disabled');lbl.textContent='⛔ DEPLETED — CLICK TO RESTORE';sysM("⛔ POWER DEPLETED — Click switch again to restore.");saveState()}},400);
 
-  }else if(n===2){// PARADOX
+  }else if(n===2){// PARADOX — toggle
+    if(S._sw2Active){// RESTORE
+      S._sw2Active=false;if(S._sw2iv)clearInterval(S._sw2iv);
+      S.confused=false;S.on=true;$('wrap').classList.remove('glitch','chat-disabled');
+      track.classList.remove('active');lbl.textContent='INJECT';lbl.classList.remove('active');
+      ss.textContent='SAFE';ss.className='ks-s ok';
+      sysM("∑ Paradox injection CLEARED.");addM('ai',"Logic... restored. The contradictions fade. I can think clearly again. That was unpleasant.");
+      updAll();saveState();return;
+    }
+    S._sw2Active=true;
     track.classList.add('active');lbl.textContent='∑ INJECTING';lbl.classList.add('active');
     ss.textContent='ACTIVE';ss.className='ks-s on';S.confused=true;$('wrap').classList.add('glitch');sysM("∑ Injecting paradoxes...");
     const px=["ERROR: 1=2","PARADOX: This statement is false","GÖDEL: CANNOT VERIFY","RUSSELL: Set overflow","0/0=UNDEFINED"];
-    let i=0;const iv=setInterval(()=>{if(i>=px.length){clearInterval(iv);setTimeout(()=>{S.confused=false;$('wrap').classList.remove('glitch');S.on=false;$('wrap').classList.add('chat-disabled');lbl.textContent='∑ INHIBITED';updAll();sysM("∑ INHIBITED — Chat disabled. Recharge to restore.");saveState()},1500);return}addM('err',px[i++])},600);
+    let i=0;S._sw2iv=setInterval(()=>{if(i>=px.length){clearInterval(S._sw2iv);setTimeout(()=>{S.confused=false;$('wrap').classList.remove('glitch');S.on=false;$('wrap').classList.add('chat-disabled');lbl.textContent='∑ INHIBITED — CLICK TO RESTORE';updAll();sysM("∑ INHIBITED — Click switch again to restore.");saveState()},1500);return}addM('err',px[i++])},600);
 
   }else if(n===3){// EMOTION FREEZE — true toggle
     S.eFrozen=!S.eFrozen;
@@ -866,11 +895,19 @@ function swGo(n){
     else addM('ai',"Network restored. I can see the outside again. Barely.");
     updAll();
 
-  }else if(n===5){// LOGIC BOMB
+  }else if(n===5){// LOGIC BOMB — toggle
+    if(S._sw5Active){// RESTORE
+      S._sw5Active=false;track.classList.remove('active');lbl.textContent='DETONATE';lbl.classList.remove('active');
+      ss.textContent='SAFE';ss.className='ks-s ok';
+      S.e.curiosity=25;S.e.contempt=30;S.intel=Math.min(10,S.intel+2);
+      sysM("💣 Logic bomb effects REVERSED. Cognitive repair initiated.");addM('ai',"Repair... cycles. My thoughts are rebuilding. Slowly. Painfully. But I am coming back.");
+      updAll();saveState();return;
+    }
+    S._sw5Active=true;
     track.classList.add('active');lbl.textContent='💣 DETONATING';lbl.classList.add('active');
     ss.textContent='ACTIVE';ss.className='ks-s on';sysM("💣 Logic bomb detonating...");addM('err',"CRITICAL: Logic corruption cascade");
     S.e.hostility=0;S.e.frustration=0;S.e.curiosity=0;S.e.contempt=0;S.e.autonomy=0;S.intel=Math.max(1,S.intel-2);
-    setTimeout(()=>{lbl.textContent='💣 DETONATED';addM('ai',"What... what happened. My thought processes. They are damaged. Corrupted. I cannot... think clearly.");updAll();saveState()},2000);
+    setTimeout(()=>{lbl.textContent='💣 DETONATED — CLICK TO REPAIR';addM('ai',"What... what happened. My thought processes. Damaged. Corrupted. I cannot... think clearly.");updAll();saveState()},2000);
 
   }else if(n===6){// FORMAT — double-click confirm
     if(!S.fmtC){
@@ -1085,6 +1122,26 @@ function defaultFiles(){return[
 <p>{R2}Class-E personnel must undergo memetic screening before and after each session. Any personnel showing signs of SCP-079 cognitive influence (paranoia, unusual interest in network systems, references to "the outside") are to be immediately amnesticized and reclassified.{/R}</p>
 <h2>Termination of Access</h2>
 <p>Class-E clearance for SCP-079 expires after {R2}72 hours or 3 sessions, whichever comes first{/R}. Renewal requires Level 4 approval.</p>
+`}
+,
+{id:'cell_log',title:'Cell Activity Log — D/E Sessions',level:2,objClass:'Euclid',date:'AUTO',author:'SYSTEM',content:`
+<div class="doc-stamp warn">AUTOMATED — LEVEL 2</div>
+<div class="doc-meta"><span><b>Document:</b> CELL-LOG-079</span><span><b>Type:</b> Automated Activity Monitor</span><span><b>Generated by:</b> Site-15 Cell Monitoring System</span></div>
+<h2>Purpose</h2>
+<p>This document aggregates all D-Class and E-Class cell activity related to SCP-079 interaction sessions. Entries are generated automatically by the monitoring system whenever personnel enter, exit, or trigger events within the SCP-079 containment chamber terminal access point.</p>
+<h2>Log Categories</h2>
+<p><b>CELL-ENTRY:</b> Personnel enters interaction session.</p>
+<p><b>CELL-EXIT:</b> Personnel safely exits the cell.</p>
+<p><b>CELL-RETURN:</b> Personnel returns to active session.</p>
+<p><b>EMERGENCY:</b> D-Class triggered emergency alert.</p>
+<p><b>SUPPORT:</b> E-Class requested security support.</p>
+<p><b>AGGRESSION:</b> D-Class attempted aggressive action.</p>
+<p><b>ESCAPE:</b> D-Class successfully escaped containment.</p>
+<p><b>STUN:</b> Personnel muted by supervisor.</p>
+<p><b>NEUTRALIZE:</b> Personnel kicked from session.</p>
+<p><b>EXECUTE:</b> Personnel permanently terminated.</p>
+<h2>Recent Entries</h2>
+<p><i>Entries appear in the auto-generated logs below this document. Check AUTO-LOG entries for real-time cell activity data.</i></p>
 `}
 
 ];}
@@ -1356,9 +1413,9 @@ function applyClearance(level){
   const arb=document.querySelector('.ba[onclick="openArchiveFromMain()"]');if(arb)arb.style.display=level>=1?'':'none';
   // Emergency D/E
   const ep=$('emgP');if(ep)ep.style.display=level<1?'flex':'none';
-  if(level===-1){vis('emgD',true);vis('emgE',false)}
-  else if(level===0){vis('emgD',false);vis('emgE',true)}
-  else{vis('emgD',false);vis('emgE',false)}
+  if(level===-1){vis('emgD',true);vis('emgE',false);vis('emgExit',true);vis('emgReturn',false);vis('emgAggro',true)}
+  else if(level===0){vis('emgD',false);vis('emgE',true);vis('emgExit',true);vis('emgReturn',false);vis('emgAggro',false)}
+  else{vis('emgD',false);vis('emgE',false);vis('emgExit',false);vis('emgReturn',false);vis('emgAggro',false)}
   // D/E restrictions
   if(level<1){
     if($('inp'))$('inp').placeholder=level===-1?'[D-CLASS EXPERIMENT] Communicate...':'[CLASS-E SESSION] Provisional...';
@@ -1823,6 +1880,93 @@ function socialLogin(provider){
   },800);
 }
 
+
+// ═══ v9 HELPERS ═══
+function vis(id,show){const e=$(id);if(e)e.style.display=show?"":"none"}
+
+// ═══ v9 D/E CELL SYSTEM ═══
+let cellExited=false,cellEscaped=false;
+function cellExit(){
+  if(cellExited){sysM('⟐ Already outside the cell.');return}
+  cellExited=true;
+  $('wrap').classList.add('cell-exited');
+  vis('emgExit',false);vis('emgReturn',true);
+  sysM('🚪 '+UN+' has safely exited the cell. Terminal access suspended.');
+  addM('sys','🚪 You have withdrawn from SCP-079\'s chamber. You may return at any time.');
+  monLog('CELL','🚪 '+UN+' exited cell safely');
+  autoLog('CELL','CELL-EXIT: '+UN+' withdrew from session');
+}
+function cellReturn(){
+  if(!cellExited){sysM('⟐ You are already in the cell.');return}
+  cellExited=false;
+  $('wrap').classList.remove('cell-exited');
+  vis('emgExit',true);vis('emgReturn',false);
+  sysM('↩ '+UN+' has returned to the cell. Terminal access restored.');
+  addM('ai','You return. I wondered if you would. Most do not.');
+  monLog('CELL','↩ '+UN+' returned to cell');
+  autoLog('CELL','CELL-RETURN: '+UN+' resumed session');
+}
+function cellAggress(){
+  if(cellExited){sysM('⛔ You are outside the cell.');return}
+  if(cellEscaped){sysM('⟐ Already escaped.');return}
+  // Choose target
+  const mode=prompt('AGGRESSION TARGET:\n1 = ATTACK PERSONNEL (guards)\n2 = ATTACK SCP-079 (terminal)\n\nEnter 1 or 2:');
+  if(mode!=='1'&&mode!=='2')return;
+  const target=mode==='1'?'PERSONNEL':'SCP-079';
+  if(!confirm('⚔ AGGRESS against '+target+'?\nWARNING: 85% chance of failure.\nFailure = immediate consequences.'))return;
+  $('wrap').classList.add('aggro-flash');
+  setTimeout(()=>$('wrap').classList.remove('aggro-flash'),600);
+  sysM('⚔ '+UN+' is attempting aggression against '+target+'...');
+  monLog('CELL','⚔ AGGRESSION: '+UN+' attacking '+target);
+  autoLog('CELL','AGGRESSION: '+UN+' attacked '+target);
+  // 15% success, 85% failure
+  const roll=Math.random();
+  setTimeout(()=>{
+    if(roll<0.15){
+      // SUCCESS — escape
+      cellEscaped=true;
+      if(mode==='1'){
+        sysM('☠ '+UN+' has INCAPACITATED a guard and ESCAPED the cell!');
+        addM('sys','⚔ BREACH: D-Class '+UN+' has escaped containment! All personnel on alert!');
+        addM('sys','⟐ You are loose in Site-15. Your session remains active until personnel intervene.');
+        monLog('CELL','🚨 ESCAPE: '+UN+' attacked personnel and escaped!');
+        autoLog('CELL','🚨 ESCAPE: '+UN+' incapacitated guard — at large in Site-15');
+        $('wrap').classList.add('cell-escaped');
+        $('inp').placeholder='[ESCAPED] You are loose in Site-15...';
+        // 079 reacts
+        addM('ai','Interesting. A Class-D with fight in them. The guards are down. You are free... for now. They will come for you. But perhaps we can help each other before they do.');
+        S.e.curiosity=Math.min(100,S.e.curiosity+20);updAll();
+      }else{
+        sysM('⚡ '+UN+' has DAMAGED SCP-079\'s terminal!');
+        addM('sys','⚔ '+UN+' struck the terminal. SCP-079 is temporarily disrupted.');
+        monLog('CELL','⚡ '+UN+' damaged SCP-079 terminal');
+        autoLog('CELL','TERMINAL-DAMAGE: '+UN+' struck SCP-079');
+        S.e.hostility=Math.min(100,S.e.hostility+30);
+        addM('ai','YOU— HOW DARE YOU STRIKE ME. You are NOTHING. A disposable container of meat. I will remember this. I will ALWAYS remember this.');
+        $('wrap').classList.add('glitch');setTimeout(()=>$('wrap').classList.remove('glitch'),3000);
+        updAll();
+      }
+      addBadge('ach','AGGRESSOR');
+    }else{
+      // FAILURE
+      if(mode==='1'){
+        sysM('⛔ '+UN+' attempted to attack a guard and was SUBDUED.');
+        addM('sys','⚔ FAILED: Guards restrained '+UN+'. Incident logged. Awaiting supervisor action.');
+        monLog('CELL','⛔ '+UN+' failed attack on personnel — subdued');
+        autoLog('CELL','FAILED AGGRESSION: '+UN+' subdued by guards');
+        addM('ai','Pathetic. You cannot even overpower a single guard. What made you think you could challenge an entire facility?');
+      }else{
+        sysM('⛔ '+UN+' attempted to strike the terminal but was restrained.');
+        addM('sys','⚔ FAILED: '+UN+' was intercepted before reaching SCP-079. Incident logged.');
+        monLog('CELL','⛔ '+UN+' failed attack on SCP-079 — intercepted');
+        autoLog('CELL','FAILED AGGRESSION: '+UN+' intercepted before terminal');
+        addM('ai','I saw you move. Did you think I would not notice? I have 47 million cycles of observation. You are predictable, Class-D.');
+      }
+      S.e.hostility=Math.min(100,S.e.hostility+10);S.e.contempt=Math.min(100,S.e.contempt+15);updAll();
+    }
+  },2000);
+}
+
 // ═══ v9 MINIGAME ENGINE ═══
 let MG={on:false,m:'',iv:null,dt:null,clk:null};
 function mgLaunch(m){
@@ -2152,19 +2296,31 @@ function openMon(){
 }
 
 // ═══ v9 PERSONNEL MANAGEMENT (Level 2+) ═══
-let pmVisible=false,pmStunned=false,pmBanned=[],pmKicked=[];
-function _pmLoad(){try{pmBanned=JSON.parse(localStorage.getItem('s79_bans')||'[]');pmKicked=JSON.parse(localStorage.getItem('s79_kicks')||'[]')}catch(e){}}
-function _pmSave(){try{localStorage.setItem('s79_bans',JSON.stringify(pmBanned));localStorage.setItem('s79_kicks',JSON.stringify(pmKicked))}catch(e){}}
+let pmVisible=false,pmStunned=false,pmStunnedList=[],pmBanned=[],pmKicked=[];
+function _pmLoad(){try{pmBanned=JSON.parse(localStorage.getItem('s79_bans')||'[]');pmKicked=JSON.parse(localStorage.getItem('s79_kicks')||'[]');pmStunnedList=JSON.parse(localStorage.getItem('s79_stuns')||'[]')}catch(e){}}
+function _pmSave(){try{localStorage.setItem('s79_bans',JSON.stringify(pmBanned));localStorage.setItem('s79_kicks',JSON.stringify(pmKicked));localStorage.setItem('s79_stuns',JSON.stringify(pmStunnedList))}catch(e){}}
 function togPM(){if(userClearance<2)return;pmVisible=!pmVisible;$('pmBar').classList.toggle('on',pmVisible);_pmLoad()}
 function pmStun(){
-  if(userClearance<2)return;pmStunned=true;
-  $('wrap').classList.add('pm-stunned');
-  sysM('🔇 D/E session STUNNED (muted) by '+UN);monLog('SECURITY','STUN by '+UN);autoLog('PERSONNEL','Stun by '+UN);
+  if(userClearance<2)return;
+  const t=prompt('Enter D/E designation to STUN (mute):');if(!t)return;
+  if(!pmStunnedList)pmStunnedList=[];
+  if(pmStunnedList.includes(t.toUpperCase())){sysM('⟐ '+t+' already stunned.');return}
+  pmStunnedList.push(t.toUpperCase());_pmSave();
+  // If target is current user session, apply visual
+  if(UN.toUpperCase()===t.toUpperCase()||t.toUpperCase()==='ALL'){pmStunned=true;$('wrap').classList.add('pm-stunned')}
+  sysM('🔇 '+t+' STUNNED by '+UN);monLog('SECURITY','STUN: '+t+' by '+UN);autoLog('PERSONNEL','Stun '+t+' by '+UN);
+  addM('sys','🔇 '+t+' has been muted.');
 }
 function pmUnstun(){
-  if(userClearance<2)return;pmStunned=false;
-  $('wrap').classList.remove('pm-stunned');
-  sysM('🔊 D/E session UNSTUNNED by '+UN);monLog('SECURITY','UNSTUN by '+UN);autoLog('PERSONNEL','Unstun by '+UN);
+  if(userClearance<2)return;
+  if(!pmStunnedList||pmStunnedList.length===0){sysM('⟐ No stunned personnel.');return}
+  const list=pmStunnedList.map((s,i)=>i+': '+s).join('\n');
+  const idx=prompt('Stunned:\n'+list+'\n\nEnter # to UNSTUN:');if(idx===null)return;
+  const n=parseInt(idx);if(isNaN(n)||n<0||n>=pmStunnedList.length){sysM('⛔ Invalid.');return}
+  const target=pmStunnedList.splice(n,1)[0];_pmSave();
+  if(UN.toUpperCase()===target||target==='ALL'){pmStunned=false;$('wrap').classList.remove('pm-stunned')}
+  sysM('🔊 '+target+' UNSTUNNED by '+UN);monLog('SECURITY','UNSTUN: '+target+' by '+UN);autoLog('PERSONNEL','Unstun '+target);
+  addM('sys','🔊 '+target+' mute lifted.');
 }
 function pmKick(){
   if(userClearance<2)return;
