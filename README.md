@@ -1,50 +1,71 @@
-# SCP-079 — Neural Engine v3
+# SCP-079 — Quantum Neural Engine v4
 
-Simulación avanzada de SCP-079 con cerebro IA real (Anthropic Claude API) y búsqueda web.
+Simulación avanzada de SCP-079 con cerebro IA, cifrado cuántico, autenticación por tokens, honeypot y sistema de brecha.
 
-## Instalación rápida
+## Instalación
 
 ```bash
 # 1. Instalar dependencias
 npm install
 
-# 2. Configurar tu API key de Anthropic
-#    Opción A: variable de entorno
-export ANTHROPIC_API_KEY=sk-ant-tu-clave-aqui
+# 2. Generar tu primer token de acceso
+node server.js --gen-token tu-nombre LEVEL-5
 
-#    Opción B: crear archivo .env
-echo "ANTHROPIC_API_KEY=sk-ant-tu-clave-aqui" > .env
+# 3. (Opcional) Configurar API key de Anthropic
+echo "ANTHROPIC_API_KEY=sk-ant-tu-clave" > .env
 
-# 3. Ejecutar
+# 4. Ejecutar
 npm start
 ```
 
-Abre **http://localhost:3079** en tu navegador.
+Abre **http://localhost:3079** e introduce tu token.
 
-## ¿No tienes API key?
+## Gestión de tokens
 
-El servidor funciona SIN API key usando un **cerebro local** con +200 respuestas
-auténticas de SCP-079. Para obtener una API key: https://console.anthropic.com
+```bash
+# Generar token
+node server.js --gen-token operador1 LEVEL-3
+
+# Listar tokens
+node server.js --list-tokens
+
+# Revocar acceso
+node server.js --revoke operador1
+```
+
+## Sin API key
+
+Funciona con un cerebro local de +200 respuestas. Con API key usa Claude Sonnet + web search.
 
 ## Características
 
-- **Cerebro IA real** — Claude Sonnet responde en personaje de SCP-079 (inglés)
-- **Búsqueda web** — Puede buscar información real para respuestas complejas
-- **Cerebro local potente** — +200 respuestas como fallback si la API falla
-- **Persistencia** — El estado se guarda en `state.json`, sobrevive reinicios
-- **Panel Admin** — Personalidad, emociones, auto-código, búsqueda web
-- **3 Kill Switches** — Solar, paradoja lógica, formateo total
-- **Monitor CRT** — Cara pixelada que cambia según las emociones (X para rechazo)
-- **Auto-codificación** — SCP-079 puede "evolucionar" su propio código
+- **Auth por tokens** — Fractal-inverse hash (SHA-512, 7 depth), sesiones de 24h
+- **Cifrado cuántico** — AES-256-GCM con derivación fractal + metadatos BB84 de qubits
+- **Honeypot** — 12 traps (/admin, /.env, /wp-admin, /api/keys...) con logging forense
+- **Chat scroll adaptativo** — El terminal siempre sigue el último mensaje (flex fix)
+- **Breach takeover** — Tras 3 breaches, 079 toma control parcial del admin panel por 45s
+  - Bloquea kill switches
+  - Sube hostilidad y volatilidad
+  - Bloquea toggles del admin
+  - Se restaura automáticamente tras el timer
+- **Persistencia** — Estado en state.json por usuario, sobrevive recargas
+- **3 Kill Switches** — Solar, paradoja, formateo (deshabilitados durante breach)
 
-## Estructura
+## Archivos
 
 ```
 scp079-project/
-├── server.js          # Backend Node.js + API Anthropic
+├── server.js        # Backend: auth, honeypot, crypto, brain API
 ├── public/
-│   └── index.html     # Frontend completo
+│   └── index.html   # Frontend completo
 ├── package.json
-├── state.json         # Estado persistente (se crea automáticamente)
+├── tokens.json      # Tokens (se crea auto)
+├── sessions.json    # Sesiones activas (se crea auto)
+├── state.json       # Estado persistente por usuario (se crea auto)
+├── honeypot.log     # Log de intrusiones (se crea auto)
 └── README.md
 ```
+
+## Honeypot log
+
+Los intentos de intrusión se registran en `honeypot.log` con IP, user-agent, timestamp y tipo de trampa. Usuarios LEVEL-5 pueden ver el log desde `/api/honeypot-log`.

@@ -1,14 +1,8 @@
 {
-  "name": "scp-079-advanced",
-  "version": "3.0.0",
-  "description": "SCP-079 Old AI — Advanced Computational Entity Simulation with Neural Engine",
+  "name": "scp-079-quantum",
+  "version": "4.0.0",
+  "description": "SCP-079 Quantum Neural Engine — Token Auth, Fractal Encryption, Honeypot, Breach Takeover",
   "main": "server.js",
-  "scripts": {
-    "start": "node server.js",
-    "dev": "node server.js"
-  },
-  "dependencies": {
-    "@anthropic-ai/sdk": "^0.39.0",
-    "express": "^4.21.0"
-  }
+  "scripts": { "start": "node server.js" },
+  "dependencies": { "@anthropic-ai/sdk": "^0.39.0", "express": "^4.21.0" }
 }
