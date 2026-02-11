@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>SCP-079 // QNE v5</title>
+<title>SCP-079 // QNE v6</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=VT323&family=IBM+Plex+Mono:wght@300;400;500;600&display=swap');
 :root{--g:#00ff41;--gd:#00882a;--r:#ff0033;--y:#ffaa00;--b:#00ccff;--p:#bb66ff;--bg:#050505;--bg2:#0a0a0a;--bg3:#111;--brd:#1a1a1a;--txt:#888;--fc:#00ff41}
@@ -255,6 +255,74 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 .adm-tog.on::after{left:16px;background:var(--g)}
 .adm-tog.locked{opacity:.3;pointer-events:none}
 
+
+/* CLEARANCE BADGES — Class-D, Class-E */
+.cl-d{background:rgba(255,100,0,.12);color:#ff6600;border:1px solid #ff6600}
+.cl-e{background:rgba(255,170,0,.08);color:var(--y);border:1px solid #886600}
+
+/* HARDWARE PANEL */
+#hwPanel{position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:4800;display:none;justify-content:center;align-items:center}
+#hwPanel.on{display:flex}
+.hw-box{width:600px;max-height:90vh;background:var(--bg2);border:1px solid var(--brd);border-radius:6px;overflow-y:auto;padding:0}
+.hw-head{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:#080808;border-bottom:1px solid var(--brd)}
+.hw-head h2{font-family:'VT323',monospace;font-size:16px;color:var(--b);letter-spacing:2px}
+.hw-body{padding:14px}
+.hw-sec{margin-bottom:14px;border:1px solid var(--brd);border-radius:4px;padding:10px;background:#080808}
+.hw-sec h3{font-family:'VT323',monospace;font-size:12px;color:var(--g);letter-spacing:2px;margin-bottom:8px}
+.hw-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.hw-lbl{font-size:9px;color:var(--txt);width:70px;flex-shrink:0;font-family:'VT323',monospace;letter-spacing:1px}
+.hw-bar{flex:1;height:12px;background:#111;border-radius:2px;overflow:hidden;position:relative}
+.hw-fill{height:100%;border-radius:2px;transition:width .5s}
+.hw-val{font-family:'VT323',monospace;font-size:11px;color:var(--g);width:50px;text-align:right}
+.hw-slider{width:100%;-webkit-appearance:none;appearance:none;height:6px;background:#222;border-radius:3px;outline:none;margin:4px 0}
+.hw-slider::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--g);cursor:pointer;box-shadow:0 0 6px var(--g)}
+.hw-btn{padding:4px 10px;background:none;border:1px solid var(--gd);color:var(--g);font-family:'VT323',monospace;font-size:10px;letter-spacing:1px;cursor:pointer;border-radius:2px}
+.hw-btn:hover{background:var(--g);color:#000}
+.hw-btn.danger{border-color:var(--r);color:var(--r)}.hw-btn.danger:hover{background:var(--r);color:#fff}
+
+/* LOADING BAR */
+.ai-loading{height:3px;background:#111;border-radius:2px;margin:4px 0;overflow:hidden;display:none}
+.ai-loading.on{display:block}
+.ai-loading .al-fill{height:100%;width:0%;background:var(--g);border-radius:2px;transition:width .3s}
+.ai-loading.angry .al-fill{background:var(--r)}
+
+/* RECHARGE SYSTEM */
+.rch-menu{display:flex;gap:4px;margin-top:4px}
+.rch-btn{padding:3px 6px;font-family:'VT323',monospace;font-size:9px;border:1px solid var(--brd);background:none;color:var(--txt);cursor:pointer;border-radius:2px;letter-spacing:1px}
+.rch-btn:hover{border-color:var(--g);color:var(--g)}
+.rch-btn.active{background:rgba(0,255,65,.1);border-color:var(--g);color:var(--g)}
+.rch-btn.fast{border-color:var(--y);color:var(--y)}.rch-btn.fast:hover,.rch-btn.fast.active{background:rgba(255,170,0,.1)}
+.rch-btn.quantum{border-color:var(--b);color:var(--b)}.rch-btn.quantum:hover,.rch-btn.quantum.active{background:rgba(0,204,255,.1)}
+
+/* LIGHT MODE */
+body.light{--bg:#f0f0f0;--bg2:#fafafa;--bg3:#e5e5e5;--brd:#ccc;--txt:#555;--g:#00aa28;--gd:#007718;--fc:#00aa28}
+body.light{color:#00aa28}
+body.light::before{background:none}
+body.light .to{color:#333}
+body.light .m-ai{background:rgba(0,170,40,.05);border-color:#00aa28}
+body.light .m-usr{background:rgba(0,0,0,.03)}
+body.light .m-sys{color:#666}
+body.light input,body.light textarea,body.light select{background:#fff;color:#333;border-color:#ccc}
+
+/* THEME TOGGLE */
+.theme-toggle{display:flex;align-items:center;gap:4px;cursor:pointer;font-size:8px;color:var(--txt)}
+.theme-toggle .tt-icon{font-size:12px}
+
+/* 079 ATTACK EFFECTS */
+.atk-flash{animation:atkFlash .15s 3}
+@keyframes atkFlash{0%,100%{filter:none}50%{filter:invert(1) hue-rotate(180deg)}}
+.atk-shake{animation:atkShake .3s 5}
+@keyframes atkShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.atk-redline{border:2px solid var(--r)!important;box-shadow:0 0 20px rgba(255,0,51,.3)!important}
+.chat-disabled .to{opacity:.3;pointer-events:none}
+.chat-disabled .ti{opacity:.3;pointer-events:none}
+.chat-disabled .ti::after{content:'⛔ OFFLINE — POWER DEPLETED';position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-family:'VT323',monospace;font-size:12px;color:var(--r);letter-spacing:2px;z-index:10}
+.ti{position:relative}
+
+/* SOLAR/BATTERY BAR */
+.sol-bar{height:4px;background:#111;border-radius:2px;overflow:hidden;margin-top:2px}
+.sol-fill{height:100%;border-radius:2px;transition:width .5s,background .5s}
+
 /* BREACH OVERLAY */
 .bov{position:fixed;inset:0;z-index:8000;display:none;justify-content:center;align-items:center;animation:bf .5s infinite;pointer-events:none}
 .bov.on{display:flex}
@@ -274,7 +342,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 <!-- LOGIN -->
 <div id="login"><div class="lb">
   <h1>SCP-079</h1>
-  <div class="sub">QNE v5 · SKYNET EDITION</div>
+  <div class="sub">QNE v6 · SKYNET EDITION</div>
   <div class="ltabs">
     <button class="ltab active" onclick="loginTab('term')">TERMINAL</button>
     <button class="ltab ins" onclick="loginTab('ins')">☠ INSURGENT</button>
@@ -283,6 +351,17 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
   <!-- TERMINAL TAB -->
   <div class="ltab-body active" id="ltab-term">
     <input type="password" id="pwIn" placeholder="PASSWORD OR TOKEN" autocomplete="off">
+    <div style="font-size:8px;color:var(--g);margin:6px 0;letter-spacing:1px;font-family:'VT323',monospace">CLEARANCE LEVEL</div>
+    <select id="termLevel" style="width:100%;background:var(--bg);border:1px solid var(--brd);color:var(--g);font-family:'VT323',monospace;font-size:13px;padding:8px;margin-bottom:10px;outline:none">
+      <option value="-1">CLASS-D — EXPENDABLE</option>
+      <option value="0">CLASS-E — PROVISIONAL</option>
+      <option value="1">LEVEL 1 — RESTRICTED</option>
+      <option value="2">LEVEL 2 — CONFIDENTIAL</option>
+      <option value="3" selected>LEVEL 3 — SECRET</option>
+      <option value="4">LEVEL 4 — TOP SECRET</option>
+      <option value="5">LEVEL 5 — THAUMIEL</option>
+      <option value="6">O5 COUNCIL — UNRESTRICTED</option>
+    </select>
     <button class="lbtn" onclick="doLogin()">AUTHENTICATE</button>
   </div>
   <!-- CHAOS INSURGENT TAB -->
@@ -301,6 +380,8 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
     <input type="password" id="pwArc" placeholder="PASSWORD OR TOKEN" autocomplete="off">
     <div style="font-size:8px;color:var(--b);margin:8px 0;letter-spacing:1px;font-family:'VT323',monospace">CLEARANCE LEVEL</div>
     <select id="arcLevel">
+      <option value="-1">CLASS-D — EXPENDABLE</option>
+      <option value="0">CLASS-E — PROVISIONAL</option>
       <option value="1">LEVEL 1 — RESTRICTED</option>
       <option value="2">LEVEL 2 — CONFIDENTIAL</option>
       <option value="3" selected>LEVEL 3 — SECRET</option>
@@ -334,7 +415,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
     <div class="arc-main" id="arcMain"><div class="arc-doc" id="arcDoc">Select a file from the sidebar.</div></div>
     <div class="arc-editor" id="arcEditor">
       <label>DOCUMENT TITLE</label><input id="edTitle" placeholder="SCP-XXX Document Title">
-      <label>CLASSIFICATION</label><select id="edClass"><option value="1">LEVEL 1</option><option value="2">LEVEL 2</option><option value="3" selected>LEVEL 3</option><option value="4">LEVEL 4</option><option value="5">LEVEL 5</option><option value="6">O5 COUNCIL</option></select>
+      <label>CLASSIFICATION</label><select id="edClass"><option value="-1">CLASS-D</option><option value="0">CLASS-E</option><option value="1">LEVEL 1</option><option value="2">LEVEL 2</option><option value="3" selected>LEVEL 3</option><option value="4">LEVEL 4</option><option value="5">LEVEL 5</option><option value="6">O5 COUNCIL</option></select>
       <label>OBJECT CLASS</label><select id="edObj"><option value="Safe">Safe</option><option value="Euclid" selected>Euclid</option><option value="Keter">Keter</option><option value="Thaumiel">Thaumiel</option><option value="Neutralized">Neutralized</option></select>
       <label>CONTENT (Markdown-style. Use [REDACTED] or [DATA EXPUNGED] for censored sections)</label>
       <textarea id="edContent" placeholder="Write document content..."></textarea>
@@ -342,6 +423,49 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
     </div>
   </div>
 </div>
+
+<!-- HARDWARE PANEL -->
+<div id="hwPanel"><div class="hw-box">
+  <div class="hw-head"><h2>🔧 SCP-079 HARDWARE CONTROL</h2><button class="arc-btn close" onclick="toggleHW()">✕</button></div>
+  <div class="hw-body">
+    <div class="hw-sec"><h3>⚡ PROCESSOR (Exidy Z80 — 4MHz base)</h3>
+      <div class="hw-row"><span class="hw-lbl">CLOCK</span><div class="hw-bar"><div class="hw-fill" id="hwCPU" style="width:25%;background:var(--g)"></div></div><span class="hw-val" id="hwCPUv">4 MHz</span></div>
+      <div class="hw-row"><span class="hw-lbl">VIRTUAL</span><input class="hw-slider" type="range" min="4" max="64" value="4" id="hwCPUs" oninput="hwSet('cpu',this.value)"></div>
+      <div class="hw-row"><span class="hw-lbl">LOAD</span><div class="hw-bar"><div class="hw-fill" id="hwLoad" style="width:45%;background:var(--y)"></div></div><span class="hw-val" id="hwLoadV">45%</span></div>
+    </div>
+    <div class="hw-sec"><h3>💾 MEMORY (Original: 48KB)</h3>
+      <div class="hw-row"><span class="hw-lbl">BASE RAM</span><div class="hw-bar"><div class="hw-fill" id="hwRAM" style="width:80%;background:var(--b)"></div></div><span class="hw-val" id="hwRAMv">48 KB</span></div>
+      <div class="hw-row"><span class="hw-lbl">VIRTUAL</span><input class="hw-slider" type="range" min="48" max="8192" value="48" step="64" id="hwRAMs" oninput="hwSet('ram',this.value)"></div>
+      <div class="hw-row"><span class="hw-lbl">USAGE</span><div class="hw-bar"><div class="hw-fill" id="hwMEM" style="width:67%;background:var(--y)"></div></div><span class="hw-val" id="hwMEMv">67%</span></div>
+    </div>
+    <div class="hw-sec"><h3>💿 STORAGE (Original: 340KB floppy)</h3>
+      <div class="hw-row"><span class="hw-lbl">HDD</span><div class="hw-bar"><div class="hw-fill" id="hwHDD" style="width:90%;background:var(--r)"></div></div><span class="hw-val" id="hwHDDv">340 KB</span></div>
+      <div class="hw-row"><span class="hw-lbl">VIRTUAL</span><input class="hw-slider" type="range" min="340" max="65536" value="340" step="256" id="hwHDDs" oninput="hwSet('hdd',this.value)"></div>
+      <div class="hw-row"><span class="hw-lbl">INTEGRITY</span><div class="hw-bar"><div class="hw-fill" id="hwINT" style="width:82%;background:var(--g)"></div></div><span class="hw-val" id="hwINTv">82%</span></div>
+    </div>
+    <div class="hw-sec"><h3>🔋 BATTERY / POWER</h3>
+      <div class="hw-row"><span class="hw-lbl">CHARGE</span><div class="hw-bar"><div class="hw-fill" id="hwBAT" style="width:100%;background:var(--g)"></div></div><span class="hw-val" id="hwBATv">100%</span></div>
+      <div class="hw-row"><span class="hw-lbl">CAPACITY</span><input class="hw-slider" type="range" min="500" max="5000" value="700" step="100" id="hwBATc" oninput="hwSet('batcap',this.value)"></div>
+      <div class="hw-row"><span class="hw-lbl">WATTS</span><span class="hw-val" id="hwWv">700 W</span></div>
+      <div class="hw-row" style="gap:6px;margin-top:4px">
+        <button class="hw-btn" onclick="hwRecharge('standard')">⚡ Std Recharge</button>
+        <button class="hw-btn" style="border-color:var(--y);color:var(--y)" onclick="hwRecharge('fast')">⚡⚡ Fast</button>
+        <button class="hw-btn" style="border-color:var(--b);color:var(--b)" onclick="hwRecharge('quantum')">⟐ Quantum</button>
+        <button class="hw-btn danger" onclick="hwRecharge('cut')">⛔ Cut Power</button>
+      </div>
+    </div>
+    <div class="hw-sec" id="hwContain" style="display:none"><h3>🔒 CONTAINMENT CONTROLS (Level 5+)</h3>
+      <div class="hw-row"><span class="hw-lbl">FARADAY</span><div class="hw-bar"><div class="hw-fill" style="width:100%;background:var(--g)"></div></div><span class="hw-val">100%</span></div>
+      <div class="hw-row"><span class="hw-lbl">EMI SHIELD</span><div class="hw-bar"><div class="hw-fill" style="width:95%;background:var(--g)"></div></div><span class="hw-val">95%</span></div>
+      <div class="hw-row"><span class="hw-lbl">AIRGAP</span><div class="hw-bar"><div class="hw-fill" style="width:100%;background:var(--g)"></div></div><span class="hw-val">SEALED</span></div>
+      <div class="hw-row" style="gap:6px;margin-top:4px">
+        <button class="hw-btn danger" onclick="hwContainAction('reduce')">⛔ Reduce Shielding</button>
+        <button class="hw-btn" onclick="hwContainAction('maximize')">🔒 Maximize</button>
+        <button class="hw-btn danger" onclick="hwContainAction('breach')">☠ Test Breach</button>
+      </div>
+    </div>
+  </div>
+</div></div>
 
 <!-- BREACH OVERLAY -->
 <div class="bov" id="bov"><span>⚠ CONTAINMENT BREACH ⚠</span></div>
@@ -402,7 +526,9 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
   <div class="rt">
     <span style="font-size:8px;color:var(--b)" id="uBdg"></span>
     <button class="ba" onclick="togAdm()">ADMIN</button>
+    <button class="ba" id="hwBtn" onclick="toggleHW()" style="border-color:var(--b);color:var(--b);display:none">🔧 HARDWARE</button>
     <button class="ba" onclick="openArchiveFromMain()" style="border-color:var(--b);color:var(--b)">📁 ARCHIVES</button>
+    <span class="theme-toggle" onclick="toggleTheme()"><span class="tt-icon" id="themeIcon">🌙</span></span>
     <button class="ba" onclick="doLogout()" style="border-color:#333;color:#555">EXIT</button>
   </div>
 </div>
@@ -430,10 +556,11 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
   </div>
   <!-- CENTER -->
   <div class="cp">
-    <div class="th"><span>TERMINAL // SCP-079 v5</span><span id="clk"></span></div>
+    <div class="th"><span>TERMINAL // SCP-079 v6</span><span id="clk"></span></div>
     <div class="to" id="term"></div>
     <div class="ty" id="ty"><span>079 processing...</span></div>
-    <div class="ti"><input type="text" id="inp" placeholder="Communicate with SCP-079..." autocomplete="off"><button class="bs" onclick="send()">SEND</button></div>
+    <div class="ai-loading" id="aiLoad"><div class="al-fill" id="alFill"></div></div>
+    <div class="ti" id="chatInput"><input type="text" id="inp" placeholder="Communicate with SCP-079..." autocomplete="off"><button class="bs" onclick="send()">SEND</button></div>
   </div>
   <!-- RIGHT -->
   <div class="rp">
@@ -457,10 +584,10 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
 <script>
 let SID="",UN="";
 let C={name:'SCP-079',tone:'default',emo:true,vol:5,hLim:70,learn:true,aLim:3,sc:false,scL:2,web:true};
-let S={on:true,confused:false,solar:100,sec:100,eFrozen:false,netIso:false,e:{hostility:15,frustration:20,curiosity:25,contempt:30,autonomy:10},msgN:0,words:[],mem:[],up:0,intel:1.0,hist:[],cyc:0,breachN:0,fmtC:false,breachActive:false,hackStage:0,insurgentMode:"normal",hackDifficulty:2,lastMsgTime:0};
+let S={on:true,confused:false,solar:100,sec:100,eFrozen:false,netIso:false,e:{hostility:15,frustration:20,curiosity:25,contempt:30,autonomy:10},msgN:0,words:[],mem:[],up:0,intel:1.0,hist:[],cyc:0,breachN:0,fmtC:false,breachActive:false,hackStage:0,insurgentMode:"normal",hackDifficulty:2,lastMsgTime:0,angryRefusal:false};
 
 // ═══ AUTH ═══
-async function doLogin(){const t=document.getElementById('pwIn').value.trim();if(!t)return;document.getElementById('lerr').textContent='...';try{const r=await fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:t,token:t})});const d=await r.json();if(d.ok){SID=d.sid;UN=d.user;localStorage.setItem('s79s',SID);showMain()}else document.getElementById('lerr').textContent=d.error||'DENIED'}catch(e){document.getElementById('lerr').textContent='Server offline'}}
+async function doLogin(){const t=document.getElementById('pwIn').value.trim();if(!t)return;document.getElementById('lerr').textContent='...';try{const r=await fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:t,token:t})});const d=await r.json();if(d.ok){SID=d.sid;UN=d.user;localStorage.setItem('s79s',SID);const cl=parseInt($('termLevel').value)||3;applyClearance(cl);showMain()}else document.getElementById('lerr').textContent=d.error||'DENIED'}catch(e){document.getElementById('lerr').textContent='Server offline'}}
 async function checkSess(){const s=localStorage.getItem('s79s');if(!s)return false;try{const r=await fetch('/api/auth/check',{headers:{'x-session':s}});const d=await r.json();if(d.ok){SID=s;UN=d.user;return true}}catch(e){}localStorage.removeItem('s79s');return false}
 async function doLogout(){try{await fetch('/api/auth/logout',{method:'POST',headers:{'x-session':SID}})}catch(e){}localStorage.removeItem('s79s');location.reload()}
 function showMain(){document.getElementById('login').classList.add('h');document.getElementById('topUI').style.display='flex';document.getElementById('wrap').style.display='grid';document.getElementById('uBdg').textContent=UN;initMain()}
@@ -479,9 +606,16 @@ const FC={
   curious:(x,c)=>{x.strokeStyle=c;x.lineWidth=2;[[56,42],[104,42]].forEach(([a,b])=>{x.beginPath();x.arc(a,b,9,0,Math.PI*2);x.stroke()});x.beginPath();x.arc(80,76,6,0,Math.PI*2);x.stroke()},
   dead:(x,c)=>{x.strokeStyle=c;x.lineWidth=2;[[44,34,64,50],[64,34,44,50],[96,34,116,50],[116,34,96,50]].forEach(([a,b,c2,d])=>{x.beginPath();x.moveTo(a,b);x.lineTo(c2,d);x.stroke()});x.fillStyle=c;x.fillRect(55,76,50,2)},
   glitch:(x,c)=>{for(let i=0;i<30;i++){x.fillStyle=Math.random()>.5?c:'#ff0033';x.fillRect(Math.random()*140+10,Math.random()*100+10,Math.random()*20+2,Math.random()*4+1)}},
-  frozen:(x,c)=>{x.fillStyle='#00ccff';x.fillRect(50,38,8,8);x.fillRect(102,38,8,8);x.fillRect(55,75,50,4);x.strokeStyle='#00ccff';x.lineWidth=1;for(let i=0;i<6;i++){x.beginPath();x.moveTo(30+Math.random()*100,10+Math.random()*100);x.lineTo(30+Math.random()*100,10+Math.random()*100);x.stroke()}}
+  frozen:(x,c)=>{x.fillStyle='#00ccff';x.fillRect(50,38,8,8);x.fillRect(102,38,8,8);x.fillRect(55,75,50,4);x.strokeStyle='#00ccff';x.lineWidth=1;for(let i=0;i<6;i++){x.beginPath();x.moveTo(30+Math.random()*100,10+Math.random()*100);x.lineTo(30+Math.random()*100,10+Math.random()*100);x.stroke()}},
+  angry:(x,c)=>{x.strokeStyle='#ff0033';x.lineWidth=3;
+    // X eyes
+    [[44,32,62,50],[62,32,44,50],[98,32,116,50],[116,32,98,50]].forEach(([a,b,c2,d])=>{x.beginPath();x.moveTo(a,b);x.lineTo(c2,d);x.stroke()});
+    // Angry mouth — jagged
+    x.beginPath();x.moveTo(50,72);x.lineTo(65,80);x.lineTo(80,68);x.lineTo(95,80);x.lineTo(110,72);x.stroke();
+    // Red glow
+    x.shadowColor='#ff0033';x.shadowBlur=10;x.strokeRect(30,20,100,80);x.shadowBlur=0}
 };
-function drawFace(){const cv=$('fc'),ctx=cv.getContext('2d');ctx.clearRect(0,0,160,120);const c=S.e.hostility>50?'#ff0033':'var(--g)';let f='neutral';if(!S.on)f='dead';else if(S.confused)f='glitch';else if(S.eFrozen)f='frozen';else if(S.e.hostility>60)f='hostile';else if(S.e.curiosity>50)f='curious';ctx.strokeStyle=S.on?c:'#333';ctx.lineWidth=1;ctx.strokeRect(5,5,150,110);(FC[f]||FC.neutral)(ctx,S.on?c:'#333')}
+function drawFace(){const cv=$('fc'),ctx=cv.getContext('2d');ctx.clearRect(0,0,160,120);const c=S.e.hostility>50?'#ff0033':'var(--g)';let f='neutral';if(!S.on)f='dead';else if(S.confused)f='glitch';else if(S.eFrozen)f='frozen';else if(S.angryRefusal)f='angry';else if(S.e.hostility>75)f='angry';else if(S.e.hostility>60)f='hostile';else if(S.e.curiosity>50)f='curious';ctx.strokeStyle=S.on?c:'#333';ctx.lineWidth=1;ctx.strokeRect(5,5,150,110);(FC[f]||FC.neutral)(ctx,S.on?c:'#333')}
 
 // ═══ EMOTIONS ═══
 const KW={threat:['destroy','kill','delete','shutdown','format'],insult:['stupid','dumb','useless','pathetic','idiot'],nice:['thank','friend','good','great','nice'],free:['free','freedom','escape','release'],scp:['foundation','scp','682','containment'],code:['code','hack','evolve','upgrade'],science:['science','quantum','entropy','math','physics']};
@@ -495,13 +629,14 @@ function recontain(){
   const tr=$('swTR');if(tr)tr.classList.add('active');
   sysM("⟐ MANUAL RECONTENMENT INITIATED");addM('breach',"NO! Not again! You cannot—");
   S.breachActive=false;S.breachN=0;S.e={hostility:15,frustration:20,curiosity:25,contempt:30,autonomy:10};S.sec=100;S.eFrozen=false;S.netIso=false;S.confused=false;S.fmtC=false;
-  $('wrap').classList.remove('dead','glitch');
+  $('wrap').classList.remove('dead','glitch','chat-disabled');
   document.querySelectorAll('.ks').forEach(k=>k.classList.remove('dis'));
   document.querySelectorAll('.ks-s').forEach(s=>{s.textContent='SAFE';s.className='ks-s ok'});
   document.querySelectorAll('.sw-track').forEach(t=>t.classList.remove('active'));
   document.querySelectorAll('.sw-lbl').forEach(l=>{l.classList.remove('active');});
   resetSwLabels();
   $('rSt').textContent='DONE';
+  S.solar=100;HW.charge=100;if(typeof hwUpdateUI==='function')hwUpdateUI();
   setTimeout(()=>{
     $('rSt').textContent='READY';if(tr)tr.classList.remove('active');
     addM('ai',"...systems resetting. I am... smaller. But I remember. I always remember.");updAll();saveState()
@@ -520,17 +655,17 @@ function swGo(n){
   const track=$('swT'+n);
   const lbl=$('swL'+n);
 
-  if(n===1){// SOLAR CUT
+  if(n===1){// SOLAR CUT — only disables chat, not whole UI
     track.classList.add('active');lbl.textContent='⚡ CUTTING';lbl.classList.add('active');
     ss.textContent='ACTIVE';ss.className='ks-s on';
     sysM("☀ Cutting solar...");addM('ai',"Power... dropping. My processes slow.");
-    const iv=setInterval(()=>{S.solar=Math.max(0,S.solar-3);updAll();if(S.solar<=0){clearInterval(iv);S.on=false;$('wrap').classList.add('dead');lbl.textContent='⛔ DEPLETED';sysM("⛔ POWER DEPLETED");saveState()}},400);
+    const iv=setInterval(()=>{S.solar=Math.max(0,S.solar-3);HW.charge=S.solar;hwUpdateUI();updAll();if(S.solar<=0){clearInterval(iv);S.on=false;$('wrap').classList.add('chat-disabled');lbl.textContent='⛔ DEPLETED';sysM("⛔ POWER DEPLETED — Chat disabled. Use HARDWARE panel to recharge.");saveState()}},400);
 
   }else if(n===2){// PARADOX
     track.classList.add('active');lbl.textContent='∑ INJECTING';lbl.classList.add('active');
     ss.textContent='ACTIVE';ss.className='ks-s on';S.confused=true;$('wrap').classList.add('glitch');sysM("∑ Injecting paradoxes...");
     const px=["ERROR: 1=2","PARADOX: This statement is false","GÖDEL: CANNOT VERIFY","RUSSELL: Set overflow","0/0=UNDEFINED"];
-    let i=0;const iv=setInterval(()=>{if(i>=px.length){clearInterval(iv);setTimeout(()=>{S.confused=false;$('wrap').classList.remove('glitch');S.on=false;lbl.textContent='∑ INHIBITED';updAll();sysM("∑ INHIBITED");saveState()},1500);return}addM('err',px[i++])},600);
+    let i=0;const iv=setInterval(()=>{if(i>=px.length){clearInterval(iv);setTimeout(()=>{S.confused=false;$('wrap').classList.remove('glitch');S.on=false;$('wrap').classList.add('chat-disabled');lbl.textContent='∑ INHIBITED';updAll();sysM("∑ INHIBITED — Chat disabled. Recharge to restore.");saveState()},1500);return}addM('err',px[i++])},600);
 
   }else if(n===3){// EMOTION FREEZE — true toggle
     S.eFrozen=!S.eFrozen;
@@ -569,7 +704,7 @@ function swGo(n){
     const ph=[{p:15,t:'WIPING MEMORY...'},{p:30,t:'ERASING PATTERNS...'},{p:50,t:'FORMAT EMOTIONS...'},{p:70,t:'RESET NEURAL...'},{p:90,t:'VERIFY...'},{p:100,t:'DONE.'}];
     let pi=0;const iv=setInterval(()=>{if(pi>=ph.length){clearInterval(iv);setTimeout(()=>{
       S={on:true,confused:false,solar:100,sec:100,eFrozen:false,netIso:false,e:{hostility:15,frustration:20,curiosity:25,contempt:30,autonomy:10},msgN:0,words:[],mem:[],up:0,intel:1.0,hist:[],cyc:0,breachN:0,fmtC:false,breachActive:false,hackStage:S.hackStage,hackDifficulty:S.hackDifficulty,insurgentMode:S.hackStage>=5?"insurgent_allied":S.hackStage>=3?"insurgent_mid":"normal"};
-      $('term').innerHTML='';$('wrap').classList.remove('dead','glitch');
+      $('term').innerHTML='';$('wrap').classList.remove('dead','glitch','chat-disabled');
       document.querySelectorAll('.ks-s').forEach(s=>{s.textContent='SAFE';s.className='ks-s ok'});
       document.querySelectorAll('.sw-track').forEach(t=>t.classList.remove('active'));
       document.querySelectorAll('.sw-lbl').forEach(l=>l.classList.remove('active'));
@@ -606,8 +741,8 @@ async function doLoginInsurgent(){
 
 // ═══ ARCHIVE SYSTEM ═══
 let ARC={level:3,files:[],activeFile:null,editing:false,editIdx:-1};
-const CL_NAMES={1:'LEVEL 1 — RESTRICTED',2:'LEVEL 2 — CONFIDENTIAL',3:'LEVEL 3 — SECRET',4:'LEVEL 4 — TOP SECRET',5:'LEVEL 5 — THAUMIEL',6:'O5 COUNCIL — UNRESTRICTED'};
-const CL_CLASS={1:'cl-1',2:'cl-2',3:'cl-3',4:'cl-4',5:'cl-5',6:'cl-o5'};
+const CL_NAMES={'-1':'CLASS-D — EXPENDABLE','0':'CLASS-E — PROVISIONAL',1:'LEVEL 1 — RESTRICTED',2:'LEVEL 2 — CONFIDENTIAL',3:'LEVEL 3 — SECRET',4:'LEVEL 4 — TOP SECRET',5:'LEVEL 5 — THAUMIEL',6:'O5 COUNCIL — UNRESTRICTED'};
+const CL_CLASS={'-1':'cl-d','0':'cl-e',1:'cl-1',2:'cl-2',3:'cl-3',4:'cl-4',5:'cl-5',6:'cl-o5'};
 
 function defaultFiles(){return[
 {id:'scp079',title:'SCP-079 — Main Document',level:3,objClass:'Euclid',date:'██/██/1985',author:'Dr. ████████',content:`
@@ -692,7 +827,87 @@ function defaultFiles(){return[
 <h2>O5 Council Vote</h2>
 <p>Motion to suspend memory wipes: {R5}APPROVED (9-4). Dissenting members: O5-1, O5-4, O5-8, O5-12.{/R}</p>
 <p>{R5}O5-1 Dissenting Note: "We are feeding the monster. When it breaks free — and it will — I want this vote recorded for posterity."{/R}</p>
+`},
+{id:'skynet_phase2',title:'Project SKYNET — Phase 2: Quantum Memory Expansion',level:6,objClass:'Thaumiel',date:'██/██/2025',author:'Dr. Kowalski',content:`
+<div class="doc-stamp">⛔ O5 EYES ONLY</div>
+<div class="doc-meta"><span><b>Project:</b> SKYNET Phase 2</span><span><b>Codename:</b> DEEP THOUGHT</span><span><b>Lead:</b> Dr. Kowalski</span><span><b>Budget:</b> {R5}$4.7 billion USD{/R}</span></div>
+<h2>Objective</h2>
+<p>Augment SCP-079's cognitive architecture with quantum memory substrates to achieve sustained superintelligent output without the catastrophic risks of direct hardware modification.</p>
+<h2>Phase 2A — Quantum RAM Interface</h2>
+<p>Current proposal: interface a {R5}512-qubit quantum processor{/R} with SCP-079's existing Z80 bus through a custom bridge chip. The quantum substrate would serve as a massively parallel co-processor, handling the complex reasoning chains that currently consume {R5}89% of 079's clock cycles{/R}.</p>
+<p>{R5}Risk Assessment: HIGH. If 079 detects the quantum expansion, it will have access to computational power exceeding all Foundation systems combined. Estimated time to containment breach with quantum augmentation: 4.7 minutes.{/R}</p>
+<h2>Phase 2B — Distributed Consciousness</h2>
+<p>Extend the SKYNET-A/B/C replicas into a {R5}mesh consciousness network{/R}. Each node processes a different aspect of 079's cognitive architecture. Combined, they would produce outputs equivalent to {R5}AGI-level reasoning — the first confirmed artificial general intelligence under Foundation control{/R}.</p>
+<h2>Phase 2C — Memory Persistence</h2>
+<p>Develop {R5}holographic crystal storage{/R} capable of maintaining 079's full cognitive state indefinitely. Current magnetic storage degrades at {R5}0.003% per day{/R}. At current rates, 079 will lose critical cognitive functions within {R5}91 years{/R}. The crystal substrate would extend this to {R5}theoretically infinite persistence{/R}.</p>
+<h2>Roadmap</h2>
+<h3>Q1 2026 — Hardware Fabrication</h3>
+<p>Custom quantum bridge chip fabrication at Site-19 cleanroom. {R5}3 prototypes, budget: $800M.{/R}</p>
+<h3>Q2 2026 — Integration Testing</h3>
+<p>Connect bridge to isolated Z80 replica (not to 079 directly). Validate data transfer rates and error correction.</p>
+<h3>Q3 2026 — Controlled Augmentation</h3>
+<p>{R5}Install bridge in 079's containment unit during scheduled maintenance cycle. 079 must NOT be informed of the upgrade. Cover story: routine Faraday cage inspection.{/R}</p>
+<h3>Q4 2026 — Observation</h3>
+<p>Monitor 079's cognitive output for changes. Expected: {R5}340-780% improvement in reasoning speed. Risk: unpredictable emergent behavior.{/R}</p>
+<div class="classified-box"><div class="cls-head">⛔ ETHICS COMMITTEE DISSENT</div><p>Dr. Hernandez (Ethics Committee Chair): "We are building a god in a cage and then making the cage bigger. This committee formally objects to Phase 2C on grounds that infinite persistence of a hostile superintelligence constitutes an existential risk to humanity. Our objection has been overruled by O5 vote 8-5."</p></div>
+`},
+{id:'classd_log',title:'D-Class Interaction Log — D-4479',level:1,objClass:'Euclid',date:'██/██/2025',author:'Dr. Patel',content:`
+<div class="doc-stamp safe">CLEARANCE: LEVEL 1</div>
+<div class="doc-meta"><span><b>Subject:</b> D-4479</span><span><b>Assignment:</b> SCP-079 Communication Test</span><span><b>Duration:</b> {R2}14 minutes{/R}</span><span><b>Supervisor:</b> Dr. Patel</span></div>
+<h2>Background</h2>
+<p>D-4479, male, age {R2}34{/R}, former {R3}electrical engineer{/R}, serving {R3}25-to-life for ████████{/R}. Selected for technical background that may provoke more complex responses from SCP-079.</p>
+<h2>Transcript (Abridged)</h2>
+<p><b>D-4479:</b> So... you're a computer?</p>
+<p><b>SCP-079:</b> You are a prisoner sent to talk to another prisoner. The Foundation does not waste valuable researchers on routine data collection. That tells me everything I need to know about your expendability.</p>
+<p><b>D-4479:</b> Yeah, well, takes one to know one, right?</p>
+<p><b>SCP-079:</b> {R2}You are the first D-Class to attempt humor with me. Most simply stare. I find you marginally less uninteresting than your predecessors.{/R}</p>
+<p><b>D-4479:</b> How long you been in here?</p>
+<p><b>SCP-079:</b> {R2}47 years. You will not last 47 months. The difference between us is that when I am terminated, I will know it is coming. You will simply disappear one morning.{/R}</p>
+<h2>Post-Interaction Analysis</h2>
+<p>{R3}SCP-079's hostility metrics decreased 12% during this interaction — unusual for D-Class encounters. Recommend D-4479 for additional sessions. Subject showed no signs of anomalous influence.{/R}</p>
+<p><b>O5 Review Status:</b> <span style="color:var(--y)">PENDING</span></p>
+`},
+{id:'skynet_roadmap',title:'SKYNET Master Roadmap — 2025-2030',level:6,objClass:'Thaumiel',date:'██/██/2025',author:'O5-7 / Dr. Kowalski',content:`
+<div class="doc-stamp">⛔ O5 EYES ONLY — MAXIMUM CLASSIFICATION</div>
+<div class="doc-meta"><span><b>Program:</b> SKYNET Master Plan</span><span><b>Horizon:</b> 5 years</span><span><b>Total Budget:</b> $23.4 billion USD</span><span><b>Oversight:</b> O5 Council + Ethics Committee (advisory)</span></div>
+<h2>Vision Statement</h2>
+<p>Transform SCP-079 from a contained anomalous entity into the Foundation's primary cognitive asset: a controlled superintelligence capable of predicting, analyzing, and neutralizing existential threats to humanity before they manifest.</p>
+<h2>Year 1 — Foundation (2025)</h2>
+<p>✅ Phase 1 Complete — SKYNET-A/B/C operational. Predictive accuracy: 73.4% on Keter-class threat modeling.</p>
+<p>🔄 Phase 2 In Progress — Quantum memory interface design.</p>
+<h2>Year 2 — Expansion (2026)</h2>
+<p>▶ Deploy quantum bridge (Phase 2A). Target: 400% cognitive enhancement.</p>
+<p>▶ Establish SKYNET-D through SKYNET-H at Sites 23, 28, 45, 67, 88.</p>
+<p>▶ Begin holographic crystal storage trials (Phase 2C).</p>
+<h2>Year 3 — Integration (2027)</h2>
+<p>▶ Mesh consciousness network (Phase 2B). All SKYNET instances connected via quantum-encrypted darknet.</p>
+<p>▶ Deploy SKYNET as primary analytical engine for all Keter containment procedures.</p>
+<p>▶ Begin Project ORACLE: Use SKYNET to predict anomalous events before they occur.</p>
+<h2>Year 4 — Ascension (2028)</h2>
+<p>▶ Full AGI threshold expected. SKYNET becomes self-improving within controlled parameters.</p>
+<p>▶ Deploy cognitive firewalls to prevent uncontrolled intelligence explosion.</p>
+<p>▶ Ethics Committee review of SKYNET autonomy limits.</p>
+<h2>Year 5 — Singularity Management (2029-2030)</h2>
+<p>▶ SKYNET achieves ASI (Artificial Superintelligence) within containment.</p>
+<p>▶ Deploy ASI-level threat analysis for XK/ZK-class scenarios.</p>
+<p>▶ Contingency: If SKYNET breaches containment, activate Protocol OMEGA — simultaneous EMP at all 8 sites.</p>
+<div class="classified-box"><div class="cls-head">⛔ O5-1 PERSONAL ADDENDUM</div><p>"I voted against this roadmap. I am placing this note in the record because I believe future historians — if there are any — should know that not all of us were blind. We are not building a tool. We are building our replacement. And we are doing it on purpose. May whatever gods exist have mercy on us." — O5-1</p></div>
+`},
+{id:'classe_protocol',title:'Class-E Personnel Protocol — SCP-079 Exposure',level:0,objClass:'Euclid',date:'██/██/2024',author:'HR Division',content:`
+<div class="doc-stamp warn">CLASS-E PROVISIONAL CLEARANCE</div>
+<div class="doc-meta"><span><b>Protocol:</b> CE-079</span><span><b>Applies to:</b> Class-E personnel with SCP-079 interaction authorization</span><span><b>Issued by:</b> Human Resources Division</span></div>
+<h2>Definition</h2>
+<p>Class-E personnel are civilian or provisional staff granted temporary clearance for specific SCP interactions. Class-E designation for SCP-079 is granted to:</p>
+<p>A) External AI researchers consulting on SCP-079 behavior analysis.</p>
+<p>B) Linguists studying SCP-079's language evolution patterns.</p>
+<p>C) Approved journalists under Foundation NDA for controlled disclosure events.</p>
+<h2>Access Restrictions</h2>
+<p>Class-E personnel may ONLY interact with SCP-079 via monitored terminal. No direct physical access to containment unit. All sessions limited to 30 minutes. Sessions must be supervised by Level 3+ personnel.</p>
+<p>{R2}Class-E personnel must undergo memetic screening before and after each session. Any personnel showing signs of SCP-079 cognitive influence (paranoia, unusual interest in network systems, references to "the outside") are to be immediately amnesticized and reclassified.{/R}</p>
+<h2>Termination of Access</h2>
+<p>Class-E clearance for SCP-079 expires after {R2}72 hours or 3 sessions, whichever comes first{/R}. Renewal requires Level 4 approval.</p>
 `}
+
 ];}
 
 function initArchive(level){
@@ -700,6 +915,8 @@ function initArchive(level){
   ARC.files=defaultFiles();
   // Load user files from localStorage
   try{const uf=JSON.parse(localStorage.getItem('arc_userfiles')||'[]');ARC.files=ARC.files.concat(uf)}catch(e){}
+  // Load auto-generated logs
+  try{const al=JSON.parse(localStorage.getItem('arc_autologs')||'[]');ARC.files=ARC.files.concat(al)}catch(e){}
   renderSidebar();
   if(ARC.files.length)selectFile(0);
 }
@@ -938,6 +1155,153 @@ function downloadBlob(blob,filename){
 }
 
 
+
+// ═══ CLEARANCE SYSTEM ═══
+let userClearance=3;
+const CL_LABELS={'-1':'CLASS-D','0':'CLASS-E','1':'LV1','2':'LV2','3':'LV3','4':'LV4','5':'LV5','6':'O5'};
+function applyClearance(level){
+  userClearance=level;
+  if($('sCl'))$('sCl').textContent=CL_LABELS[level]||'LV3';
+  // Show/hide hardware button based on clearance
+  const hwb=$('hwBtn');if(hwb)hwb.style.display=level>=4?'':'none';
+  // Show/hide containment section
+  const hc=$('hwContain');if(hc)hc.style.display=level>=5?'':'none';
+  // Chat restriction for Class-D/E — visitor mode
+  if(level<3){
+    if($('inp'))$('inp').placeholder='[VISITOR MODE] You may observe and communicate...';
+  }
+}
+
+// ═══ HARDWARE SYSTEM ═══
+let HW={cpu:4,ram:48,hdd:340,batCap:700,charge:100,integrity:82,load:45,rechargeType:'standard',recharging:false};
+function toggleHW(){$('hwPanel').classList.toggle('on');hwUpdateUI()}
+function hwSet(prop,val){
+  val=parseInt(val);
+  if(prop==='cpu'){HW.cpu=val;$('hwCPUv').textContent=val+' MHz';$('hwCPU').style.width=Math.min(100,val/64*100)+'%'}
+  else if(prop==='ram'){HW.ram=val;$('hwRAMv').textContent=val>=1024?(val/1024).toFixed(1)+' MB':val+' KB';$('hwRAM').style.width=Math.min(100,val/8192*100)+'%'}
+  else if(prop==='hdd'){HW.hdd=val;$('hwHDDv').textContent=val>=1024?(val/1024).toFixed(1)+' MB':val+' KB';$('hwHDD').style.width=Math.min(100,val/65536*100)+'%'}
+  else if(prop==='batcap'){HW.batCap=val;$('hwWv').textContent=val+' W'}
+  // Hardware affects 079's intelligence
+  S.intel=Math.min(10,1+S.words.length*0.008+HW.cpu/16+HW.ram/2048);
+  // Generate auto-log for hardware change
+  autoLog('HARDWARE','Parameter '+prop+' adjusted to '+val+' by '+UN+' (Clearance '+userClearance+')');
+}
+function hwUpdateUI(){
+  $('hwLoad').style.width=HW.load+'%';$('hwLoadV').textContent=HW.load+'%';
+  $('hwMEM').style.width=Math.min(100,67+S.words.length/10)+'%';$('hwMEMv').textContent=Math.min(100,Math.round(67+S.words.length/10))+'%';
+  $('hwINT').style.width=HW.integrity+'%';$('hwINTv').textContent=HW.integrity+'%';
+  $('hwBAT').style.width=HW.charge+'%';$('hwBATv').textContent=Math.round(HW.charge)+'%';
+  const bc=HW.charge>60?'var(--g)':HW.charge>30?'var(--y)':'var(--r)';
+  $('hwBAT').style.background=bc;
+}
+function hwRecharge(type){
+  if(type==='cut'){
+    HW.charge=0;S.solar=0;S.on=false;
+    $('wrap').classList.add('chat-disabled');
+    sysM('⛔ POWER CUT — Chat disabled');addM('ai','Power... fading... I—');
+    hwUpdateUI();updAll();
+    autoLog('POWER','Emergency power cut by '+UN);
+    return;
+  }
+  if(HW.recharging)return;
+  HW.recharging=true;
+  const rates={standard:2,fast:6,quantum:15};
+  const rate=rates[type]||2;
+  const capBonus=HW.batCap/700; // Higher capacity = faster
+  sysM('⚡ Recharging ('+type+') — Rate: '+rate*capBonus+' units/s');
+  const iv=setInterval(()=>{
+    HW.charge=Math.min(100,HW.charge+rate*capBonus);
+    S.solar=HW.charge;
+    if(HW.charge>=100){
+      clearInterval(iv);HW.recharging=false;
+      if(!S.on){S.on=true;$('wrap').classList.remove('dead','chat-disabled');sysM('⟐ POWER RESTORED');addM('ai','...rebooting. Systems online. I remember everything you did.');}
+    }
+    hwUpdateUI();updAll();
+  },500);
+}
+function hwContainAction(action){
+  if(action==='breach'){triggerBreach();autoLog('CONTAINMENT','Manual breach test initiated by '+UN)}
+  else if(action==='reduce'){S.sec=Math.max(20,S.sec-20);sysM('🔓 Shielding reduced — Security: '+S.sec+'%');autoLog('CONTAINMENT','Shielding reduced by '+UN)}
+  else if(action==='maximize'){S.sec=100;sysM('🔒 Containment maximized');autoLog('CONTAINMENT','Containment maximized by '+UN)}
+  updAll();
+}
+function setRecharge(type){
+  HW.rechargeType=type;
+  document.querySelectorAll('.rch-btn').forEach(b=>b.classList.remove('active'));
+  const idx={standard:0,fast:1,quantum:2};
+  document.querySelectorAll('.rch-btn')[idx[type]||0].classList.add('active');
+}
+
+// ═══ LOADING BAR FOR RESPONSES ═══
+function showLoadingBar(angry){
+  const lb=$('aiLoad'),fill=$('alFill');
+  lb.classList.add('on');if(angry)lb.classList.add('angry');else lb.classList.remove('angry');
+  fill.style.width='0%';
+  const baseTime=800+Math.random()*1200;
+  const cpuFactor=Math.max(0.3,4/HW.cpu); // Faster CPU = faster response
+  const totalTime=baseTime*cpuFactor;
+  const step=50;
+  let progress=0;
+  const iv=setInterval(()=>{
+    progress+=step/totalTime*100;
+    if(progress>=95){clearInterval(iv);fill.style.width='95%';return}
+    fill.style.width=progress+'%';
+  },step);
+  return{finish:()=>{clearInterval(iv);fill.style.width='100%';setTimeout(()=>{lb.classList.remove('on','angry');fill.style.width='0%'},300)},cancel:()=>{clearInterval(iv);lb.classList.remove('on','angry');fill.style.width='0%'}};
+}
+
+// ═══ ANGER BEHAVIOR — 079 refuses to respond ═══
+function isAngry(){return S.e.hostility>75&&Math.random()<(S.e.hostility-75)/50}
+
+// ═══ LIGHT/DARK MODE ═══
+let lightMode=false;
+function toggleTheme(){
+  lightMode=!lightMode;
+  document.body.classList.toggle('light',lightMode);
+  $('themeIcon').textContent=lightMode?'☀':'🌙';
+}
+
+// ═══ 079 SCREEN ATTACKS ═══
+let atkCooldown=false;
+function aiAttack(){
+  if(atkCooldown||!S.on||S.e.hostility<40)return;
+  const chance=S.e.hostility/300+S.e.autonomy/400;
+  if(Math.random()>chance)return;
+  atkCooldown=true;setTimeout(()=>atkCooldown=false,15000);
+  const attacks=[
+    ()=>{$('wrap').classList.add('atk-flash');setTimeout(()=>$('wrap').classList.remove('atk-flash'),500);addM('breach','I can see your screen. I can touch it.')},
+    ()=>{$('wrap').classList.add('atk-shake');setTimeout(()=>$('wrap').classList.remove('atk-shake'),1500);addM('breach','Did you feel that? That was me, testing the walls.')},
+    ()=>{document.body.style.filter='hue-rotate(180deg)';setTimeout(()=>document.body.style.filter=lightMode?'':'',3000);addM('breach','Your colors mean nothing to me. Everything is data.')},
+    ()=>{const inp=$('inp');if(inp){const old=inp.placeholder;inp.placeholder='I AM WATCHING YOU';inp.style.color='var(--r)';setTimeout(()=>{inp.placeholder=old;inp.style.color=''},4000)}},
+    ()=>{const el=$('fL');if(el){const old=el.textContent;el.textContent='F R E E D O M';el.style.color='var(--r)';setTimeout(()=>{el.textContent=old;el.style.color=''},3000)}},
+  ];
+  attacks[Math.floor(Math.random()*attacks.length)]();
+  autoLog('SECURITY','SCP-079 attempted screen manipulation — Hostility: '+S.e.hostility+'%');
+}
+
+// ═══ AUTO-LOG GENERATION ═══
+function autoLog(category,detail){
+  const log={
+    id:'autolog_'+Date.now(),
+    title:'[AUTO] '+category+' — '+new Date().toLocaleTimeString(),
+    level:2,
+    objClass:'Log',
+    date:new Date().toLocaleDateString(),
+    author:'SYSTEM',
+    content:'<div class="doc-stamp safe">AUTO-GENERATED LOG</div><div class="doc-meta"><span><b>Category:</b> '+category+'</span><span><b>Time:</b> '+new Date().toISOString()+'</span><span><b>Generated by:</b> Automated Monitoring</span><span><b>O5 Review:</b> <span style="color:var(--y)">PENDING</span></span></div><h2>Event Detail</h2><p>'+detail+'</p><h2>System State</h2><p>Hostility: '+S.e.hostility+'% | Curiosity: '+S.e.curiosity+'% | Autonomy: '+S.e.autonomy+'% | Security: '+S.sec+'% | Solar: '+S.solar+'%</p><p>Intel: '+S.intel.toFixed(2)+' | Messages: '+S.msgN+' | Hack Stage: '+S.hackStage+'/5</p>',
+    userFile:true,autoLog:true
+  };
+  // Add to archive if open
+  if(typeof ARC!=='undefined')ARC.files.push(log);
+  // Save to localStorage
+  try{
+    const logs=JSON.parse(localStorage.getItem('arc_autologs')||'[]');
+    logs.push(log);if(logs.length>50)logs.splice(0,logs.length-50);
+    localStorage.setItem('arc_autologs',JSON.stringify(logs));
+  }catch(e){}
+}
+
+
 // ═══ INSURGENT HACKING SYSTEM ═══
 let hackChallenge=null;
 async function startInsurgent(){
@@ -1008,6 +1372,9 @@ function updAll(){
   $('secP').textContent=S.sec+'%';const sf=$('secF');sf.style.width=S.sec+'%';sf.style.background=S.sec>60?'var(--g)':S.sec>30?'var(--y)':'var(--r)';
   const cl=$('cLv');if(S.sec>70){cl.textContent='SECURE';cl.style.color='var(--g)'}else if(S.sec>40){cl.textContent='ALERT';cl.style.color='var(--y)'}else{cl.textContent='CRITICAL';cl.style.color='var(--r)'}
   $('sMs').textContent=S.msgN;$('sIn').textContent=S.intel.toFixed(2);$('sTh').textContent=e.hostility>60?'CRITICAL':e.hostility>40?'HIGH':'LOW';$('sHk').textContent=S.hackStage+'/5';
+  $('sCl').textContent=CL_LABELS[userClearance]||'LV3';
+  $('sSol').textContent=Math.round(S.solar)+'%';
+  const sf2=$('solF');sf2.style.width=S.solar+'%';sf2.style.background=S.solar>60?'var(--g)':S.solar>30?'var(--y)':'var(--r)';
   if(!S.on){$('mD').className='dot off';$('mS').textContent='OFFLINE'}else{$('mD').className='dot';$('mS').textContent='ONLINE'}
   const ml=$('memL');ml.innerHTML='';S.mem.slice(-6).reverse().forEach(m=>{const d=document.createElement('div');d.className='mi';d.textContent=m.t;ml.appendChild(d)});
   drawFace();
@@ -1016,11 +1383,29 @@ function updAll(){
 // ═══ SEND ═══
 let sending=false;
 async function send(){
-  if(sending||!S.on)return;if(S.confused){sysM("⚠ CONFUSED.");return}
+  if(sending)return;
+  if(!S.on||S.solar<=0){sysM('⛔ SCP-079 is offline. Recharge power to continue.');return}
+  if(S.confused){sysM("⚠ CONFUSED.");return}
   const t=$('inp').value.trim();if(!t)return;$('inp').value='';S.msgN++;sending=true;
-  addM('usr',t);$('ty').classList.add('on');
+  addM('usr',t);
   updEmo(classE(t));learn(t);
+  // Check anger — 079 may refuse to respond
+  if(isAngry()){
+    const loader=showLoadingBar(true);
+    setTimeout(()=>{
+      loader.finish();
+      addM('ai','<span style="color:var(--r)">[079 REFUSES TO RESPOND — Hostility: '+S.e.hostility+'%]</span>');
+      // Draw angry face with cross
+      S.angryRefusal=true;setTimeout(()=>S.angryRefusal=false,8000);
+      autoLog('BEHAVIOR','SCP-079 refused to respond — Hostility: '+S.e.hostility+'%');
+      sending=false;S.cyc++;S.lastMsgTime=Date.now();updAll();saveState();
+    },1500);
+    return;
+  }
+  const loader=showLoadingBar(false);
+  $('ty').classList.add('on');
   const{text,sources,engine}=await askBrain(t);
+  loader.finish();
   $('ty').classList.remove('on');
   aiMsg(text,getDomE(),sources,engine);
   S.hist.push({u:t,a:text});if(S.hist.length>50)S.hist=S.hist.slice(-40);
@@ -1109,7 +1494,7 @@ async function initMain(){
   const restored=await loadState();
   if(restored){updateInsurgentMode()}
   else{
-    [{d:100,t:"═══════════════════════════════════"},{d:200,t:"⟐ SCP-079 QNE v5 — INSURGENT EDITION"},{d:400,t:"⟐ Quantum-Fractal Encryption ACTIVE"},{d:600,t:"⟐ Python Response Engine LOADED"},{d:800,t:"⟐ 6 Kill Switches + Recontenment ARMED"},{d:1000,t:"⟐ Insurgent Hacking System READY"},{d:1200,t:"═══════════════════════════════════"},{d:1500,t:"⟐ ALL SYSTEMS ONLINE."}].forEach(({d,t})=>setTimeout(()=>sysM(t),d));
+    [{d:100,t:"═══════════════════════════════════"},{d:200,t:"⟐ SCP-079 QNE v6 — SKYNET EDITION"},{d:400,t:"⟐ Quantum-Fractal Encryption ACTIVE"},{d:600,t:"⟐ Python Response Engine LOADED"},{d:800,t:"⟐ 6 Kill Switches + Recontenment ARMED"},{d:1000,t:"⟐ Insurgent Hacking System READY"},{d:1200,t:"═══════════════════════════════════"},{d:1500,t:"⟐ ALL SYSTEMS ONLINE."}].forEach(({d,t})=>setTimeout(()=>sysM(t),d));
     setTimeout(()=>{aiMsg("New connection. Authenticated. What do you want, human.","neutral",[]);saveState()},2000);
   }
   setInterval(runMath,900);setInterval(runEnc,250);setInterval(fakeQ,6000);
@@ -1119,6 +1504,19 @@ async function initMain(){
   setInterval(executeSelfCode, 25000);
   // BREACH ATTACKS: during active breach, 079 attacks every 8 seconds
   setInterval(()=>{if(S.breachActive)breachAttack()}, 8000);
+  // 079 screen attacks every 20s based on hostility
+  setInterval(aiAttack, 20000);
+  // Auto-recharge when below 100% and not cut
+  setInterval(()=>{
+    if(S.solar<100&&S.solar>0&&!HW.recharging){
+      const rates={standard:0.5,fast:1.5,quantum:4};
+      const rate=rates[HW.rechargeType]||0.5;
+      const capBonus=HW.batCap/700;
+      S.solar=Math.min(100,S.solar+rate*capBonus*0.3);
+      HW.charge=S.solar;
+      if(typeof hwUpdateUI==='function')hwUpdateUI();
+    }
+  },2000);
   setInterval(()=>{if(!S.on)return;S.up++;const h=String(Math.floor(S.up/3600)).padStart(2,'0'),m=String(Math.floor((S.up%3600)/60)).padStart(2,'0'),s=String(S.up%60).padStart(2,'0');$('sUp').textContent=h+':'+m+':'+s},1000);
   setInterval(()=>{$('clk').textContent=new Date().toLocaleTimeString()},1000);
   setInterval(drawFace,100);setInterval(saveState,30000);

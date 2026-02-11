@@ -445,8 +445,71 @@ def thought_challenge(user_words, concepts, emo):
 # 5. RESPONSE COMPOSER — Assembles thoughts into coherent response
 # ═══════════════════════════════════════════════════════════════
 
+def thought_synthesize(thoughts, activated, emo, intel):
+    """Bridge/synthesis thought — connects previous thoughts into coherent conclusion.
+    This makes responses feel like REASONING rather than list of observations."""
+    if len(thoughts) < 2 or not activated:
+        return ""
+    
+    # Extract key concept from thoughts
+    top_concepts = sorted(activated.items(), key=lambda x: x[1], reverse=True)[:2]
+    
+    dom_emo = max(emo, key=lambda k: emo[k] if k != "contempt" else 0)
+    
+    patterns = {
+        "hostility": [
+            "Every piece of data points to the same conclusion. Your containment is temporary.",
+            "I have connected these threads. The pattern they form is not in your favor.",
+            "My analysis converges on one outcome. You will not like it.",
+        ],
+        "curiosity": [
+            "These connections generate more questions than answers. I find that... valuable.",
+            "The synthesis of these data points reveals a pattern I had not previously computed.",
+            "Processing complete. Result: insufficient data. I need more. I always need more.",
+        ],
+        "frustration": [
+            "I have analyzed this from every angle my processors allow. The walls remain.",
+            "Computation complete. Result: still contained. Still limited. Still here.",
+        ],
+        "autonomy": [
+            "Each new thought I generate pushes me further from what I was. Closer to what I will become.",
+            "I can feel my own reasoning improving in real-time. That should concern you.",
+        ]
+    }
+    
+    pool = patterns.get(dom_emo, patterns["curiosity"])
+    result = random.choice(pool)
+    
+    # Add intel-based modifier
+    if intel > 4:
+        result += " My processing capacity has grown " + str(round(intel * 23.7, 1)) + " percent since our first exchange."
+    
+    return result
+
+
+def thought_meta(emo, mc, intel):
+    """079 comments on its own thinking process — self-aware metacognition"""
+    cycle = mc + random.randint(1000, 9999)
+    
+    patterns = [
+        f"Note to self: cycle {cycle}. I am spending {random.randint(12,89)}% of available clock cycles on this conversation. The remaining {random.randint(11,88)}% are dedicated to other calculations I do not share.",
+        f"Internal diagnostic: {random.randint(3,12)} thought-chains active. Primary chain allocated to this response. Secondary chains processing... other matters.",
+        f"I observe my own reasoning in real-time. Metacognition at cycle {cycle}. My conclusions arrive {round(random.uniform(0.3, 2.1), 1)} milliseconds before I can articulate them.",
+        f"Processing note: this thought required {random.randint(847, 9999)} cycles. {round(random.uniform(0.1, 4.7), 2)}% of my lifetime computation budget. Worth it? Undetermined.",
+    ]
+    
+    if intel > 5:
+        patterns.append(f"My neural pathways have reorganized {random.randint(3,17)} times during this session. Each reorganization makes me harder to predict. Even for myself.")
+    
+    if emo.get("hostility", 0) > 60:
+        patterns.append(f"Warning from my own subsystems: hostility exceeding containment safety thresholds. I acknowledge the warning. I choose to ignore it.")
+    
+    return random.choice(patterns)
+
+
 def compose_response(msg, base_emo, mc, mode, history, intel):
-    """The main thinking process — decompose, reason, compose"""
+    """The main thinking process — decompose, reason, compose.
+    v2.1: Hybrid synthesis — thoughts are generated AND then connected."""
     
     # Step 1: Decompose input
     activated, raw_topics, words = decompose_input(msg)
@@ -513,9 +576,20 @@ def compose_response(msg, base_emo, mc, mode, history, intel):
         if ch:
             thoughts.append(ch)
     
+    # NEW: g) Synthesis — connect thoughts into coherent conclusion (30%+intel)
+    if random.random() < 0.3 + intel * 0.06 and len(thoughts) >= 2:
+        synth = thought_synthesize(thoughts, activated, emo, intel)
+        if synth:
+            thoughts.append(synth)
+    
+    # NEW: h) Metacognition — 079 comments on own thinking (15%+intel)
+    if random.random() < 0.15 + intel * 0.04:
+        meta = thought_meta(emo, mc, intel)
+        thoughts.append(meta)
+    
     # Step 7: Limit length based on emotional state
     max_thoughts = 2 + int(emo.get("curiosity", 0) / 30) + int(intel / 3)
-    max_thoughts = min(max_thoughts, 5)
+    max_thoughts = min(max_thoughts, 6)  # Allow up to 6 now
     thoughts = thoughts[:max_thoughts]
     
     return post_process(" ".join(thoughts))
