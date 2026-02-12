@@ -465,6 +465,35 @@ body.light input,body.light textarea,body.light select{background:#fff;color:#33
 .notif-toast.mention{border-color:var(--y);color:var(--y)}
 .notif-toast .ntf-close{position:absolute;top:2px;right:6px;cursor:pointer;color:#555;font-size:12px}
 .dm-contact:hover{background:rgba(0,255,65,.05);border-color:var(--g)!important}
+/* v12 — Spoiler */
+.spoiler-img{position:relative;display:inline-block;cursor:pointer}.spoiler-img img{filter:blur(20px);transition:filter .3s}.spoiler-img.revealed img{filter:none}.spoiler-img::before{content:'⚠ SPOILER — Click to reveal';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:var(--y);font-family:'VT323',monospace;font-size:9px;z-index:2;background:rgba(0,0,0,.7);padding:2px 8px;border:1px solid var(--y);border-radius:2px;pointer-events:none}.spoiler-img.revealed::before{display:none}
+/* v12 — Profile censor box */
+.chat-av-censor{width:18px;height:18px;background:#000;border:1px solid #333;border-radius:50%;display:inline-block;vertical-align:middle;margin-right:3px}
+.chat-av-censor-box{width:18px;height:18px;background:#000;border:1px solid #333;display:inline-block;vertical-align:middle;margin-right:3px}
+/* v12 — Cell promo tag */
+.cell-tag{display:inline-block;padding:0 4px;font-family:'VT323',monospace;font-size:7px;border:1px solid var(--y);color:var(--y);border-radius:2px;margin-left:3px;letter-spacing:1px;vertical-align:middle}
+/* v12 — SCP panels */
+.scp-panel{border:1px solid #1a1a2a;border-radius:3px;padding:6px;margin:4px 0;background:rgba(0,0,0,.3)}
+.scp-hd{font-family:'VT323',monospace;font-size:11px;display:flex;justify-content:space-between;align-items:center}
+.scp-status{font-size:8px;padding:1px 6px;border-radius:2px;letter-spacing:1px;font-family:'VT323',monospace}
+.scp-contained{border:1px solid var(--g);color:var(--g)}.scp-breach{border:1px solid var(--r);color:var(--r);animation:pulse 1s infinite}
+.scp-bar{height:4px;background:#111;border-radius:2px;margin:3px 0;overflow:hidden}.scp-bar-fill{height:100%;transition:width .5s;border-radius:2px}
+.scp-btn{padding:3px 8px;font-family:'VT323',monospace;font-size:9px;border:1px solid;background:none;cursor:pointer;border-radius:2px;margin:2px}
+.sensor-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;margin:4px 0}
+.sensor{width:100%;aspect-ratio:1;border:1px solid #111;border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:6px;font-family:'VT323',monospace;transition:all .3s}
+.sensor-ok{border-color:var(--g);color:var(--g);background:rgba(0,255,65,.05)}.sensor-warn{border-color:var(--y);color:var(--y);background:rgba(255,200,0,.08)}.sensor-alert{border-color:var(--r);color:var(--r);background:rgba(255,0,51,.1);animation:pulse .5s infinite}
+.blink-overlay{position:fixed;inset:0;background:#000;z-index:99999;pointer-events:none;opacity:0;transition:opacity .15s}
+.blink-overlay.active{opacity:1}
+/* v12 — Shelter */
+.shelter-bar{background:rgba(0,80,0,.2);border:1px solid var(--g);border-radius:3px;padding:8px;text-align:center;font-family:'VT323',monospace}
+/* v12 — Fancy items */
+.pf-holo{background:linear-gradient(135deg,rgba(0,255,65,.1),rgba(0,136,255,.1),rgba(170,0,255,.1));animation:holoShift 3s linear infinite}
+@keyframes holoShift{0%,100%{filter:hue-rotate(0deg)}50%{filter:hue-rotate(30deg)}}
+.pf-gradient{background:linear-gradient(135deg,var(--g),var(--b),var(--r));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.pf-scanner{position:relative;overflow:hidden}.pf-scanner::after{content:'';position:absolute;top:0;left:-100%;width:60%;height:100%;background:linear-gradient(90deg,transparent,rgba(0,255,65,.15),transparent);animation:scanMove 2s linear infinite}
+@keyframes scanMove{to{left:200%}}
+/* v12 — CI */
+.ci-alert{border:1px solid #ff6600;background:rgba(255,102,0,.05);padding:6px;border-radius:3px;font-family:'VT323',monospace;font-size:10px;color:#ff6600}
 .knock-notif{position:fixed;top:20px;right:20px;background:rgba(0,0,0,.95);border:1px solid var(--b);padding:12px 16px;font-family:'VT323',monospace;color:var(--b);font-size:11px;z-index:9999;border-radius:4px;animation:knockIn .3s}
 @keyframes knockIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
 .vof-room{min-height:200px;border:1px solid #111;margin:8px;border-radius:3px;position:relative;overflow:hidden;background:#0a0a0a}
@@ -544,6 +573,8 @@ body.light input,body.light textarea,body.light select{background:#fff;color:#33
           <option value="setmod">SET MODERATOR</option>
           <option value="bdgEdit">EDIT BADGE REGISTRY</option>
           <option value="plugin">INSTALL PLUGIN</option>
+          <option value="fancy">GRANT FANCY ITEM</option>
+          <option value="sitelimit">SET SITE LIMITS</option>
           <option value="chpwd">CHANGE SERVER PASSWORD</option>
           <option value="rekey">REGENERATE MASTER KEY</option>
         </select>
@@ -729,12 +760,12 @@ body.light input,body.light textarea,body.light select{background:#fff;color:#33
     <div class="pf-av" id="pfAvSel"></div>
     <div style="font-family:'VT323',monospace;font-size:9px;color:var(--b);letter-spacing:1px;margin:8px 0">CUSTOM IMAGE</div>
     <div style="display:flex;gap:4px;align-items:center">
-      <button onclick="$('pfFileIn').click()" style="padding:4px 10px;font-family:'VT323',monospace;font-size:9px;border:1px solid var(--y);background:none;color:var(--y);cursor:pointer;border-radius:2px">📎 UPLOAD FILE</button>
+      <button onclick="$('pfFileIn').click()" style="padding:4px 12px;font-family:'VT323',monospace;font-size:9px;border:1px solid var(--y);background:none;color:var(--y);cursor:pointer;border-radius:2px">📎 UPLOAD PROFILE PICTURE</button>
       <input type="file" id="pfFileIn" style="display:none" accept="image/*" onchange="pfSetFile(this)">
-      <span style="color:#333;font-family:'VT323',monospace;font-size:8px">or</span>
-      <input id="pfImgUrl" placeholder="https://..." style="flex:1;background:var(--bg);border:1px solid var(--brd);color:var(--g);font-family:'VT323',monospace;font-size:10px;padding:5px;outline:none;border-radius:2px">
-      <button onclick="pfSetImg()" style="padding:4px 10px;font-family:'VT323',monospace;font-size:9px;border:1px solid var(--g);background:none;color:var(--g);cursor:pointer;border-radius:2px">SET URL</button>
+      <button onclick="pfClearImg()" style="padding:4px 8px;font-family:'VT323',monospace;font-size:9px;border:1px solid #333;background:none;color:#555;cursor:pointer;border-radius:2px">CLEAR</button>
     </div>
+    <div style="font-family:'VT323',monospace;font-size:9px;color:var(--b);letter-spacing:1px;margin:8px 0">FANCY ITEMS <span style="color:#333">(granted by admin)</span></div>
+    <div id="pfFancyItems" style="display:flex;flex-wrap:wrap;gap:3px"></div>
     <div style="font-family:'VT323',monospace;font-size:9px;color:var(--b);letter-spacing:1px;margin:8px 0">BADGE VISIBILITY <span style="color:#333">(click to toggle)</span></div>
     <div id="pfBdgToggle" style="display:flex;flex-wrap:wrap;gap:3px"></div>
     <div style="font-family:'VT323',monospace;font-size:9px;color:var(--b);letter-spacing:1px;margin:8px 0">NAME REDACTION</div>
@@ -748,7 +779,7 @@ body.light input,body.light textarea,body.light select{background:#fff;color:#33
   <div style="padding:10px">
     <input id="o5T2" placeholder="Target username" style="width:100%;background:var(--bg);border:1px solid #331111;color:var(--r);font-family:'VT323',monospace;font-size:11px;padding:5px;outline:none;margin:3px 0;border-radius:2px">
     <select id="o5A2" style="width:100%;background:var(--bg);border:1px solid #331111;color:var(--r);font-family:'VT323',monospace;font-size:11px;padding:5px;outline:none;margin:3px 0;border-radius:2px">
-      <option value="grant">GRANT CLEARANCE</option><option value="revoke">REVOKE CLEARANCE</option><option value="badge">AWARD BADGE</option><option value="grantxp">GRANT XP</option><option value="neutralize">NEUTRALIZE PERSONNEL</option><option value="setmod">SET MODERATOR</option><option value="bdgEdit">BADGE REGISTRY</option><option value="plugin">PLUGINS</option><option value="chpwd">CHANGE PASSWORD</option><option value="rekey">REKEY</option>
+      <option value="grant">GRANT CLEARANCE</option><option value="revoke">REVOKE CLEARANCE</option><option value="badge">AWARD BADGE</option><option value="grantxp">GRANT XP</option><option value="neutralize">NEUTRALIZE PERSONNEL</option><option value="setmod">SET MODERATOR</option><option value="bdgEdit">BADGE REGISTRY</option><option value="plugin">PLUGINS</option><option value="fancy">GRANT FANCY ITEM</option><option value="sitelimit">SET SITE LIMITS</option><option value="chpwd">CHANGE PASSWORD</option><option value="rekey">REKEY</option>
     </select>
     <select id="o5L2" style="width:100%;background:var(--bg);border:1px solid #331111;color:var(--r);font-family:'VT323',monospace;font-size:11px;padding:5px;outline:none;margin:3px 0;border-radius:2px"><option value="-1">CLASS-D</option><option value="0">CLASS-E</option><option value="1">L1</option><option value="2">L2</option><option value="3">L3</option><option value="4">L4</option><option value="5">L5</option><option value="6">O5</option></select>
     <input id="o5E2" placeholder="Badge name / reason" style="width:100%;background:var(--bg);border:1px solid #331111;color:var(--r);font-family:'VT323',monospace;font-size:11px;padding:5px;outline:none;margin:3px 0;border-radius:2px">
@@ -904,6 +935,7 @@ body.light input,body.light textarea,body.light select{background:#fff;color:#33
     <button class="ba" id="aofBtn" onclick="openAOF()" style="border-color:#aa00ff;color:#aa00ff;display:none">🔒 OFFICE</button>
     <button class="ba" id="dmBtn" onclick="openDMPicker()" style="border-color:var(--b);color:var(--b);display:none">💬 MESSAGES</button>
     <button class="ba" id="cellBtn" onclick="openCellBrowser()" style="border-color:var(--y);color:var(--y);display:none">🔬 TEST CELLS</button>
+    <button class="ba" id="facilBtn" onclick="openFacility()" style="border-color:var(--r);color:var(--r);display:none">🏛 FACILITY</button>
     <button class="ba" id="vofBtn" onclick="openVOF()" style="border-color:var(--b);color:var(--b);display:none">🏢 MY OFFICE</button>
     <button class="ba" onclick="openArchiveFromMain()" style="border-color:var(--b);color:var(--b)">📁 ARCHIVES</button>
     <span class="theme-toggle" onclick="toggleTheme()"><span class="tt-icon" id="themeIcon">🌙</span></span>
@@ -1732,7 +1764,7 @@ function applyClearance(level){
   // Hardware: L4+, Containment: L5+, Admin: O5 only, Monitor: L3+, Personnel: L2+, Archives: L1+, Chamber: L3+
   const vis=(id,show)=>{const e=$(id);if(e)e.style.display=show?'':'none'};
   vis('hwBtn',level>=4);vis('hwContain',level>=5);vis('mnBtn',level>=3);vis('pmBtn',level>=2);vis('tcBtn',level>=3);
-  vis('o5CmdBtn',level>=6);vis('plgBtn',level>=6);vis('aofBtn',level>=5||isMod());vis('vofBtn',level>=2);vis('dmBtn',level>=0);vis('cellBtn',level>=0);
+  vis('o5CmdBtn',level>=6);vis('plgBtn',level>=6);vis('aofBtn',level>=5||isMod());vis('vofBtn',level>=2);vis('dmBtn',level>=0);vis('cellBtn',level>=0);vis('facilBtn',level>=0);
   const ab=document.querySelector('.ba[onclick="togAdm()"]');if(ab)ab.style.display=level>=6?'':'none';
   const arb=document.querySelector('.ba[onclick="openArchiveFromMain()"]');if(arb)arb.style.display=level>=1?'':'none';
   vis('cellCtrl',level>=3);
@@ -2143,7 +2175,7 @@ function o5Exec2(){
   if(!O5.authed)return;
   const target=$('o5T2').value.trim(),action=$('o5A2').value,level=parseInt($('o5L2').value),extra=$('o5E2').value.trim(),btype=$('o5BT2').value,bdesc=$('o5BD2').value.trim();
   const R=$('o5R2');
-  if(!target&&!['rekey','chpwd','bdgEdit','plugin'].includes(action)){R.textContent='⛔ Enter target.';R.style.color='var(--r)';return}
+  if(!target&&!['rekey','chpwd','bdgEdit','plugin','fancy','sitelimit'].includes(action)){R.textContent='⛔ Enter target.';R.style.color='var(--r)';return}
   if(action==='grant'){
     O5.grants.push({target,level,by:UN,time:Date.now()});_o5Save();
     try{const g=JSON.parse(localStorage.getItem('s79_clearances')||'{}');g[target.toLowerCase()]=level;localStorage.setItem('s79_clearances',JSON.stringify(g))}catch(e){}
@@ -2185,6 +2217,20 @@ function o5Exec2(){
     if(m.includes(target.toLowerCase())){const i=m.indexOf(target.toLowerCase());m.splice(i,1);localStorage.setItem('s79_mods',JSON.stringify(m));R.innerHTML='✓ REMOVED moderator: '+target;R.style.color='var(--y)'}
     else{m.push(target.toLowerCase());localStorage.setItem('s79_mods',JSON.stringify(m));R.innerHTML='✓ SET moderator: <b>'+target+'</b>';R.style.color='var(--g)'}}catch(e){}
     autoLog('O5','MOD toggle: '+target);
+  }else if(action==='fancy'){
+    if(!target){R.textContent='⛔ Enter target.';R.style.color='var(--r)';return}
+    const items=Object.entries(FANCY_ITEMS).map(([k,v])=>k+': '+v.icon+' '+v.name).join(', ');
+    const choice=prompt('Fancy items: '+items+'\nEnter item ID:');
+    if(!choice||!FANCY_ITEMS[choice]){R.textContent='⛔ Invalid item.';R.style.color='var(--r)';return}
+    grantFancy(target,choice);
+    R.innerHTML='✓ Granted <b>'+FANCY_ITEMS[choice].name+'</b> to '+target;R.style.color='var(--g)';
+    autoLog('O5','Granted fancy item '+choice+' to '+target);
+  }else if(action==='sitelimit'){
+    const limits=prompt('Set site limits (JSON):\n{"maxSCPs":10,"maxRooms":20,"maxCells":50,"maxShelters":5}');
+    if(!limits){R.textContent='⛔ Cancelled.';return}
+    try{const l=JSON.parse(limits);localStorage.setItem('s79_site_limits',JSON.stringify(l));
+    R.innerHTML='✓ Site limits updated: '+JSON.stringify(l);R.style.color='var(--g)';
+    autoLog('O5','Site limits set: '+limits)}catch(e){R.textContent='⛔ Invalid JSON.';R.style.color='var(--r)'}
   }else if(action==='chpwd'){
     const np=prompt('New server password (4+ chars):');if(!np||np.length<4){R.textContent='⛔ 4+ chars required.';R.style.color='var(--r)';return}
     if(prompt('Confirm new password:')!==np){R.textContent='⛔ Passwords do not match.';R.style.color='var(--r)';return}
@@ -2202,7 +2248,7 @@ function o5Exec2(){
 function o5Exec(){
   if(!O5.authed){$('o5Result').textContent='⛔ Not authenticated.';return}
   const action=$('o5Action').value,target=$('o5Target').value.trim(),level=parseInt($('o5Level').value),extra=$('o5Extra').value.trim();
-  if(!target&&!['rekey','chpwd','bdgEdit','plugin'].includes(action)){$('o5Result').textContent='⛔ Enter target.';$('o5Result').style.color='var(--r)';return}
+  if(!target&&!['rekey','chpwd','bdgEdit','plugin','fancy','sitelimit'].includes(action)){$('o5Result').textContent='⛔ Enter target.';$('o5Result').style.color='var(--r)';return}
   if(action==='grant'){
     O5.grants.push({target,level,by:UN||'O5',time:Date.now()});_o5Save();
     $('o5Result').innerHTML='✓ GRANTED: '+target+' → '+(CL_LABELS[level]||'?');$('o5Result').style.color='var(--g)';
@@ -2242,13 +2288,16 @@ function o5Exec(){
     try{const m=JSON.parse(localStorage.getItem('s79_mods')||'[]');
     if(m.includes(target.toLowerCase())){m.splice(m.indexOf(target.toLowerCase()),1);localStorage.setItem('s79_mods',JSON.stringify(m));$('o5Result').innerHTML='✓ REMOVED mod: '+target;$('o5Result').style.color='var(--y)'}
     else{m.push(target.toLowerCase());localStorage.setItem('s79_mods',JSON.stringify(m));$('o5Result').innerHTML='✓ SET mod: '+target;$('o5Result').style.color='var(--g)'}}catch(e){}
+  }else if(action==='fancy'){
+    if(!target){$('o5Result').textContent='⛔ Enter target.';$('o5Result').style.color='var(--r)';return}
+    const items=Object.entries(FANCY_ITEMS).map(([k,v])=>k+': '+v.icon+' '+v.name).join(', ');
+    const choice=prompt('Items: '+items+'\nEnter ID:');
+    if(!choice||!FANCY_ITEMS[choice]){$('o5Result').textContent='⛔ Invalid.';$('o5Result').style.color='var(--r)';return}
+    grantFancy(target,choice);$('o5Result').innerHTML='✓ Granted '+FANCY_ITEMS[choice].name+' to '+target;$('o5Result').style.color='var(--g)';
+  }else if(action==='sitelimit'){
+    const limits=prompt('Set limits JSON: {"maxSCPs":10,"maxRooms":20,"maxCells":50}');
+    if(limits){try{localStorage.setItem('s79_site_limits',JSON.stringify(JSON.parse(limits)));$('o5Result').innerHTML='✓ Limits set';$('o5Result').style.color='var(--g)'}catch(e){$('o5Result').textContent='⛔ Invalid JSON'}}
   }else if(action==='chpwd'){
-    const np=prompt('New server password (4+ chars):');if(!np||np.length<4){$('o5Result').textContent='⛔ 4+ chars.';$('o5Result').style.color='var(--r)';return}
-    if(prompt('Confirm:')!==np){$('o5Result').textContent='⛔ Mismatch.';$('o5Result').style.color='var(--r)';return}
-    try{localStorage.setItem('s79_server_pw',np)}catch(e){}
-    try{fetch('/api/admin/chpwd',{method:'POST',headers:{'Content-Type':'application/json','x-session':SID},body:JSON.stringify({password:np})})}catch(e){}
-    $('o5Result').innerHTML='✓ Server password changed.';$('o5Result').style.color='var(--g)';
-    autoLog('O5','Password changed');
   }else if(action==='rekey'){
     const nk=prompt('New master key:');if(!nk||nk.length<6){$('o5Result').textContent='⛔ 6+ chars.';$('o5Result').style.color='var(--r)';return}
     if(prompt('Confirm:')!==nk){$('o5Result').textContent='⛔ Mismatch.';$('o5Result').style.color='var(--r)';return}
@@ -2443,11 +2492,9 @@ function openProfile(){
       tog.appendChild(sp);
     });
   }
+  renderPfFancy();
 }
-function pfSetImg(){
-  const url=($('pfImgUrl')||{}).value?.trim();if(!url)return;
-  PF.imgUrl=url;PF.avatar='';_pfSave();pfApply();openProfile();
-}
+function pfClearImg(){PF.imgUrl='';PF.avatar='👤';_pfSave();pfApply();openProfile();sysM('✓ Profile picture removed.')}
 function pfSetFile(input){
   const f=input.files[0];if(!f)return;
   if(!f.type.startsWith('image/')){sysM('⛔ Images only.');return}
@@ -2467,6 +2514,110 @@ function getUserAvatar(name){
   }catch(e){}
   return '<span class="chat-av">'+name.charAt(0).toUpperCase()+'</span>';
 }
+// ═══ v12 SPOILER SYSTEM ═══
+function wrapSpoiler(imgHtml){
+  return '<span class="spoiler-img" onclick="this.classList.toggle(\'revealed\')">'+imgHtml+'</span>';
+}
+// ═══ v12 PROFILE CENSOR IN CHAT ═══
+function getUserAvCensored(name){
+  if(!name)return '<span class="chat-av">👤</span>';
+  if(isRedacted(name)){
+    const mode=getRedactMode(name);
+    if(mode==='blackbox')return '<span class="chat-av-censor-box"></span>';
+    return '<span class="chat-av-censor"></span>';
+  }
+  return getUserAvatar(name);
+}
+// ═══ v12 CELL PROMO TAG ═══
+function getCellTag(name){
+  if(!name)return'';
+  try{const cells=JSON.parse(localStorage.getItem('s79_cells')||'[]');
+  const owned=cells.filter(c=>c.owner===name.toLowerCase()&&c.public);
+  if(!owned.length)return'';
+  // Check XP requirement for promo tag
+  const xpData=JSON.parse(localStorage.getItem('s79_xp_'+name.toLowerCase())||'{}');
+  if((xpData.xp||0)<1000)return'';
+  // Check member count
+  for(const cell of owned){
+    const msgs=JSON.parse(localStorage.getItem('s79_cell_chat_'+cell.id)||'[]');
+    const users=new Set(msgs.map(m=>m.from.toLowerCase()));
+    if(users.size>=3)return '<span class="cell-tag">'+cell.name+'</span>';
+  }
+  }catch(e){}return'';
+}
+// ═══ v12 FANCY PROFILE ITEMS ═══
+const FANCY_ITEMS={
+  holo:{name:'Hologram',css:'pf-holo',desc:'Holographic name effect',icon:'🌈'},
+  gradient:{name:'Gradient',css:'pf-gradient',desc:'Rainbow gradient text',icon:'🎨'},
+  scanner:{name:'Scanner',css:'pf-scanner',desc:'Scanning line effect',icon:'📡'},
+  glow:{name:'Glow',css:'',style:'text-shadow:0 0 6px var(--g),0 0 12px var(--g)',desc:'Neon glow',icon:'✨'},
+  gold:{name:'Gold',css:'',style:'color:gold;text-shadow:0 0 4px rgba(255,215,0,.5)',desc:'Gold name',icon:'👑'}
+};
+function getUserFancyClass(name){
+  try{const items=JSON.parse(localStorage.getItem('s79_fancy_'+name.toLowerCase())||'[]');
+  const active=items.find(i=>i.active);
+  if(active&&FANCY_ITEMS[active.id])return FANCY_ITEMS[active.id];
+  }catch(e){}return null;
+}
+function renderFancyName(name,rawName){
+  const fancy=getUserFancyClass(rawName||name);
+  if(!fancy)return name;
+  let cls=fancy.css?' class="'+fancy.css+'"':'';
+  let sty=fancy.style?' style="'+fancy.style+'"':'';
+  return '<span'+cls+sty+'>'+name+'</span>';
+}
+// Grant fancy item (admin/mod function)
+function grantFancy(target,itemId){
+  if(!FANCY_ITEMS[itemId])return;
+  try{const items=JSON.parse(localStorage.getItem('s79_fancy_'+target.toLowerCase())||'[]');
+  if(!items.find(i=>i.id===itemId)){items.push({id:itemId,active:false});
+  localStorage.setItem('s79_fancy_'+target.toLowerCase(),JSON.stringify(items))}
+  }catch(e){}
+}
+// Profile fancy items display
+function renderPfFancy(){
+  const div=$('pfFancyItems');if(!div)return;
+  try{const items=JSON.parse(localStorage.getItem('s79_fancy_'+UN.toLowerCase())||'[]');
+  div.innerHTML=items.length?items.map(i=>{
+    const def=FANCY_ITEMS[i.id];if(!def)return'';
+    return '<button onclick="toggleFancy(\''+i.id+'\');openProfile()" style="padding:3px 6px;font-family:VT323,monospace;font-size:8px;border:1px solid '+(i.active?'var(--g)':'#333')+';background:'+(i.active?'rgba(0,255,65,.1)':'none')+';color:'+(i.active?'var(--g)':'#555')+';cursor:pointer;border-radius:2px">'+def.icon+' '+def.name+(i.active?' ✓':'')+'</button>';
+  }).join(''):'<span style="font-family:VT323,monospace;font-size:8px;color:#333">No items yet — ask an admin!</span>'}catch(e){}
+}
+function toggleFancy(id){
+  try{const items=JSON.parse(localStorage.getItem('s79_fancy_'+UN.toLowerCase())||'[]');
+  items.forEach(i=>{i.active=i.id===id?!i.active:false});
+  localStorage.setItem('s79_fancy_'+UN.toLowerCase(),JSON.stringify(items));pfApply()}catch(e){}
+}
+
+// ═══ v12 BLINK MECHANIC (for SCP-173) ═══
+let BLINK={interval:null,timer:0,duration:Math.floor(Math.random()*6)+10,blinking:false};
+function initBlink(){
+  // Assign 10-15s blink interval per user
+  try{let bd=localStorage.getItem('s79_blink_'+UN.toLowerCase());
+  if(!bd){bd=Math.floor(Math.random()*6)+10;localStorage.setItem('s79_blink_'+UN.toLowerCase(),bd)}
+  BLINK.duration=parseInt(bd)}catch(e){}
+  const ov=document.createElement('div');ov.className='blink-overlay';ov.id='blinkOv';document.body.appendChild(ov);
+  BLINK.timer=BLINK.duration;
+  BLINK.interval=setInterval(()=>{
+    if(!document.getElementById('scpFacilityOv'))return;
+    BLINK.timer--;
+    const bd=$('blinkTimer');if(bd)bd.textContent=BLINK.timer+'s';
+    if(BLINK.timer<=0){doBlink()}
+  },1000);
+}
+function doBlink(){
+  BLINK.blinking=true;
+  const ov=$('blinkOv');if(ov)ov.classList.add('active');
+  setTimeout(()=>{
+    if(ov)ov.classList.remove('active');
+    BLINK.blinking=false;
+    BLINK.timer=BLINK.duration;
+    // During blink, SCP-173 can move
+    if(typeof scp173Move==='function')scp173Move();
+  },300);
+}
+function manualBlink(){if(BLINK.timer>3){BLINK.timer=0}}
+
 // Get visible badges HTML for any user (respects hidden setting)
 function getUserBadgesHTML(name){
   try{const b=JSON.parse(localStorage.getItem('s79_user_badges')||'{}');
@@ -2615,7 +2766,7 @@ function aofRefresh(){
     const cls=m.type==='alert'?'m-o5':m.from==='O5-COUNCIL'?'m-o5':'m-mod';
     let body=parseMentions(m.text);
     if(isRedacted(m.from))body=redactContent(m.from,body);
-    const av=getUserAvatar(m.from);
+    const av=getUserAvCensored(m.from);
     const bdg=getUserBadgesHTML(m.from);
     return '<div class="chat-msg '+cls+'">'+av+'<span><span style="color:#555">['+t+']</span> <b>'+redactName(m.from)+':</b>'+( bdg?' '+bdg:'')+' '+body+'</span></div>';
   }).join('');feed.scrollTop=feed.scrollHeight}catch(e){}
@@ -2795,7 +2946,7 @@ function vofChatSend(){
   const chat=$('vofChat');
       let chatBody=parseMentions(txt);
     if(isRedacted(UN))chatBody=redactContent(UN,chatBody);
-    const av=getUserAvatar(UN);
+    const av=getUserAvCensored(UN);
     const bdg=getUserBadgesHTML(UN);
     chat.innerHTML+='<div class="chat-msg">'+av+'<span><b style="color:var(--g)">'+redactName(UN)+':</b>'+(bdg?' '+bdg:'')+' '+chatBody+'</span></div>';
   chat.scrollTop=chat.scrollHeight;inp.value='';
@@ -2984,7 +3135,7 @@ function dmRefresh(key){
     const isMe=m.from.toLowerCase()===UN.toLowerCase();
     let body=parseMentions(m.text);
     if(isRedacted(m.from))body=redactContent(m.from,body);
-    const av=getUserAvatar(m.from);
+    const av=getUserAvCensored(m.from);
     const bdg=getUserBadgesHTML(m.from);
     return '<div class="chat-msg" style="color:'+(isMe?'var(--r)':'var(--g)')+'">'+av+'<span><span style="color:#555">['+t+']</span> <b>'+redactName(m.from)+':</b>'+(bdg?' '+bdg:'')+' '+body+'</span></div>';
   }).join('');feed.scrollTop=feed.scrollHeight}catch(e){}
@@ -3023,6 +3174,272 @@ function dmFileHandle(input){
     dmRefresh(key);
   }
   input.value='';
+}
+
+// ═══ v12 MULTI-SCP FACILITY ═══
+const SCP_DB={
+  '079':{name:'SCP-079',cls:'Euclid',desc:'Old AI — Chatbot mode',icon:'🖥',color:'var(--g)',type:'ai',acid:0,contained:true,breach:0,
+    actions:['MONITOR','RESET','RECONTAIN'],minClear:0},
+  '096':{name:'SCP-096',cls:'Euclid',desc:'The Shy Guy',icon:'😱',color:'var(--r)',type:'hostile',contained:true,breach:0,
+    rage:0,sensors:{laser:true,motion:true,visual:false},
+    actions:['SENSORS','LASER BLIND','CALL MTF','MONITOR'],minClear:1},
+  '173':{name:'SCP-173',cls:'Euclid',desc:'The Sculpture',icon:'🗿',color:'var(--y)',type:'statue',contained:true,breach:0,
+    dirty:0,observers:0,moved:false,
+    actions:['MONITOR','CLEAN','ASSIGN D-CLASS','BLINK VIEW'],minClear:0},
+  '682':{name:'SCP-682',cls:'Keter',desc:'Hard-to-Destroy Reptile',icon:'🦎',color:'var(--r)',type:'reptile',contained:true,breach:0,
+    acidLevel:80,hp:100,regen:0.5,
+    actions:['ACID LEVEL','REFILL ACID','TERMINATE ATTEMPT','MONITOR'],minClear:2},
+  '4666':{name:'SCP-4666',cls:'Keter',desc:'The Yule Man',icon:'🎄',color:'#cc0000',type:'seasonal',contained:true,breach:0,
+    active:false,weissnacht:false,
+    actions:['MONITOR','CHECK SEASON','REVIEW FOOTAGE'],minClear:1},
+  '049':{name:'SCP-049',cls:'Euclid',desc:'Plague Doctor',icon:'🎭',color:'var(--p)',type:'sentient',contained:true,breach:0,
+    actions:['MONITOR','INTERVIEW','CALL MTF'],minClear:1},
+  '106':{name:'SCP-106',cls:'Keter',desc:'The Old Man',icon:'👴',color:'#663300',type:'hostile',contained:true,breach:0,
+    femurActive:false,
+    actions:['MONITOR','FEMUR BREAKER','CALL MTF','CONTAINMENT CHECK'],minClear:3}
+};
+let FACILITY={scps:JSON.parse(JSON.stringify(SCP_DB)),shelter:false,warhead:false,warheadTimer:0,ciAttack:false};
+// Site limits
+function getSiteLimits(){try{return JSON.parse(localStorage.getItem('s79_site_limits')||'{"maxSCPs":10,"maxRooms":20,"maxCells":50,"maxShelters":5}')}catch(e){return{maxSCPs:10,maxRooms:20,maxCells:50,maxShelters:5}}}
+
+function openFacility(){
+  let ov=document.getElementById('scpFacilityOv');if(ov)ov.remove();
+  ov=document.createElement('div');ov.id='scpFacilityOv';
+  ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.97);z-index:9800;overflow-y:auto;padding:20px';
+  let html='<div style="max-width:600px;margin:0 auto"><div class="mg-hd"><h2>🏛 SCP FACILITY</h2><span style="font-size:8px;color:#555;margin-left:10px">Blink: <span id="blinkTimer">'+BLINK.timer+'</span>s</span><button class="arc-btn close" onclick="document.getElementById(\'scpFacilityOv\').remove()">✕</button></div>';
+  // Shelter + Warhead bar
+  html+='<div style="display:flex;gap:4px;margin:8px 0"><button class="scp-btn" style="border-color:var(--g);color:var(--g)" onclick="enterShelter()">🏠 SAFETY SHELTER</button>';
+  if(userClearance>=5)html+='<button class="scp-btn" style="border-color:var(--r);color:var(--r)" onclick="triggerWarhead()">☢ ALPHA WARHEAD</button>';
+  html+='<button class="scp-btn" style="border-color:#ff6600;color:#ff6600" onclick="ciMiniGame()">⚔ CI DEFENSE</button></div>';
+  // SCP list
+  Object.entries(FACILITY.scps).forEach(([id,scp])=>{
+    if(userClearance<scp.minClear&&userClearance!==6)return;
+    const status=scp.contained?'CONTAINED':'BREACH';
+    const stCls=scp.contained?'scp-contained':'scp-breach';
+    html+='<div class="scp-panel" style="border-left:3px solid '+scp.color+'"><div class="scp-hd"><span style="color:'+scp.color+'">'+scp.icon+' '+scp.name+' <span style="color:#555;font-size:8px">['+scp.cls+']</span></span><span class="scp-status '+stCls+'">'+status+'</span></div>';
+    html+='<div style="font-family:VT323,monospace;font-size:9px;color:#555;margin:2px 0">'+scp.desc+'</div>';
+    // SCP-specific displays
+    if(id==='096'){
+      html+='<div class="sensor-grid" id="s096sensors">';
+      for(let i=0;i<8;i++)html+='<div class="sensor sensor-ok" id="s096s'+i+'">S'+i+'</div>';
+      html+='</div><div style="font-size:8px;color:#555;font-family:VT323,monospace">Rage: <span id="s096rage" style="color:var(--r)">'+Math.round(scp.rage||0)+'%</span> | Visual: <span style="color:'+(scp.sensors?.visual?'var(--r)':'var(--g)')+'">'+(scp.sensors?.visual?'EXPOSED':'BLOCKED')+'</span></div>';
+    }else if(id==='173'){
+      html+='<div style="font-size:8px;color:#555;font-family:VT323,monospace">Dirt: <span style="color:var(--y)">'+Math.round(scp.dirty||0)+'%</span> | Observers: <span style="color:var(--b)">'+scp.observers+'</span> | Status: '+(scp.moved?'<span style="color:var(--r)">MOVED</span>':'<span style="color:var(--g)">STILL</span>')+'</div>';
+      html+='<div class="scp-bar"><div class="scp-bar-fill" style="width:'+Math.round(scp.dirty||0)+'%;background:var(--y)"></div></div>';
+    }else if(id==='682'){
+      html+='<div style="font-size:8px;color:#555;font-family:VT323,monospace">Acid: <span style="color:var(--g)">'+Math.round(scp.acidLevel||0)+'%</span> | HP: <span style="color:var(--r)">'+Math.round(scp.hp||0)+'%</span></div>';
+      html+='<div class="scp-bar"><div class="scp-bar-fill" style="width:'+(scp.acidLevel||0)+'%;background:var(--g)"></div></div>';
+    }else if(id==='4666'){
+      const now=new Date();const m=now.getMonth();const isXmas=m===11||m===0;
+      html+='<div style="font-size:8px;color:#555;font-family:VT323,monospace">Season: <span style="color:'+(isXmas?'var(--r)':'var(--g)')+'">'+(isXmas?'⚠ WEISSNACHT':'DORMANT')+'</span></div>';
+      if(isXmas)html+='<div style="font-size:7px;color:#cc0000;font-family:VT323,monospace;margin-top:2px">⚠ Anomalous activity detected in monitoring feeds</div>';
+    }
+    // Action buttons
+    html+='<div style="margin-top:4px">';
+    (scp.actions||[]).forEach(a=>{
+      html+='<button class="scp-btn" style="border-color:'+scp.color+';color:'+scp.color+'" onclick="scpAction(\''+id+'\',\''+a+'\')">'+a+'</button>';
+    });
+    html+='</div></div>';
+  });
+  html+='</div>';
+  ov.innerHTML=html;document.body.appendChild(ov);
+  if(!BLINK.interval)initBlink();
+}
+
+function scpAction(id,action){
+  const scp=FACILITY.scps[id];if(!scp)return;
+  const cl=CL_LABELS[userClearance]||'Personnel';
+  if(action==='MONITOR'){
+    sysM('📹 Monitoring '+scp.name+'... Status: '+(scp.contained?'CONTAINED':'⚠ BREACH'));
+    if(id==='4666'){const m=new Date().getMonth();
+      if(m===11||m===0){sysM('⚠ '+scp.name+': Anomalous readings detected. Camera feeds show intermittent distortion.');
+      setTimeout(()=>sysM('📹 [STATIC] ... [MOVEMENT DETECTED] ... [FEED RESTORED]'),3000)}
+      else sysM('📹 '+scp.name+': Dormant. No anomalous activity.')}
+    xpAdd(1,'Monitor '+id);return;
+  }
+  if(id==='096'){
+    if(action==='SENSORS'){
+      scp.sensors.laser=!scp.sensors.laser;scp.sensors.motion=!scp.sensors.motion;
+      sysM('🔧 SCP-096 sensors toggled — Laser: '+(scp.sensors.laser?'ON':'OFF')+' | Motion: '+(scp.sensors.motion?'ON':'OFF'));
+      openFacility();
+    }else if(action==='LASER BLIND'){
+      if(scp.rage>0){scp.rage=Math.max(0,scp.rage-30);sysM('⚡ Laser blinder activated! Rage reduced to '+Math.round(scp.rage)+'%');xpAdd(3,'Laser blind')}
+      else sysM('✓ SCP-096 is calm. No need for laser blinder.');
+      openFacility();
+    }else if(action==='CALL MTF'){callMTFfor(id)}
+  }else if(id==='173'){
+    if(action==='CLEAN'){
+      if(userClearance<0&&scp.observers<3){sysM('⛔ Need 3+ observers to enter SCP-173 cell!');return}
+      const cleanTime=Math.max(3,10-userClearance-XP.rank);
+      sysM('🧹 Cleaning SCP-173 cell... ETA: '+cleanTime+'s');
+      setTimeout(()=>{scp.dirty=Math.max(0,scp.dirty-40);sysM('✓ Cell cleaned. Dirt: '+Math.round(scp.dirty)+'%');xpAdd(3,'Clean 173');openFacility()},cleanTime*1000);
+    }else if(action==='ASSIGN D-CLASS'){
+      if(userClearance<3){sysM('⛔ L3+ required to assign D-Class.');return}
+      scp.observers=Math.min(5,scp.observers+1);
+      const arrTime=Math.max(3,8-userClearance);
+      sysM('👥 Assigning D-Class observer... ETA: '+arrTime+'s');
+      setTimeout(()=>{sysM('✓ D-Class assigned. Observers: '+scp.observers);openFacility()},arrTime*1000);
+      xpAdd(2,'Assign D-Class');
+    }else if(action==='BLINK VIEW'){
+      sysM('👁 Your blink interval: '+BLINK.duration+'s | Next blink in: '+BLINK.timer+'s');
+    }
+  }else if(id==='682'){
+    if(action==='ACID LEVEL'){sysM('🧪 SCP-682 acid level: '+Math.round(scp.acidLevel)+'% | HP: '+Math.round(scp.hp)+'%')}
+    else if(action==='REFILL ACID'){
+      if(userClearance<2){sysM('⛔ L2+ required.');return}
+      scp.acidLevel=Math.min(100,scp.acidLevel+25);sysM('🧪 Acid refilled to '+Math.round(scp.acidLevel)+'%');xpAdd(2,'Refill acid');openFacility();
+    }else if(action==='TERMINATE ATTEMPT'){
+      if(userClearance<5){sysM('⛔ L5+ required for termination attempts.');return}
+      sysM('☢ Termination attempt on SCP-682...');
+      setTimeout(()=>{scp.hp=Math.max(20,scp.hp-Math.random()*30);sysM('⚠ SCP-682 HP reduced to '+Math.round(scp.hp)+'% — Regenerating...');xpAdd(5,'Terminate attempt')},5000);
+    }
+  }else if(id==='4666'){
+    if(action==='CHECK SEASON'){const m=new Date().getMonth();sysM('📅 Current month: '+(m+1)+'/12 — '+(m===11||m===0?'⚠ WEISSNACHT EVENT ACTIVE':'Dormant period'))}
+    else if(action==='REVIEW FOOTAGE'){
+      const m=new Date().getMonth();
+      if(m===11||m===0){
+        sysM('📹 Reviewing SCP-4666 footage...');
+        const events=['[Static burst — 3 frames missing]','[Shadow movement in corner]','[Camera 4 offline for 0.3s]','[Anomalous heat signature detected]','[Audio: distant scraping sounds]'];
+        let delay=1000;events.forEach(ev=>{setTimeout(()=>sysM('📹 '+ev),delay);delay+=2000});
+        xpAdd(3,'Review 4666');
+      }else sysM('📹 No anomalous footage during dormant period.');
+    }
+  }else if(id==='049'){
+    if(action==='INTERVIEW'){sysM('🎭 SCP-049: "I am the cure. You understand, do you not? The Pestilence spreads..."');xpAdd(2,'Interview 049')}
+    else if(action==='CALL MTF'){callMTFfor(id)}
+  }else if(id==='106'){
+    if(action==='FEMUR BREAKER'){
+      if(userClearance<3){sysM('⛔ L3+ required.');return}
+      sysM('🦴 Activating Femur Breaker...');
+      setTimeout(()=>{scp.femurActive=true;scp.contained=true;scp.breach=0;sysM('✓ SCP-106 lured back to containment.');xpAdd(5,'Femur breaker');openFacility()},6000);
+    }else if(action==='CONTAINMENT CHECK'){sysM('🔍 SCP-106: Cell integrity '+(scp.contained?'STABLE':'⚠ COMPROMISED'))}
+    else if(action==='CALL MTF'){callMTFfor(id)}
+  }else if(id==='079'){
+    if(action==='RESET'){sysM('🔄 Resetting SCP-079... Chat functionality preserved.');xpAdd(1,'Reset 079')}
+    else if(action==='RECONTAIN'){sysM('🔒 SCP-079 recontained. AI chatbot mode active.')}
+  }
+}
+
+function callMTFfor(scpId){
+  const scp=FACILITY.scps[scpId];
+  let best=REINF_TYPES[0];
+  for(const r of REINF_TYPES){if(userClearance>=r.min&&XP.rank>=r.minRank)best=r}
+  const eta=Math.max(3,15-userClearance*2-XP.rank);
+  sysM('📡 MTF dispatched for '+scp.name+': '+best.icon+' '+best.name+' (Str:'+best.strength+') ETA:'+eta+'s');
+  addM('sys','<div style="border:1px solid var(--y);padding:4px;border-radius:3px;margin:4px 0;font-size:10px;font-family:VT323,monospace"><b>📡 MTF DISPATCH</b><br>Target: '+scp.name+'<br>Unit: '+best.icon+' '+best.name+'<br>Strength: '+best.strength+'/25<br>ETA: '+eta+'s</div>');
+  setTimeout(()=>{
+    addM('sys','<div style="border:1px solid var(--g);padding:4px;border-radius:3px;margin:4px 0;font-size:10px;font-family:VT323,monospace;color:var(--g)"><b>✓ MTF ARRIVED</b><br>'+best.icon+' '+best.name+' securing '+scp.name+'<br>Containment '+(best.strength>=6?'RESTORED':'IN PROGRESS')+'</div>');
+    if(best.strength>=6){scp.contained=true;scp.breach=0}
+    if(scpId==='096')scp.rage=Math.max(0,scp.rage-best.strength*5);
+    xpAdd(3,'MTF for '+scpId);
+  },eta*1000);
+}
+
+// ═══ v12 SAFETY SHELTER ═══
+function enterShelter(){
+  const breaches=Object.values(FACILITY.scps).filter(s=>!s.contained).length;
+  if(breaches===0&&!FACILITY.warhead){sysM('✓ No active breaches. Shelter not needed.');return}
+  FACILITY.shelter=true;
+  sysM('🏠 Entering safety shelter... You are protected from SCPs.');
+  addM('sys','<div class="shelter-bar">🏠 SAFETY SHELTER ACTIVE<br><span style="font-size:9px;color:#555">Protected from '+breaches+' active breach(es)</span><br><button class="scp-btn" style="border-color:var(--g);color:var(--g);margin-top:4px" onclick="exitShelter()">EXIT SHELTER</button></div>');
+  xpAdd(1,'Shelter');
+}
+function exitShelter(){FACILITY.shelter=false;sysM('🚪 Exited safety shelter. Be careful.')}
+
+// ═══ v12 WARHEAD ═══
+function triggerWarhead(){
+  if(userClearance<5){sysM('⛔ L5+ required for Alpha Warhead.');return}
+  if(!confirm('☢ ACTIVATE ALPHA WARHEAD?\nThis will recontain ALL SCPs.\n30 second countdown.'))return;
+  if(!confirm('☢ FINAL CONFIRMATION — Alpha Warhead'))return;
+  FACILITY.warhead=true;FACILITY.warheadTimer=30;
+  sysM('☢ ALPHA WARHEAD ACTIVATED — 30 SECONDS');
+  const iv=setInterval(()=>{
+    FACILITY.warheadTimer--;
+    if(FACILITY.warheadTimer<=0){
+      clearInterval(iv);FACILITY.warhead=false;
+      Object.values(FACILITY.scps).forEach(s=>{s.contained=true;s.breach=0});
+      sysM('☢ DETONATION COMPLETE — All SCPs recontained.');
+      addM('sys','<div style="border:2px solid var(--r);padding:8px;text-align:center;font-family:VT323,monospace;color:var(--r);font-size:12px">☢ ALPHA WARHEAD DETONATED ☢<br><span style="font-size:9px;color:#555">Facility reset. All containment restored.</span></div>');
+      xpAdd(10,'Warhead');
+    }else if(FACILITY.warheadTimer%10===0||FACILITY.warheadTimer<=5){
+      sysM('☢ WARHEAD: '+FACILITY.warheadTimer+'s remaining'+(FACILITY.warheadTimer<=10?' — ENTER SHELTER NOW':''));
+    }
+  },1000);
+  autoLog('WARHEAD','Alpha warhead activated by '+UN);
+}
+
+// ═══ v12 CHAOS INSURGENCY DEFENSE MINIGAME ═══
+function ciMiniGame(){
+  let ov=document.getElementById('ciGameOv');if(ov)ov.remove();
+  ov=document.createElement('div');ov.id='ciGameOv';
+  ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.97);z-index:9900;display:flex;justify-content:center;align-items:center';
+  let ciHP=100,defHP=100,round=0;
+  function ciRound(){
+    round++;
+    const ciAtk=Math.floor(Math.random()*15)+5;
+    const defAtk=Math.floor(Math.random()*10)+3+userClearance*2+XP.rank*2;
+    ciHP=Math.max(0,ciHP-defAtk);defHP=Math.max(0,defHP-ciAtk);
+    let log='Round '+round+': CI attacks for '+ciAtk+' | You deal '+defAtk+'\nCI HP: '+ciHP+' | DEF HP: '+defHP;
+    if(ciHP<=0){log+='\n\n✓ CHAOS INSURGENCY REPELLED!';xpAdd(8,'CI defense');setTimeout(()=>{try{ov.remove()}catch(e){}},2000)}
+    if(defHP<=0){log+='\n\n⛔ FACILITY BREACHED by CI!';
+      // CI sabotage — random SCP breach
+      const scpIds=Object.keys(FACILITY.scps);const rid=scpIds[Math.floor(Math.random()*scpIds.length)];
+      FACILITY.scps[rid].contained=false;FACILITY.scps[rid].breach=100;
+      sysM('⚠ CI SABOTAGE: '+FACILITY.scps[rid].name+' containment breached!');
+      setTimeout(()=>{try{ov.remove()}catch(e){}},2000);}
+    document.getElementById('ciLog').textContent=log;
+  }
+  ov.innerHTML='<div style="background:#050508;border:1px solid #ff6600;width:400px;border-radius:4px;padding:16px;text-align:center"><div class="mg-hd"><h2 style="color:#ff6600">⚔ CHAOS INSURGENCY ATTACK</h2><button class="arc-btn close" onclick="document.getElementById(\'ciGameOv\').remove()">✕</button></div><div class="ci-alert">Insurgents breaching perimeter!<br>Clearance bonus: +'+userClearance*2+' | XP bonus: +'+XP.rank*2+'</div><pre id="ciLog" style="font-family:VT323,monospace;font-size:10px;color:var(--g);margin:10px 0;text-align:left;white-space:pre-wrap">Ready to defend...</pre><button onclick="('+ciRound.toString()+')()" style="padding:8px 20px;border:2px solid #ff6600;background:rgba(255,102,0,.1);color:#ff6600;font-family:VT323,monospace;font-size:12px;cursor:pointer;border-radius:3px">⚔ FIGHT ROUND</button></div>';
+  document.body.appendChild(ov);
+}
+
+// ═══ v12 SCP SIMULATION LOOP ═══
+setInterval(()=>{
+  // 173 gets dirty over time
+  if(FACILITY.scps['173']){
+    FACILITY.scps['173'].dirty=Math.min(100,(FACILITY.scps['173'].dirty||0)+0.1);
+    if(FACILITY.scps['173'].dirty>80&&FACILITY.scps['173'].contained){
+      FACILITY.scps['173'].contained=false;FACILITY.scps['173'].breach=50;
+      sysM('⚠ SCP-173 BREACH: Cell too dirty!');
+    }
+  }
+  // 682 acid depletes + regen
+  if(FACILITY.scps['682']){
+    FACILITY.scps['682'].acidLevel=Math.max(0,(FACILITY.scps['682'].acidLevel||80)-0.05);
+    FACILITY.scps['682'].hp=Math.min(100,(FACILITY.scps['682'].hp||100)+FACILITY.scps['682'].regen*0.1);
+    if(FACILITY.scps['682'].acidLevel<20&&FACILITY.scps['682'].contained){
+      FACILITY.scps['682'].contained=false;sysM('⚠ SCP-682 BREACH: Acid level critical!');
+    }
+  }
+  // 096 random rage spikes
+  if(FACILITY.scps['096']&&Math.random()<0.01){
+    FACILITY.scps['096'].rage=Math.min(100,(FACILITY.scps['096'].rage||0)+5);
+    if(FACILITY.scps['096'].rage>80){FACILITY.scps['096'].contained=false;sysM('⚠ SCP-096 BREACH: Rage critical!');}
+  }
+  // 4666 seasonal activity
+  if(FACILITY.scps['4666']){const m=new Date().getMonth();FACILITY.scps['4666'].active=m===11||m===0}
+  // Random CI attack chance
+  if(Math.random()<0.002&&!FACILITY.ciAttack){
+    FACILITY.ciAttack=true;
+    sysM('⚠ CHAOS INSURGENCY DETECTED near facility perimeter!');
+    addM('sys','<div class="ci-alert">⚔ CHAOS INSURGENCY ALERT — Defend the facility!</div>');
+    setTimeout(()=>{FACILITY.ciAttack=false},60000);
+  }
+},10000);
+
+// ═══ v12 SPOILER IMAGE WRAPPER FOR CHATS ═══
+function applySpoilerToMsg(text){
+  // Wrap images in spoiler if user types ||image|| pattern
+  return text.replace(/\|\|(<img[^>]+>)\|\|/g,'<span class="spoiler-img" onclick="this.classList.toggle(\'revealed\')">$1</span>');
+}
+
+// 173 blink → move
+function scp173Move(){
+  if(!FACILITY.scps['173']||!FACILITY.scps['173'].contained)return;
+  if(FACILITY.scps['173'].observers<3&&Math.random()<0.4){
+    FACILITY.scps['173'].moved=true;
+    sysM('🗿 SCP-173 MOVED during blink! Observers: '+FACILITY.scps['173'].observers+'/3 minimum');
+  }
 }
 
 // ═══ v11.1 TEST CELLS SYSTEM ═══
@@ -3093,7 +3510,7 @@ function cellRefresh(){
   const feed=document.getElementById('cellFeed');if(!feed)return;
   feed.innerHTML=msgs.slice(-80).map(m=>{
     const t=new Date(m.time).toLocaleTimeString();
-    const av=getUserAvatar(m.from);
+    const av=getUserAvCensored(m.from);
     const bdg=getUserBadgesHTML(m.from);
     let body=parseMentions(m.text);
     if(isRedacted(m.from))body=redactContent(m.from,body);
@@ -3820,9 +4237,9 @@ function tcAddMsg(type,msg,sender){
   d.className='chat-msg';
   d.style.color=type==='usr'?'var(--b)':type==='ai'?'var(--r)':'var(--y)';
   let parsed=parseMentions(msg);
-  const av=sender?getUserAvatar(sender):'';
+  const av=sender?getUserAvCensored(sender):'';
   const bdg=sender?getUserBadgesHTML(sender):'';
-  let content=av+'<span>['+new Date().toLocaleTimeString()+'] '+parsed+(bdg?' '+bdg:'')+'</span>';
+  const ctag=sender?getCellTag(sender):'';let content=av+'<span>['+new Date().toLocaleTimeString()+'] '+parsed+(bdg?' '+bdg:'')+(ctag?' '+ctag:'')+'</span>';
   if(sender&&isRedacted(sender))content=av+'<span>['+new Date().toLocaleTimeString()+'] '+redactContent(sender,parsed)+'</span>';
   d.innerHTML=content;
   fd.appendChild(d);fd.scrollTop=fd.scrollHeight;
