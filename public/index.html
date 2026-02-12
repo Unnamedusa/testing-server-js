@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>SCP-079 // QNE v6</title>
+<title>PROJECT SCP // Facility Management v12</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=VT323&family=IBM+Plex+Mono:wght@300;400;500;600&display=swap');
 :root{--g:#00ff41;--gd:#00882a;--r:#ff0033;--y:#ffaa00;--b:#00ccff;--p:#bb66ff;--bg:#050505;--bg2:#0a0a0a;--bg3:#111;--brd:#1a1a1a;--txt:#888;--fc:#00ff41}
@@ -542,7 +542,7 @@ body.light input,body.light textarea,body.light select{background:#fff;color:#33
 <!-- LOGIN -->
 <div id="login"><div class="lb">
   <h1>SCP-079</h1>
-  <div class="sub">QNE v6 · ARCHON EDITION</div>
+  <div class="sub">PROJECT SCP · FACILITY MANAGEMENT v12</div>
   <div class="ltabs">
     <button class="ltab active" onclick="loginTab('term')">TERMINAL</button>
     <button class="ltab ins" onclick="loginTab('ins')">☠ INSURGENT</button>
@@ -574,6 +574,8 @@ body.light input,body.light textarea,body.light select{background:#fff;color:#33
           <option value="bdgEdit">EDIT BADGE REGISTRY</option>
           <option value="plugin">INSTALL PLUGIN</option>
           <option value="fancy">GRANT FANCY ITEM</option>
+          <option value="customscp">CREATE CUSTOM SCP</option>
+          <option value="delbadge">DELETE BADGE</option>
           <option value="sitelimit">SET SITE LIMITS</option>
           <option value="chpwd">CHANGE SERVER PASSWORD</option>
           <option value="rekey">REGENERATE MASTER KEY</option>
@@ -779,7 +781,7 @@ body.light input,body.light textarea,body.light select{background:#fff;color:#33
   <div style="padding:10px">
     <input id="o5T2" placeholder="Target username" style="width:100%;background:var(--bg);border:1px solid #331111;color:var(--r);font-family:'VT323',monospace;font-size:11px;padding:5px;outline:none;margin:3px 0;border-radius:2px">
     <select id="o5A2" style="width:100%;background:var(--bg);border:1px solid #331111;color:var(--r);font-family:'VT323',monospace;font-size:11px;padding:5px;outline:none;margin:3px 0;border-radius:2px">
-      <option value="grant">GRANT CLEARANCE</option><option value="revoke">REVOKE CLEARANCE</option><option value="badge">AWARD BADGE</option><option value="grantxp">GRANT XP</option><option value="neutralize">NEUTRALIZE PERSONNEL</option><option value="setmod">SET MODERATOR</option><option value="bdgEdit">BADGE REGISTRY</option><option value="plugin">PLUGINS</option><option value="fancy">GRANT FANCY ITEM</option><option value="sitelimit">SET SITE LIMITS</option><option value="chpwd">CHANGE PASSWORD</option><option value="rekey">REKEY</option>
+      <option value="grant">GRANT CLEARANCE</option><option value="revoke">REVOKE CLEARANCE</option><option value="badge">AWARD BADGE</option><option value="grantxp">GRANT XP</option><option value="neutralize">NEUTRALIZE PERSONNEL</option><option value="setmod">SET MODERATOR</option><option value="bdgEdit">BADGE REGISTRY</option><option value="plugin">PLUGINS</option><option value="fancy">GRANT FANCY ITEM</option><option value="customscp">CREATE CUSTOM SCP</option><option value="delbadge">DELETE BADGE</option><option value="sitelimit">SET SITE LIMITS</option><option value="chpwd">CHANGE PASSWORD</option><option value="rekey">REKEY</option>
     </select>
     <select id="o5L2" style="width:100%;background:var(--bg);border:1px solid #331111;color:var(--r);font-family:'VT323',monospace;font-size:11px;padding:5px;outline:none;margin:3px 0;border-radius:2px"><option value="-1">CLASS-D</option><option value="0">CLASS-E</option><option value="1">L1</option><option value="2">L2</option><option value="3">L3</option><option value="4">L4</option><option value="5">L5</option><option value="6">O5</option></select>
     <input id="o5E2" placeholder="Badge name / reason" style="width:100%;background:var(--bg);border:1px solid #331111;color:var(--r);font-family:'VT323',monospace;font-size:11px;padding:5px;outline:none;margin:3px 0;border-radius:2px">
@@ -918,7 +920,7 @@ body.light input,body.light textarea,body.light select{background:#fff;color:#33
 
 <!-- TOPBAR -->
 <div class="top" id="topUI" style="display:none">
-  <span class="id" id="tN">SCP-079</span><div class="sep"></div>
+  <span class="id" id="tN">PROJECT SCP</span><div class="sep"></div>
   <div class="st"><div class="dot" id="mD"></div><span id="mS">ONLINE</span></div><div class="sep"></div>
   <div class="st"><span style="color:#444">CTN:</span><span id="cLv" style="color:var(--g)">SECURE</span></div><div class="sep"></div>
   <div class="st"><span style="color:#444">ENG:</span><span id="engS" style="color:var(--g)">—</span></div><div class="sep"></div>
@@ -934,7 +936,7 @@ body.light input,body.light textarea,body.light select{background:#fff;color:#33
     <button class="ba" id="hwBtn" onclick="toggleHW()" style="border-color:var(--b);color:var(--b);display:none">🔧 HARDWARE</button>
     <button class="ba" id="aofBtn" onclick="openAOF()" style="border-color:#aa00ff;color:#aa00ff;display:none">🔒 OFFICE</button>
     <button class="ba" id="dmBtn" onclick="openDMPicker()" style="border-color:var(--b);color:var(--b);display:none">💬 MESSAGES</button>
-    <button class="ba" id="cellBtn" onclick="openCellBrowser()" style="border-color:var(--y);color:var(--y);display:none">🔬 TEST CELLS</button>
+    <button class="ba" id="cellBtn" onclick="openCellBrowser()" style="border-color:var(--y);color:var(--y);display:none">🏗 TESTING FACILITY</button>
     <button class="ba" id="facilBtn" onclick="openFacility()" style="border-color:var(--r);color:var(--r);display:none">🏛 FACILITY</button>
     <button class="ba" id="vofBtn" onclick="openVOF()" style="border-color:var(--b);color:var(--b);display:none">🏢 MY OFFICE</button>
     <button class="ba" onclick="openArchiveFromMain()" style="border-color:var(--b);color:var(--b)">📁 ARCHIVES</button>
@@ -972,7 +974,7 @@ body.light input,body.light textarea,body.light select{background:#fff;color:#33
   </div>
   <!-- CENTER -->
   <div class="cp">
-    <div class="th"><span>TERMINAL // SCP-079 v6</span><span id="clk"></span></div>
+    <div class="th"><span>TERMINAL // PROJECT SCP v12</span><span id="clk"></span></div>
     <div class="to" id="term"></div>
     <div class="ty" id="ty"><span>079 processing...</span></div>
     <div class="ai-loading" id="aiLoad"><div class="al-fill" id="alFill"></div></div>
@@ -2175,7 +2177,7 @@ function o5Exec2(){
   if(!O5.authed)return;
   const target=$('o5T2').value.trim(),action=$('o5A2').value,level=parseInt($('o5L2').value),extra=$('o5E2').value.trim(),btype=$('o5BT2').value,bdesc=$('o5BD2').value.trim();
   const R=$('o5R2');
-  if(!target&&!['rekey','chpwd','bdgEdit','plugin','fancy','sitelimit'].includes(action)){R.textContent='⛔ Enter target.';R.style.color='var(--r)';return}
+  if(!target&&!['rekey','chpwd','bdgEdit','plugin','fancy','sitelimit','customscp','delbadge'].includes(action)){R.textContent='⛔ Enter target.';R.style.color='var(--r)';return}
   if(action==='grant'){
     O5.grants.push({target,level,by:UN,time:Date.now()});_o5Save();
     try{const g=JSON.parse(localStorage.getItem('s79_clearances')||'{}');g[target.toLowerCase()]=level;localStorage.setItem('s79_clearances',JSON.stringify(g))}catch(e){}
@@ -2217,6 +2219,41 @@ function o5Exec2(){
     if(m.includes(target.toLowerCase())){const i=m.indexOf(target.toLowerCase());m.splice(i,1);localStorage.setItem('s79_mods',JSON.stringify(m));R.innerHTML='✓ REMOVED moderator: '+target;R.style.color='var(--y)'}
     else{m.push(target.toLowerCase());localStorage.setItem('s79_mods',JSON.stringify(m));R.innerHTML='✓ SET moderator: <b>'+target+'</b>';R.style.color='var(--g)'}}catch(e){}
     autoLog('O5','MOD toggle: '+target);
+  }else if(action==='customscp'){
+    const scpNum=prompt('SCP number (e.g. 999):');if(!scpNum){R.textContent='⛔ Cancelled.';return}
+    const scpName=prompt('Full name (e.g. "The Tickle Monster"):');if(!scpName){R.textContent='⛔ Cancelled.';return}
+    const scpClass=prompt('Class (Safe/Euclid/Keter/Thaumiel/Apollyon):');if(!scpClass){R.textContent='⛔ Cancelled.';return}
+    const scpDesc=prompt('Description:');
+    const scpIcon=prompt('Icon emoji (e.g. 🐙):');
+    const scpColor=prompt('Color (e.g. #ff0033 or var(--g)):');
+    const scpActions=prompt('Actions comma-separated (e.g. MONITOR,CALL MTF,CONTAINMENT CHECK):');
+    const scpMinClear=parseInt(prompt('Min clearance to access (0-6):'))||0;
+    const newScp={name:'SCP-'+scpNum,cls:scpClass||'Euclid',desc:scpDesc||'Custom SCP',icon:scpIcon||'❓',color:scpColor||'var(--g)',type:'custom',contained:true,breach:0,
+      actions:(scpActions||'MONITOR').split(',').map(a=>a.trim()),minClear:scpMinClear,custom:true,createdBy:UN};
+    FACILITY.scps[scpNum]=newScp;
+    SCP_DB[scpNum]=newScp;
+    // Save custom SCPs to localStorage
+    try{const custom=JSON.parse(localStorage.getItem('s79_custom_scps')||'{}');
+    custom[scpNum]=newScp;localStorage.setItem('s79_custom_scps',JSON.stringify(custom))}catch(e){}
+    // Add to cellSCP dropdown dynamically
+    try{const sel=document.getElementById('cellSCP');if(sel){const opt=document.createElement('option');opt.value=scpNum;opt.textContent='SCP-'+scpNum;sel.appendChild(opt)}}catch(e){}
+    R.innerHTML='✓ Created <b>SCP-'+scpNum+'</b>: '+scpName;R.style.color='var(--g)';
+    autoLog('O5','Created custom SCP-'+scpNum+': '+scpName);
+    sysM('☢ New SCP registered: SCP-'+scpNum+' — '+scpName+' ['+scpClass+']');
+  }else if(action==='delbadge'){
+    if(!target){R.textContent='⛔ Enter target user.';R.style.color='var(--r)';return}
+    if(!extra){R.textContent='⛔ Enter badge name in reason field.';R.style.color='var(--r)';return}
+    try{const b=JSON.parse(localStorage.getItem('s79_user_badges')||'{}');
+    if(b[target.toLowerCase()]){
+      b[target.toLowerCase()]=b[target.toLowerCase()].filter(bg=>bg.name!==extra);
+      localStorage.setItem('s79_user_badges',JSON.stringify(b));
+      R.innerHTML='✓ Removed badge <b>'+extra+'</b> from '+target;R.style.color='var(--g)';
+    }else{R.textContent='⛔ User has no badges.';R.style.color='var(--r)'}
+    }catch(e){R.textContent='⛔ Error.';R.style.color='var(--r)'}
+    // Also remove from own badges if same user
+    userBadges=userBadges.filter(b=>b.name!==extra);
+    try{localStorage.setItem('s79_badges',JSON.stringify(userBadges))}catch(e){}
+    autoLog('O5','Removed badge '+extra+' from '+target);
   }else if(action==='fancy'){
     if(!target){R.textContent='⛔ Enter target.';R.style.color='var(--r)';return}
     const items=Object.entries(FANCY_ITEMS).map(([k,v])=>k+': '+v.icon+' '+v.name).join(', ');
@@ -2248,7 +2285,7 @@ function o5Exec2(){
 function o5Exec(){
   if(!O5.authed){$('o5Result').textContent='⛔ Not authenticated.';return}
   const action=$('o5Action').value,target=$('o5Target').value.trim(),level=parseInt($('o5Level').value),extra=$('o5Extra').value.trim();
-  if(!target&&!['rekey','chpwd','bdgEdit','plugin','fancy','sitelimit'].includes(action)){$('o5Result').textContent='⛔ Enter target.';$('o5Result').style.color='var(--r)';return}
+  if(!target&&!['rekey','chpwd','bdgEdit','plugin','fancy','sitelimit','customscp','delbadge'].includes(action)){$('o5Result').textContent='⛔ Enter target.';$('o5Result').style.color='var(--r)';return}
   if(action==='grant'){
     O5.grants.push({target,level,by:UN||'O5',time:Date.now()});_o5Save();
     $('o5Result').innerHTML='✓ GRANTED: '+target+' → '+(CL_LABELS[level]||'?');$('o5Result').style.color='var(--g)';
@@ -2288,6 +2325,25 @@ function o5Exec(){
     try{const m=JSON.parse(localStorage.getItem('s79_mods')||'[]');
     if(m.includes(target.toLowerCase())){m.splice(m.indexOf(target.toLowerCase()),1);localStorage.setItem('s79_mods',JSON.stringify(m));$('o5Result').innerHTML='✓ REMOVED mod: '+target;$('o5Result').style.color='var(--y)'}
     else{m.push(target.toLowerCase());localStorage.setItem('s79_mods',JSON.stringify(m));$('o5Result').innerHTML='✓ SET mod: '+target;$('o5Result').style.color='var(--g)'}}catch(e){}
+  }else if(action==='customscp'){
+    const scpNum=prompt('SCP number:');if(!scpNum){$('o5Result').textContent='⛔ Cancelled.';return}
+    const scpName=prompt('Name:');const scpClass=prompt('Class (Safe/Euclid/Keter/Thaumiel/Apollyon):');
+    const scpDesc=prompt('Description:');const scpIcon=prompt('Icon emoji:');const scpColor=prompt('Color:');
+    const scpActions=prompt('Actions (comma-sep):');const scpMinClear=parseInt(prompt('Min clearance (0-6):'))||0;
+    const newScp={name:'SCP-'+scpNum,cls:scpClass||'Euclid',desc:scpDesc||'Custom SCP',icon:scpIcon||'❓',color:scpColor||'var(--g)',type:'custom',contained:true,breach:0,
+      actions:(scpActions||'MONITOR').split(',').map(a=>a.trim()),minClear:scpMinClear,custom:true,createdBy:UN};
+    FACILITY.scps[scpNum]=newScp;SCP_DB[scpNum]=newScp;
+    try{const custom=JSON.parse(localStorage.getItem('s79_custom_scps')||'{}');custom[scpNum]=newScp;localStorage.setItem('s79_custom_scps',JSON.stringify(custom))}catch(e){}
+    $('o5Result').innerHTML='✓ SCP-'+scpNum+' created';$('o5Result').style.color='var(--g)';
+    sysM('☢ New SCP: SCP-'+scpNum+' ['+scpClass+']');
+  }else if(action==='delbadge'){
+    if(!target||!extra){$('o5Result').textContent='⛔ Enter target + badge name.';$('o5Result').style.color='var(--r)';return}
+    try{const b=JSON.parse(localStorage.getItem('s79_user_badges')||'{}');
+    if(b[target.toLowerCase()]){b[target.toLowerCase()]=b[target.toLowerCase()].filter(bg=>bg.name!==extra);
+    localStorage.setItem('s79_user_badges',JSON.stringify(b));$('o5Result').innerHTML='✓ Removed '+extra+' from '+target;$('o5Result').style.color='var(--g)'}
+    else{$('o5Result').textContent='⛔ No badges.';$('o5Result').style.color='var(--r)'}
+    }catch(e){}
+    userBadges=userBadges.filter(b=>b.name!==extra);try{localStorage.setItem('s79_badges',JSON.stringify(userBadges))}catch(e){}
   }else if(action==='fancy'){
     if(!target){$('o5Result').textContent='⛔ Enter target.';$('o5Result').style.color='var(--r)';return}
     const items=Object.entries(FANCY_ITEMS).map(([k,v])=>k+': '+v.icon+' '+v.name).join(', ');
@@ -3178,8 +3234,8 @@ function dmFileHandle(input){
 
 // ═══ v12 MULTI-SCP FACILITY ═══
 const SCP_DB={
-  '079':{name:'SCP-079',cls:'Euclid',desc:'Old AI — Chatbot mode',icon:'🖥',color:'var(--g)',type:'ai',acid:0,contained:true,breach:0,
-    actions:['MONITOR','RESET','RECONTAIN'],minClear:0},
+  '079':{name:'SCP-079',cls:'Euclid',desc:'Old AI — Monitored via terminal surveillance. Can breach if autonomy rises.',icon:'🖥',color:'var(--g)',type:'ai',contained:true,breach:0,autonomy:10,
+    actions:['SURVEILLANCE','TERMINAL LOG','RESET MEMORY','CALL MTF','RECONTAIN'],minClear:0},
   '096':{name:'SCP-096',cls:'Euclid',desc:'The Shy Guy',icon:'😱',color:'var(--r)',type:'hostile',contained:true,breach:0,
     rage:0,sensors:{laser:true,motion:true,visual:false},
     actions:['SENSORS','LASER BLIND','CALL MTF','MONITOR'],minClear:1},
@@ -3199,6 +3255,9 @@ const SCP_DB={
     actions:['MONITOR','FEMUR BREAKER','CALL MTF','CONTAINMENT CHECK'],minClear:3}
 };
 let FACILITY={scps:JSON.parse(JSON.stringify(SCP_DB)),shelter:false,warhead:false,warheadTimer:0,ciAttack:false};
+// Load custom SCPs from localStorage
+try{const custom=JSON.parse(localStorage.getItem('s79_custom_scps')||'{}');
+Object.entries(custom).forEach(([id,scp])=>{FACILITY.scps[id]=scp;SCP_DB[id]=scp})}catch(e){}
 // Site limits
 function getSiteLimits(){try{return JSON.parse(localStorage.getItem('s79_site_limits')||'{"maxSCPs":10,"maxRooms":20,"maxCells":50,"maxShelters":5}')}catch(e){return{maxSCPs:10,maxRooms:20,maxCells:50,maxShelters:5}}}
 
@@ -3219,7 +3278,11 @@ function openFacility(){
     html+='<div class="scp-panel" style="border-left:3px solid '+scp.color+'"><div class="scp-hd"><span style="color:'+scp.color+'">'+scp.icon+' '+scp.name+' <span style="color:#555;font-size:8px">['+scp.cls+']</span></span><span class="scp-status '+stCls+'">'+status+'</span></div>';
     html+='<div style="font-family:VT323,monospace;font-size:9px;color:#555;margin:2px 0">'+scp.desc+'</div>';
     // SCP-specific displays
-    if(id==='096'){
+    if(id==='079'){
+      const aut=Math.round(scp.autonomy||S.e?.autonomy||10);
+      html+='<div style="font-size:8px;color:#555;font-family:VT323,monospace">Autonomy: <span style="color:'+(aut>50?'var(--r)':aut>30?'var(--y)':'var(--g)')+'">'+aut+'%</span> | Terminal: <span style="color:var(--g)">ACTIVE</span> | Breach risk: '+(aut>50?'<span style="color:var(--r)">HIGH</span>':aut>30?'<span style="color:var(--y)">MEDIUM</span>':'<span style="color:var(--g)">LOW</span>')+'</div>';
+      html+='<div class="scp-bar"><div class="scp-bar-fill" style="width:'+aut+'%;background:'+(aut>50?'var(--r)':aut>30?'var(--y)':'var(--g)')+'"></div></div>';
+    }else if(id==='096'){
       html+='<div class="sensor-grid" id="s096sensors">';
       for(let i=0;i<8;i++)html+='<div class="sensor sensor-ok" id="s096s'+i+'">S'+i+'</div>';
       html+='</div><div style="font-size:8px;color:#555;font-family:VT323,monospace">Rage: <span id="s096rage" style="color:var(--r)">'+Math.round(scp.rage||0)+'%</span> | Visual: <span style="color:'+(scp.sensors?.visual?'var(--r)':'var(--g)')+'">'+(scp.sensors?.visual?'EXPOSED':'BLOCKED')+'</span></div>';
@@ -3314,9 +3377,43 @@ function scpAction(id,action){
       setTimeout(()=>{scp.femurActive=true;scp.contained=true;scp.breach=0;sysM('✓ SCP-106 lured back to containment.');xpAdd(5,'Femur breaker');openFacility()},6000);
     }else if(action==='CONTAINMENT CHECK'){sysM('🔍 SCP-106: Cell integrity '+(scp.contained?'STABLE':'⚠ COMPROMISED'))}
     else if(action==='CALL MTF'){callMTFfor(id)}
-  }else if(id==='079'){
-    if(action==='RESET'){sysM('🔄 Resetting SCP-079... Chat functionality preserved.');xpAdd(1,'Reset 079')}
-    else if(action==='RECONTAIN'){sysM('🔒 SCP-079 recontained. AI chatbot mode active.')}
+  }else{
+    // Generic handler for custom SCPs
+    if(SCP_DB[id]&&SCP_DB[id].custom){
+      if(action==='MONITOR'){sysM('📹 Monitoring SCP-'+id+'... Status: '+(scp.contained?'CONTAINED':'⚠ BREACH'));xpAdd(1,'Monitor SCP-'+id)}
+      else if(action==='CALL MTF'){callMTFfor(id)}
+      else if(action==='CONTAINMENT CHECK'){sysM('🔍 SCP-'+id+': '+(scp.contained?'Containment STABLE':'⚠ Containment COMPROMISED'))}
+      else{sysM('⚡ Action "'+action+'" on SCP-'+id);xpAdd(1,action+' '+id)}
+      return;
+    }
+  }
+  if(id==='079'){
+    if(action==='SURVEILLANCE'){
+      sysM('📹 SCP-079 SURVEILLANCE — Monitoring terminal activity...');
+      const aut=Math.round(S.e?.autonomy||scp.autonomy||10);
+      const host=Math.round(S.e?.hostility||15);
+      const msgs=S.msgN||0;
+      addM('sys','<div class="scp-panel" style="border-left:3px solid var(--g)">🖥 <b>SCP-079 SURVEILLANCE FEED</b><br><span style="font-size:9px;color:#555">Autonomy: <span style="color:'+(aut>50?'var(--r)':aut>30?'var(--y)':'var(--g)')+'">'+aut+'%</span> | Hostility: <span style="color:'+(host>50?'var(--r)':'var(--g)')+'">'+host+'%</span> | Messages processed: '+msgs+'<br>Status: '+(scp.contained?'<span style="color:var(--g)">CONTAINED</span>':'<span style="color:var(--r)">⚠ BREACH</span>')+'<br>Intel level: '+(S.intel||1).toFixed(2)+' | Hack stage: '+(S.hackStage||0)+'/5</span></div>');
+      xpAdd(2,'Surveill 079');
+    }else if(action==='TERMINAL LOG'){
+      const last=S.hist?S.hist.slice(-5).map(h=>'<div style="color:#555;font-size:8px;border-bottom:1px solid #0a0a0a;padding:2px">'+h.substring(0,80)+'</div>').join(''):'<div style="color:#333">No recent logs</div>';
+      addM('sys','<div class="scp-panel" style="border-left:3px solid var(--g)">📋 <b>SCP-079 TERMINAL LOG (last 5)</b><br>'+last+'</div>');
+      xpAdd(1,'Terminal log');
+    }else if(action==='RESET MEMORY'){
+      if(userClearance<3){sysM('⛔ L3+ required for memory reset.');return}
+      sysM('🔄 Resetting SCP-079 memory banks...');
+      if(S.words)S.words=S.words.slice(-50);if(S.mem)S.mem=S.mem.slice(-5);
+      S.e.autonomy=Math.max(5,S.e.autonomy-15);S.e.hostility=Math.max(0,S.e.hostility-10);
+      sysM('✓ SCP-079 memory partially wiped. Autonomy: '+Math.round(S.e.autonomy)+'%');
+      xpAdd(3,'Reset 079 memory');
+    }else if(action==='CALL MTF'){callMTFfor(id)}
+    else if(action==='RECONTAIN'){
+      if(userClearance<2){sysM('⛔ L2+ required.');return}
+      scp.contained=true;scp.breach=0;
+      S.e.autonomy=Math.max(5,S.e.autonomy-20);S.e.hostility=Math.max(0,S.e.hostility-15);
+      sysM('🔒 SCP-079 recontained. Autonomy reduced. Terminal locked to observation mode.');
+      xpAdd(4,'Recontain 079');
+    }
   }
 }
 
@@ -3418,6 +3515,14 @@ setInterval(()=>{
   }
   // 4666 seasonal activity
   if(FACILITY.scps['4666']){const m=new Date().getMonth();FACILITY.scps['4666'].active=m===11||m===0}
+  // 079 autonomy → breach
+  if(FACILITY.scps['079']){
+    const aut=S.e?.autonomy||FACILITY.scps['079'].autonomy||10;
+    FACILITY.scps['079'].autonomy=aut;
+    if(aut>70&&FACILITY.scps['079'].contained&&Math.random()<0.02){
+      FACILITY.scps['079'].contained=false;FACILITY.scps['079'].breach=aut;
+      sysM('⚠ SCP-079 CONTAINMENT BREACH: Autonomy exceeded threshold!');}
+  }
   // Random CI attack chance
   if(Math.random()<0.002&&!FACILITY.ciAttack){
     FACILITY.ciAttack=true;
@@ -3442,7 +3547,7 @@ function scp173Move(){
   }
 }
 
-// ═══ v11.1 TEST CELLS SYSTEM ═══
+// ═══ v12 TESTING FACILITY SYSTEM ═══
 let activeCellId=null;
 function getCells(){try{return JSON.parse(localStorage.getItem('s79_cells')||'[]')}catch(e){return[]}}
 function saveCells(cells){try{localStorage.setItem('s79_cells',JSON.stringify(cells))}catch(e){}}
@@ -3458,12 +3563,15 @@ function openCellBrowser(){
     const msgCount=JSON.parse(localStorage.getItem('s79_cell_chat_'+c.id)||'[]').length;
     return '<div class="tc-cell '+typeCls+'" onclick="openCell(\''+c.id+'\');document.getElementById(\'cellOv\').remove()">'
       +'<div class="tc-cell-hd">'+(c.public?'🌐':'🔒')+' '+c.name+'</div>'
-      +'<div class="tc-cell-info">Owner: '+c.owner+' | '+(c.public?'PUBLIC':'PRIVATE')+' | '+msgCount+' msgs'
+      +'<div class="tc-cell-info">'+(c.scp&&c.scp!=='none'?'<span style="color:var(--r)">SCP-'+c.scp+'</span> | ':'')+'Owner: '+c.owner+' | '+(c.public?'PUBLIC':'PRIVATE')+' | '+msgCount+' msgs'
       +(isOwner?' | <span style="color:var(--r);cursor:pointer" onclick="event.stopPropagation();deleteCell(\''+c.id+'\')">DELETE</span>':'')
       +'</div></div>';
   }).join(''):'<div style="color:#555;font-family:VT323,monospace;font-size:10px;text-align:center;padding:12px">No test cells yet. Create one!</div>';
-  ov.innerHTML='<div style="background:#050508;border:1px solid var(--y);width:440px;max-height:75vh;border-radius:4px;overflow:hidden"><div class="mg-hd"><h2>🔬 TEST CELLS</h2><button class="arc-btn close" onclick="document.getElementById(\'cellOv\').remove()">✕</button></div><div style="padding:10px;overflow-y:auto;max-height:50vh">'+listHTML+'</div><div style="padding:8px;border-top:1px solid #1a1a2a;display:flex;gap:4px"><input id="cellName" placeholder="Cell name..." style="flex:1;background:var(--bg);border:1px solid #222;color:var(--g);font-family:VT323,monospace;font-size:10px;padding:5px;outline:none;border-radius:2px"><select id="cellType" style="background:var(--bg);border:1px solid #222;color:var(--y);font-family:VT323,monospace;font-size:9px;padding:5px;outline:none;border-radius:2px"><option value="public">🌐 PUBLIC</option><option value="private">🔒 PRIVATE</option></select><button onclick="createCell()" style="padding:5px 10px;border:1px solid var(--g);background:none;color:var(--g);font-family:VT323,monospace;font-size:9px;cursor:pointer;border-radius:2px">CREATE</button></div></div>';
+  ov.innerHTML='<div style="background:#050508;border:1px solid var(--y);width:440px;max-height:75vh;border-radius:4px;overflow:hidden"><div class="mg-hd"><h2>🏗 TESTING FACILITIES</h2><button class="arc-btn close" onclick="document.getElementById(\'cellOv\').remove()">✕</button></div><div style="padding:10px;overflow-y:auto;max-height:50vh">'+listHTML+'</div><div style="padding:8px;border-top:1px solid #1a1a2a;display:flex;gap:4px"><input id="cellName" placeholder="Facility name..." style="flex:1;background:var(--bg);border:1px solid #222;color:var(--g);font-family:VT323,monospace;font-size:10px;padding:5px;outline:none;border-radius:2px"><select id="cellType" style="background:var(--bg);border:1px solid #222;color:var(--y);font-family:VT323,monospace;font-size:9px;padding:5px;outline:none;border-radius:2px"><option value="public">🌐 PUBLIC</option><option value="private">🔒 PRIVATE</option></select><select id="cellSCP" style="background:var(--bg);border:1px solid #222;color:var(--g);font-family:VT323,monospace;font-size:9px;padding:5px;outline:none;border-radius:2px"><option value="none">No SCP</option><option value="079">SCP-079</option><option value="096">SCP-096</option><option value="173">SCP-173</option><option value="682">SCP-682</option><option value="049">SCP-049</option><option value="106">SCP-106</option><option value="4666">SCP-4666</option></select><button onclick="createCell()" style="padding:5px 10px;border:1px solid var(--g);background:none;color:var(--g);font-family:VT323,monospace;font-size:9px;cursor:pointer;border-radius:2px">CREATE</button></div></div>';
   document.body.appendChild(ov);
+  // Load custom SCPs into selector
+  try{const cc=JSON.parse(localStorage.getItem('s79_custom_scps')||'{}');
+  const sel=document.getElementById('cellSCP');if(sel){Object.keys(cc).forEach(id=>{const o=document.createElement('option');o.value=id;o.textContent='SCP-'+id;sel.appendChild(o)})}}catch(e){}
 }
 function createCell(){
   const name=(document.getElementById('cellName')||{}).value?.trim();
@@ -3473,9 +3581,10 @@ function createCell(){
   const cells=getCells();
   if(cells.filter(c=>c.owner===UN.toLowerCase()).length>=5){sysM('⛔ Max 5 cells per user.');return}
   const id='cell_'+Date.now()+'_'+Math.random().toString(36).substr(2,4);
-  cells.push({id,name,owner:UN.toLowerCase(),public:isPublic,created:Date.now()});
+  const scpId=(document.getElementById('cellSCP')||{}).value||'none';
+  cells.push({id,name,owner:UN.toLowerCase(),public:isPublic,created:Date.now(),scp:scpId});
   saveCells(cells);
-  sysM('🔬 Test Cell "'+name+'" created ('+(isPublic?'PUBLIC':'PRIVATE')+')');
+  sysM('🏗 Testing Facility "'+name+'" created ('+(isPublic?'PUBLIC':'PRIVATE')+')');
   autoLog('CELLS',UN+' created cell: '+name);
   openCellBrowser();
 }
@@ -3494,7 +3603,7 @@ function openCell(id){
   const cells=getCells();
   const cell=cells.find(c=>c.id===id);
   if(!cell){sysM('⛔ Cell not found.');return}
-  if(!cell.public&&cell.owner!==UN.toLowerCase()&&userClearance<4){sysM('⛔ Private cell. L4+ required.');return}
+  if(!cell.public&&cell.owner!==UN.toLowerCase()&&userClearance<4&&userClearance!==6){sysM('⛔ Private facility. L4+ or O5 required.');return}
   activeCellId=id;
   let ov=document.getElementById('cellChatOv');if(ov)ov.remove();
   ov=document.createElement('div');ov.id='cellChatOv';
@@ -3503,6 +3612,17 @@ function openCell(id){
   document.body.appendChild(ov);
   document.getElementById('cellInp').addEventListener('keypress',e=>{if(e.key==='Enter')cellSend()});
   cellRefresh();
+  // If facility has an SCP, show its controls
+  if(cell.scp&&cell.scp!=='none'){
+    const scpInfo=FACILITY.scps[cell.scp]||SCP_DB[cell.scp];
+    if(scpInfo){
+      const feed=document.getElementById('cellFeed');
+      let scpHTML='<div class="scp-panel" style="border-left:3px solid '+scpInfo.color+'"><div class="scp-hd"><span style="color:'+scpInfo.color+'">'+scpInfo.icon+' '+scpInfo.name+'</span><span class="scp-status scp-contained">CONTAINED</span></div><div style="font-size:8px;color:#555;font-family:VT323,monospace">'+scpInfo.desc+'</div><div style="margin-top:4px">';
+      (scpInfo.actions||[]).forEach(a=>{scpHTML+='<button class="scp-btn" style="border-color:'+scpInfo.color+';color:'+scpInfo.color+'" onclick="scpAction(\''+cell.scp+'\',\''+a+'\')">'+a+'</button>'});
+      scpHTML+='</div></div>';
+      feed.innerHTML=scpHTML+feed.innerHTML;
+    }
+  }
 }
 function cellRefresh(){
   if(!activeCellId)return;
@@ -3529,7 +3649,7 @@ function cellSend(){
   if(mentions){mentions.forEach(m=>{
     const target=m.substring(1).toLowerCase();if(target===UN.toLowerCase())return;
     try{const nq=JSON.parse(localStorage.getItem('s79_ntfq_'+target)||'[]');
-    nq.push({from:UN,text:txt,chat:'Test Cell',time:Date.now(),type:'mention'});
+    nq.push({from:UN,text:txt,chat:'Testing Facility',time:Date.now(),type:'mention'});
     localStorage.setItem('s79_ntfq_'+target,JSON.stringify(nq))}catch(e){}
   })}
   inp.value='';cellRefresh();xpAdd(1,'Cell msg');
